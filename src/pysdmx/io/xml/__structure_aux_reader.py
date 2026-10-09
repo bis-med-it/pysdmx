@@ -577,7 +577,7 @@ class StructureParser(Struct):
                 field_info = add_list(json_contact.pop(k))
                 for i, element in enumerate(field_info):
                     field_info[i] = _extract_text(element)
-                json_contact[v] = field_info
+                json_contact[v] = tuple(field_info)
 
         return Contact(**json_contact)
 
@@ -612,7 +612,7 @@ class StructureParser(Struct):
 
             annotations.append(Annotation(**e))
 
-        item_elem[ANNOTATIONS.lower()] = annotations
+        item_elem[ANNOTATIONS.lower()] = tuple(annotations)
         del item_elem[ANNOTATIONS]
 
         return item_elem
@@ -780,10 +780,13 @@ class StructureParser(Struct):
             agency = scheme.agency
             agency_id = agency.id if isinstance(agency, Agency) else agency
             items = [
-                replace(item, dataflows=list(paprs[f"{agency_id}:{item.id}"]))
+                replace(
+                    item,
+                    dataflows=tuple(paprs[f"{agency_id}:{item.id}"]),
+                )
                 for item in scheme.items
             ]
-            enriched[urn] = replace(scheme, items=items)
+            enriched[urn] = replace(scheme, items=tuple(items))
         return enriched
 
     def __format_representation(
@@ -1006,7 +1009,7 @@ class StructureParser(Struct):
                 if not as_list:
                     json_elem[new_key] = references[0]
                 else:
-                    json_elem[new_key] = references
+                    json_elem[new_key] = tuple(references)
                 json_elem.pop(scheme)
 
         extract_references(RULE_SCHEME, "ruleset_schemes", self.rulesets)
@@ -1471,14 +1474,18 @@ class StructureParser(Struct):
 
         return ConstraintAttachment(
             data_provider=data_provider,
-            data_structures=data_structures or None,
-            dataflows=dataflows or None,
-            provision_agreements=(provision_agreements or None),
+            data_structures=(
+                tuple(data_structures) if data_structures else None
+            ),
+            dataflows=tuple(dataflows) if dataflows else None,
+            provision_agreements=(
+                tuple(provision_agreements) if provision_agreements else None
+            ),
         )
 
     def __format_cube_region(self, region_elem: Dict[str, Any]) -> CubeRegion:
         if region_elem is None:
-            return CubeRegion(key_values=[], is_included=True)
+            return CubeRegion(key_values=(), is_included=True)
         is_included = True
         if INCLUDE in region_elem:
             is_included = region_elem[INCLUDE].lower() == "true"
@@ -1490,7 +1497,9 @@ class StructureParser(Struct):
                 for kv in add_list(region_elem[KEY_VALUE])
             )
 
-        return CubeRegion(key_values=key_values, is_included=is_included)
+        return CubeRegion(
+            key_values=tuple(key_values), is_included=is_included
+        )
 
     def __format_cube_key_value(self, kv: Dict[str, Any]) -> CubeKeyValue:
         values = []
@@ -1539,7 +1548,7 @@ class StructureParser(Struct):
         key_list = add_list(keyset_elem[KEY])
         for k in key_list:
             if k is None:
-                keys.append(DataKey(keys_values=[]))
+                keys.append(DataKey(keys_values=()))
                 continue
             keys_values = []
             if KEY_VALUE in k:
@@ -1552,9 +1561,9 @@ class StructureParser(Struct):
                         DataKeyValue(id=kv[ID], value=value_text)
                     )
 
-            keys.append(DataKey(keys_values=keys_values))
+            keys.append(DataKey(keys_values=tuple(keys_values)))
 
-        return KeySet(keys=keys, is_included=is_included)
+        return KeySet(keys=tuple(keys), is_included=is_included)
 
     def __format_constraint(self, element: Dict[str, Any]) -> Dict[str, Any]:
         # Allowed/Actual marker: SDMX 3.0 uses 'role' (required); SDMX
@@ -1595,8 +1604,8 @@ class StructureParser(Struct):
             del element[DATA_KEY_SET]
 
         element["constraint_attachment"] = constraint_attachment
-        element["cube_regions"] = cube_regions
-        element["key_sets"] = key_sets
+        element["cube_regions"] = tuple(cube_regions)
+        element["key_sets"] = tuple(key_sets)
 
         return element
 
@@ -1749,16 +1758,16 @@ class StructureParser(Struct):
         if "ToVtlMapping" in json_vtl:
             to_vtl = json_vtl.pop("ToVtlMapping")
             if "ToVtlSubSpace" in to_vtl:
-                to_vtl["to_vtl_sub_space"] = add_list(
-                    to_vtl["ToVtlSubSpace"]["Key"]
+                to_vtl["to_vtl_sub_space"] = tuple(
+                    add_list(to_vtl["ToVtlSubSpace"]["Key"])
                 )
                 del to_vtl["ToVtlSubSpace"]
             json_vtl["to_vtl_mapping_method"] = ToVtlMapping(**to_vtl)
         if "FromVtlMapping" in json_vtl:
             from_vtl = json_vtl.pop("FromVtlMapping")
             if "FromVtlSuperSpace" in from_vtl:
-                from_vtl["from_vtl_sub_space"] = add_list(
-                    from_vtl["FromVtlSuperSpace"]["Key"]
+                from_vtl["from_vtl_sub_space"] = tuple(
+                    add_list(from_vtl["FromVtlSuperSpace"]["Key"])
                 )
                 del from_vtl["FromVtlSuperSpace"]
             json_vtl["from_vtl_mapping_method"] = FromVtlMapping(**from_vtl)
@@ -1830,7 +1839,7 @@ class StructureParser(Struct):
             contacts = [
                 self.__format_contact(e) for e in item_json_info[CONTACT]
             ]
-            item_json_info[CONTACT.lower() + "s"] = contacts
+            item_json_info[CONTACT.lower() + "s"] = tuple(contacts)
             del item_json_info[CONTACT]
 
         if CORE_REP in item_json_info and item_name_class == CON:
@@ -1868,16 +1877,18 @@ class StructureParser(Struct):
                     if isinstance(group_dimensions, dict):
                         group_dimensions = [group_dimensions]
 
-                    group["dimensions"] = [
-                        (
-                            d[DIM_REF]
-                            if isinstance(d[DIM_REF], str)
-                            else d[DIM_REF][REF][ID]
-                        )
-                        for d in group_dimensions
-                    ]
+                    group["dimensions"] = tuple(
+                        [
+                            (
+                                d[DIM_REF]
+                                if isinstance(d[DIM_REF], str)
+                                else d[DIM_REF][REF][ID]
+                            )
+                            for d in group_dimensions
+                        ]
+                    )
 
-                element[GROUPS_LOW] = [Group(**g) for g in groups]
+                element[GROUPS_LOW] = tuple([Group(**g) for g in groups])
                 del element[DSD_COMPS][GROUP]
         return element
 
@@ -1895,8 +1906,8 @@ class StructureParser(Struct):
 
         if len(src_list) != 1 or len(tgt_list) != 1:
             return MultiComponentMap(
-                source=src_list,
-                target=tgt_list,
+                source=tuple(src_list),
+                target=tuple(tgt_list),
                 values=child_dict["values"],
             )
 
@@ -1913,8 +1924,8 @@ class StructureParser(Struct):
         tgt_list = add_list(structure.get("target"))
 
         if len(src_list) != 1 or len(tgt_list) != 1:
-            structure["source"] = src_list
-            structure["target"] = tgt_list
+            structure["source"] = tuple(src_list)
+            structure["target"] = tuple(tgt_list)
             return MultiRepresentationMap(**structure)
 
         structure["source"] = src_list[0]
@@ -1932,8 +1943,8 @@ class StructureParser(Struct):
 
         if len(src_list) != 1 or len(tgt_list) != 1:
             return MultiValueMap(
-                source=src_list,
-                target=tgt_list,
+                source=tuple(src_list),
+                target=tuple(tgt_list),
                 valid_from=child_dict.get("valid_from"),
                 valid_to=child_dict.get("valid_to"),
             )
@@ -2021,7 +2032,7 @@ class StructureParser(Struct):
                     consolidated_children.append(target_class(**child_dict))
 
         if consolidated_children:
-            element["maps"] = consolidated_children
+            element["maps"] = tuple(consolidated_children)
 
         return element
 
@@ -2080,7 +2091,7 @@ class StructureParser(Struct):
                 del element[item]
             if scheme == AGENCY_SCHEME:
                 items = self.__prefix_agency_ids(items, element[AGENCY_ID])
-            element["items"] = items
+            element["items"] = tuple(items)
             element = self.__format_agency(element)
             element = self.__format_validity(element)
             element = self.__format_vtl(element)
@@ -2141,8 +2152,10 @@ class StructureParser(Struct):
                 element[IS_PARTIAL_LOW] = element.pop(IS_PARTIAL) == "true"
             items = (
                 tuple(
-                    self.__format_category(cat)
-                    for cat in add_list(element[CATEGORY])
+                    [
+                        self.__format_category(cat)
+                        for cat in add_list(element[CATEGORY])
+                    ]
                 )
                 if CATEGORY in element
                 else ()
@@ -2900,8 +2913,10 @@ class StructureParser(Struct):
             description=category.description,
             annotations=category.annotations,
             categories=tuple(
-                self.__rebuild_category(child, path, flows, others)
-                for child in category.categories
+                [
+                    self.__rebuild_category(child, path, flows, others)
+                    for child in category.categories
+                ]
             ),
             dataflows=tuple(flows.get(path, ())),
             other_references=tuple(others.get(path, ())),
@@ -2950,10 +2965,12 @@ class StructureParser(Struct):
             category_schemes[urn] = replace(
                 scheme,
                 items=tuple(
-                    self.__rebuild_category(
-                        cat, "", scheme_flows, scheme_others
-                    )
-                    for cat in scheme.items
+                    [
+                        self.__rebuild_category(
+                            cat, "", scheme_flows, scheme_others
+                        )
+                        for cat in scheme.items
+                    ]
                 ),
             )
 

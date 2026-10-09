@@ -76,7 +76,7 @@ def test_org_schemes_31(samples_folder):
     provider = dps.items[0]
     assert isinstance(provider, DataProvider)
     assert provider.id == "DP"
-    assert provider.contacts[0].emails == ["dp.test@md.org"]
+    assert provider.contacts[0].emails == ("dp.test@md.org",)
 
     assert isinstance(by_type[DataConsumerScheme].items[0], DataConsumer)
     assert isinstance(
@@ -95,9 +95,9 @@ def test_provider_scheme_enrichment_31(samples_folder):
     assert len(schemes) == 1
     provider = schemes[0].items[0]
     assert provider.id == "MD"
-    assert provider.dataflows == [
-        DataflowRef(id="TEST", agency="MD", version="1.0")
-    ]
+    assert provider.dataflows == (
+        DataflowRef(id="TEST", agency="MD", version="1.0"),
+    )
 
 
 @pytest.mark.xml
@@ -121,10 +121,10 @@ def test_metadata_provider_scheme_enrichment_31(samples_folder):
     schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
     assert len(schemes) == 1
     providers = {p.id: p for p in schemes[0].items}
-    assert providers["MP1"].dataflows == [
-        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
-    ]
-    assert providers["MP2"].dataflows == []
+    assert providers["MP1"].dataflows == (
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0"),
+    )
+    assert providers["MP2"].dataflows == ()
 
 
 @pytest.mark.xml
@@ -410,10 +410,10 @@ def test_generic_metadata_31(samples_folder):
     assert report.id == "RPT1"
     assert report.reportingBegin == "2020-01-01"
     # SDMX-ML 3.1 expresses multiple values as repeated <Attribute> elements
-    assert report["CONTACT.EMAIL"].value == [
+    assert report["CONTACT.EMAIL"].value == (
         "john@example.org",
         "doe@example.org",
-    ]
+    )
     assert report["NOTE"].value == "A single note"
 
 
@@ -498,10 +498,10 @@ def test_availability_constraint_31(samples_folder):
 
     att = ac.constraint_attachment
     assert att.data_provider is None
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:DF_TEST(1.0)",
+    )
 
     region = ac.cube_region
     assert region.is_included is True
@@ -570,7 +570,7 @@ def test_read_empty_structure_containers_31(samples_folder):
     # returns an empty Message instead of raising.
     msg = read_sdmx(input_str, validate=False)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -582,7 +582,7 @@ def test_read_no_structure_containers_31(samples_folder):
 
     msg = read_sdmx(input_str, validate=True)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -594,7 +594,7 @@ def test_read_header_only_structure_message_31(samples_folder):
 
     msg = read_sdmx(input_str, validate=True)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -639,5 +639,5 @@ def test_generic_metadata_empty_set_31():
 
     msg = read_sdmx(doc, validate=True)
     assert msg.header is not None
-    assert msg.reports == []
-    assert msg.get_reports() == []
+    assert msg.reports == ()
+    assert msg.get_reports() == ()

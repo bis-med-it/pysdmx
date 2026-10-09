@@ -1188,21 +1188,21 @@ def test_agency(complete_header, agency, agency_sample):
 def test_org_schemes_30_round_trip(complete_header):
     provider_scheme = DataProviderScheme(
         agency="MD",
-        items=[
+        items=(
             DataProvider(
                 id="DP",
                 name="DATA PROVIDER",
-                contacts=[Contact(name="Stats", emails=["dp.test@md.org"])],
-            )
-        ],
+                contacts=(Contact(name="Stats", emails=("dp.test@md.org",)),),
+            ),
+        ),
     )
     consumer_scheme = DataConsumerScheme(
         agency="MD",
-        items=[DataConsumer(id="DC", name="DATA CONSUMER")],
+        items=(DataConsumer(id="DC", name="DATA CONSUMER"),),
     )
     metadata_scheme = MetadataProviderScheme(
         agency="MD",
-        items=[MetadataProvider(id="MP", name="METADATA PROVIDER")],
+        items=(MetadataProvider(id="MP", name="METADATA PROVIDER"),),
     )
     content = [provider_scheme, consumer_scheme, metadata_scheme]
     result = write(content, header=complete_header, prettyprint=True)
@@ -1220,13 +1220,15 @@ def test_org_schemes_30_round_trip(complete_header):
 def test_provider_scheme_enrichment_30_round_trip(complete_header):
     provider_scheme = DataProviderScheme(
         agency="MD",
-        items=[
+        items=(
             DataProvider(
                 id="MD",
                 name="DATA PROVIDER",
-                dataflows=[DataflowRef(id="TEST", agency="MD", version="1.0")],
-            )
-        ],
+                dataflows=(
+                    DataflowRef(id="TEST", agency="MD", version="1.0"),
+                ),
+            ),
+        ),
     )
     provision_agreement = ProvisionAgreement(
         id="TEST",
@@ -1240,9 +1242,9 @@ def test_provider_scheme_enrichment_30_round_trip(complete_header):
     result = write(content, header=complete_header, prettyprint=True)
     re_read = read_sdmx(result, validate=True).structures
     scheme = next(s for s in re_read if isinstance(s, DataProviderScheme))
-    assert scheme.items[0].dataflows == [
-        DataflowRef(id="TEST", agency="MD", version="1.0")
-    ]
+    assert scheme.items[0].dataflows == (
+        DataflowRef(id="TEST", agency="MD", version="1.0"),
+    )
     assert scheme == provider_scheme
 
 
@@ -1558,10 +1560,12 @@ def test_availability_constraint_roundtrip_30(complete_header):
     )
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
-            data_provider=None, dataflows=[urn]
+            data_provider=None, dataflows=(urn,)
         ),
         cube_region=CubeRegion(
-            key_values=[CubeKeyValue(id="FREQ", values=[CubeValue(value="M")])]
+            key_values=(
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
+            )
         ),
         series_count=3,
         obs_count=42,
@@ -1977,13 +1981,13 @@ def test_annotations_30_apostrophes_preserved(complete_header):
             Code(
                 id="CI",
                 name="Côte d'Ivoire",
-                annotations=[
+                annotations=(
                     Annotation(id="c1", title="Item's first"),
                     Annotation(id="c2", title="Item's last"),
-                ],
+                ),
             ),
         ],
-        annotations=[
+        annotations=(
             Annotation(
                 id="a1",
                 title="It's the first title",
@@ -1997,7 +2001,7 @@ def test_annotations_30_apostrophes_preserved(complete_header):
                 title="It's the last title",
                 text="It's the last text",
             ),
-        ],
+        ),
     )
 
     result = write([codelist], header=complete_header, prettyprint=True)
@@ -2023,7 +2027,7 @@ def test_annotations_30_element_order(complete_header):
         agency="BIS",
         version="1.0.0",
         items=[Code(id="A", name="a")],
-        annotations=[
+        annotations=(
             Annotation(
                 id="a1",
                 title="Title",
@@ -2031,7 +2035,7 @@ def test_annotations_30_element_order(complete_header):
                 url="https://example.com/note",
                 text="Some text",
             ),
-        ],
+        ),
     )
 
     result = write([codelist], header=complete_header, prettyprint=True)
@@ -2066,10 +2070,10 @@ def test_vtl_item_30_apostrophes_preserved(complete_header):
                 expression="ds",
                 is_persistent=False,
                 result="r",
-                annotations=[
+                annotations=(
                     Annotation(id="a1", title="Ann's first"),
                     Annotation(id="a2", title="Ann's last"),
-                ],
+                ),
             )
         ],
     )
