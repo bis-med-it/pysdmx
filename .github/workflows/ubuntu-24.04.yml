@@ -50,6 +50,7 @@ jobs:
             sdmxschemas==1.1.0 \
             parsy==2.2 \
             msgspec==0.20.0 \
+            rfc3339-validator==0.1.4 \
             respx==0.23.1  # Needed for tests
 
       - name: Install pip dependencies (duckdb, pyarrow, vtlengine)

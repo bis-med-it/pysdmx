@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -116,8 +116,8 @@ def codelist():
         ],
         agency="BIS",
         version="1.0",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
     )
 
 
@@ -538,8 +538,8 @@ def dataflow():
         uri=None,
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."
         "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
         version="1.0",
     )
 
@@ -570,8 +570,8 @@ def dataflow2():
         uri=None,
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."
         "Dataflow=MD:MD_DATAFLOW(1.0)",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
         version="1.0",
     )
 

@@ -31,7 +31,7 @@ from pysdmx.model import (
     Role,
 )
 from pysdmx.model.dataflow import Group
-from pysdmx.util import is_final, parse_item_urn
+from pysdmx.util import ensure_tz_aware, is_final, parse_item_urn
 
 
 def _find_concept(
@@ -572,8 +572,8 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             is_final=is_final(self.version),
             annotations=[a.to_model() for a in self.annotations],
             is_external_reference=self.isExternalReference,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             components=c,
             evolving_structure=self.evolvingStructure,
             groups=grps,
@@ -597,8 +597,8 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             name=dsd.name,
             version=dsd.version,
             isExternalReference=dsd.is_external_reference,
-            validFrom=dsd.valid_from,
-            validTo=dsd.valid_to,
+            validFrom=ensure_tz_aware(dsd.valid_from),
+            validTo=ensure_tz_aware(dsd.valid_to),
             description=dsd.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in dsd.annotations]

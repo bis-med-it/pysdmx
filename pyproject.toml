@@ -38,14 +38,15 @@ documentation = "https://bis-med-it.github.io/pysdmx"
 data = ["pandas>=2.1.4", "pyarrow>=14.0,<26.0"]
 dc = ["python-dateutil>=2.8.2"]
 vtl = ["vtlengine>=1.8.0,<2.0"]
-json = ["sdmxschemas>=1.1.0", "jsonschema>=4.10"]
+json = ["sdmxschemas>=1.1.0", "jsonschema>=4.10", "rfc3339-validator>=0.1.4"]
 xml = ["lxml>=6.1.0; sys_platform != 'emscripten'",
     "lxml>=6.0.2; sys_platform == 'emscripten'",
     "xmltodict>=0.13", "sdmxschemas>=1.1.0"]
 all = ["lxml>=6.1.0; sys_platform != 'emscripten'",
     "lxml>=6.0.2; sys_platform == 'emscripten'",
     "xmltodict>=0.13", "sdmxschemas>=1.1.0", "pandas>=2.1.4",
-    "pyarrow>=14.0,<26.0", "python-dateutil>=2.8.2", "vtlengine>=1.8.0,<2.0"]
+    "pyarrow>=14.0,<26.0", "python-dateutil>=2.8.2", "vtlengine>=1.8.0,<2.0",
+    "jsonschema>=4.10", "rfc3339-validator>=0.1.4"]
 
 [tool.poetry]
 requires-poetry = ">=2.0"
@@ -71,6 +72,7 @@ types-python-dateutil = ">=2.9.0.20240316,<3.0"
 pyarrow-stubs = ">=14.0,<26.0"
 pandas-stubs = ">=2.2.3.241009,<4.0.0"
 types-jsonschema = ">=4.25.1.20251009,<5.0"
+types-rfc3339-validator = ">=0.1.0.20250322,<1.0"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = [

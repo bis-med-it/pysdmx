@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -87,8 +87,8 @@ def test_hierarchy_30(samples_folder):
     assert len(code_a.codes) == 1
     assert code_a.codes[0].id == "A1"
     code_b = hierarchy.codes[1]
-    assert code_b.rel_valid_from == datetime(2021, 1, 1)
-    assert code_b.rel_valid_to == datetime(2021, 12, 31)
+    assert code_b.rel_valid_from == datetime(2021, 1, 1, tzinfo=timezone.utc)
+    assert code_b.rel_valid_to == datetime(2021, 12, 31, tzinfo=timezone.utc)
 
 
 @pytest.mark.xml
@@ -1219,8 +1219,8 @@ def test_constraint_with_time_range_30(samples_folder):
     region = result[0].cube_regions[0]
     freq = region.key_values[0]
     time = region.key_values[1]
-    assert freq.valid_from == datetime(2020, 1, 1)
-    assert freq.valid_to == datetime(2024, 1, 1)
+    assert freq.valid_from == datetime(2020, 1, 1, tzinfo=timezone.utc)
+    assert freq.valid_to == datetime(2024, 1, 1, tzinfo=timezone.utc)
     assert isinstance(time.time_range, CubeTimeRange)
     assert time.time_range.start_period.period == "1989-01-01T00:00:00"
 

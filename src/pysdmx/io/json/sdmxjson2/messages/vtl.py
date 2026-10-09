@@ -30,7 +30,7 @@ from pysdmx.model.vtl import (
     VtlMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import is_final, parse_urn
+from pysdmx.util import ensure_tz_aware, is_final, parse_urn
 
 
 class JsonCustomType(NameableType, frozen=True, omit_defaults=True):
@@ -94,8 +94,8 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
@@ -122,8 +122,8 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=cts.name,
             version=cts.version,
             isExternalReference=cts.is_external_reference,
-            validFrom=cts.valid_from,
-            validTo=cts.valid_to,
+            validFrom=ensure_tz_aware(cts.valid_from),
+            validTo=ensure_tz_aware(cts.valid_to),
             description=cts.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in cts.annotations]
@@ -193,8 +193,8 @@ class JsonNamePersonalisationScheme(
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
@@ -223,8 +223,8 @@ class JsonNamePersonalisationScheme(
             name=nps.name,
             version=nps.version,
             isExternalReference=nps.is_external_reference,
-            validFrom=nps.valid_from,
-            validTo=nps.valid_to,
+            validFrom=ensure_tz_aware(nps.valid_from),
+            validTo=ensure_tz_aware(nps.valid_to),
             description=nps.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in nps.annotations]
@@ -290,8 +290,8 @@ class JsonUserDefinedOperatorScheme(
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
@@ -358,8 +358,8 @@ class JsonUserDefinedOperatorScheme(
             name=udos.name,
             version=udos.version,
             isExternalReference=udos.is_external_reference,
-            validFrom=udos.valid_from,
-            validTo=udos.valid_to,
+            validFrom=ensure_tz_aware(udos.valid_from),
+            validTo=ensure_tz_aware(udos.valid_to),
             description=udos.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in udos.annotations]
@@ -446,8 +446,8 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
@@ -494,8 +494,8 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=rss.name,
             version=rss.version,
             isExternalReference=rss.is_external_reference,
-            validFrom=rss.valid_from,
-            validTo=rss.valid_to,
+            validFrom=ensure_tz_aware(rss.valid_from),
+            validTo=ensure_tz_aware(rss.valid_to),
             description=rss.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in rss.annotations]
@@ -714,8 +714,8 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
@@ -741,8 +741,8 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=vms.name,
             version=vms.version,
             isExternalReference=vms.is_external_reference,
-            validFrom=vms.valid_from,
-            validTo=vms.valid_to,
+            validFrom=ensure_tz_aware(vms.valid_from),
+            validTo=ensure_tz_aware(vms.valid_to),
             description=vms.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in vms.annotations]
@@ -840,8 +840,8 @@ class JsonTransformationScheme(
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
@@ -918,8 +918,8 @@ class JsonTransformationScheme(
             name=ts.name,
             version=ts.version,
             isExternalReference=ts.is_external_reference,
-            validFrom=ts.valid_from,
-            validTo=ts.valid_to,
+            validFrom=ensure_tz_aware(ts.valid_from),
+            validTo=ensure_tz_aware(ts.valid_to),
             description=ts.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in ts.annotations]

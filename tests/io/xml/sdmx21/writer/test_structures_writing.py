@@ -1,6 +1,6 @@
 import copy
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -359,8 +359,8 @@ def test_hierarchy_21_metadata_round_trip(complete_header):
         description="My description",
         agency="BIS",
         version="1.0",
-        valid_from=datetime(2021, 1, 1),
-        valid_to=datetime(2021, 12, 31),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
         annotations=(Annotation(id="AN1", title="anno"),),
         codes=(
             HierarchicalCode(
@@ -690,8 +690,8 @@ def codelist():
         ],
         agency="BIS",
         version="1.0",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
     )
 
 
@@ -707,8 +707,8 @@ def noname_codelist():
         ],
         agency="MD",
         version="1.0",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
     )
 
 
@@ -1166,8 +1166,8 @@ def dataflow():
         uri=None,
         urn="urn:sdmx:org.sdmx.infomodel.datastructure."
         "Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)",
-        valid_from=datetime.strptime("2021-01-01", "%Y-%m-%d"),
-        valid_to=datetime.strptime("2021-12-31", "%Y-%m-%d"),
+        valid_from=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        valid_to=datetime(2021, 12, 31, tzinfo=timezone.utc),
         version="1.0",
     )
 
@@ -1658,8 +1658,8 @@ def test_writer_dataflow_without_structure(complete_header, dataflow):
         'urn="urn:sdmx:org.sdmx.infomodel.datastructure.'
         'Dataflow=BIS:WEBSTATS_DER_DATAFLOW(1.0)" '
         'version="1.0" '
-        'validFrom="2021-01-01T00:00:00" '
-        'validTo="2021-12-31T00:00:00" '
+        'validFrom="2021-01-01T00:00:00Z" '
+        'validTo="2021-12-31T00:00:00Z" '
         'isExternalReference="true" '
         'isFinal="true" '
         'agencyID="BIS">'
@@ -2379,8 +2379,8 @@ def test_constraint_keyvalue_validity_omitted_21():
                     CubeKeyValue(
                         id="FREQ",
                         values=[CubeValue(value="A")],
-                        valid_from=datetime(2020, 1, 1),
-                        valid_to=datetime(2021, 1, 1),
+                        valid_from=datetime(2020, 1, 1, tzinfo=timezone.utc),
+                        valid_to=datetime(2021, 1, 1, tzinfo=timezone.utc),
                     )
                 ]
             )

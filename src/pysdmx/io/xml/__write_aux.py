@@ -4,6 +4,7 @@
 import re
 import warnings
 from collections import OrderedDict
+from datetime import datetime
 from typing import Optional, Union
 from xml.sax.saxutils import escape
 
@@ -41,7 +42,7 @@ from pysdmx.io.xml.__tokens import (
 from pysdmx.model import Organisation
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
-from pysdmx.util import parse_short_urn
+from pysdmx.util import ensure_tz_aware, parse_short_urn
 
 MESSAGE_TYPE_MAPPING = {
     Format.DATA_SDMX_ML_2_1_GEN: "GenericData",
@@ -465,6 +466,25 @@ def __write_receivers(header: Header, nl: str, prettyprint: bool) -> str:
     return "".join(recs)
 
 
+def format_datetime(value: datetime) -> str:
+    """Formats a datetime as an SDMX-ML datetime with an explicit timezone.
+
+    Datetimes without timezone information are assumed to be expressed
+    in UTC, which is written as ``Z``.
+
+    Args:
+        value: The datetime to be formatted.
+
+    Returns:
+        The formatted datetime, with seconds precision.
+    """
+    return (
+        ensure_tz_aware(value)
+        .isoformat(timespec="seconds")
+        .replace("+00:00", "Z")
+    )
+
+
 def __write_header(
     header: Header,
     prettyprint: bool,
@@ -506,9 +526,7 @@ def __write_header(
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
-    prepared = header.prepared.isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    prepared = format_datetime(header.prepared)
     test = str(header.test).lower()
     references_str = ""
     action_value = (

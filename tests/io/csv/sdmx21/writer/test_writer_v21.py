@@ -239,7 +239,7 @@ def test_to_sdmx_csv_writing(
     reference_df = pd.read_csv(data_path_reference).astype(str)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
-        reference_df.replace("nan", ""),
+        reference_df.fillna("").replace("nan", ""),
         check_like=True,
     )
 
@@ -259,7 +259,7 @@ def test_to_sdmx_csv_writing_to_file(
     reference_df = pd.read_csv(data_path_reference).astype(str)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
-        reference_df.replace("nan", ""),
+        reference_df.fillna("").replace("nan", ""),
         check_like=True,
     )
 
@@ -279,7 +279,7 @@ def test_writer_attached_attrs(
     reference_df = pd.read_csv(data_path_reference_attch_atts).astype(str)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
-        reference_df.replace("nan", ""),
+        reference_df.fillna("").replace("nan", ""),
         check_like=True,
     )
 
@@ -300,7 +300,7 @@ def test_writer_with_action(
     reference_df = pd.read_csv(data_path_reference_action).astype(str)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
-        reference_df.replace("nan", ""),
+        reference_df.fillna("").replace("nan", ""),
         check_like=True,
     )
 
@@ -321,7 +321,7 @@ def test_writer_with_append_action(
     reference_df = pd.read_csv(data_path_reference_append_action).astype(str)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
-        reference_df.replace("nan", ""),
+        reference_df.fillna("").replace("nan", ""),
         check_like=True,
     )
 
@@ -476,7 +476,7 @@ def test_writer_partial_keys(
     reference_df = pd.read_csv(data_path_reference_partial_keys).astype(str)
     pd.testing.assert_frame_equal(
         result_df.fillna("").replace("nan", ""),
-        reference_df.replace("nan", ""),
+        reference_df.fillna("").replace("nan", ""),
     )
 
 

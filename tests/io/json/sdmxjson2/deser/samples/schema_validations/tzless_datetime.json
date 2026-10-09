@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "id": "TEST_ID",
+    "test": false,
+    "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+    "prepared": "2025-01-01T00:00:00Z",
+    "contentLanguages": ["en"],
+    "sender": { "id": "TEST_SENDER" }
+  },
+  "data": {
+    "conceptSchemes": [
+      {
+        "id": "CS",
+        "name": "Test Concept Scheme",
+        "names": { "en": "Test Concept Scheme" },
+        "version": "1.0",
+        "agencyID": "TEST",
+        "isExternalReference": false,
+        "isFinal": false,
+        "isPartial": false,
+        "validFrom": "2003-01-01T00:00:00",
+        "concepts": [
+          {
+            "id": "DIM3",
+            "name": "Test Concept",
+            "names": { "en": "Test Concept" },
+            "coreRepresentation": {
+              "format": {
+                "dataType": "DateTime",
+                "isSequence": true,
+                "startTime": "2000-01-01T00:00:00",
+                "endTime": "2020-12-31T23:59:59"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

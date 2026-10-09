@@ -230,3 +230,12 @@ def test_generic_metadata_output_path(samples_folder, tmp_path):
     assert result is None
     re_read = read_sdmx(output_path, validate=True).get_reports()
     assert list(re_read) == list(reports)
+
+
+@pytest.mark.xml
+def test_generic_metadata_prepared_without_timezone_is_assumed_utc(
+    complete_header, report
+):
+    result = write([report], header=complete_header, prettyprint=True)
+
+    assert "<mes:Prepared>2021-01-01T00:00:00Z</mes:Prepared>" in result

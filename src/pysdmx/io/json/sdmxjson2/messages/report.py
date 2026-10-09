@@ -22,6 +22,7 @@ from pysdmx.model.metadata import (
     merge_attributes,
     unmerge_attributes,
 )
+from pysdmx.util import ensure_tz_aware
 
 
 class JsonMetadataAttribute(IdentifiableType, frozen=True, omit_defaults=True):
@@ -81,8 +82,8 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
             id=self.id,
             name=self.name,
             description=self.description,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             version=self.version,
             agency=self.agency,
             is_external_reference=self.isExternalReference,
@@ -117,8 +118,8 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
             name=report.name,
             version=report.version,
             isExternalReference=report.is_external_reference,
-            validFrom=report.valid_from,
-            validTo=report.valid_to,
+            validFrom=ensure_tz_aware(report.valid_from),
+            validTo=ensure_tz_aware(report.valid_to),
             description=report.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in report.annotations]

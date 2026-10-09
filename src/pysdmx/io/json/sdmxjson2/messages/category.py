@@ -23,7 +23,7 @@ from pysdmx.model import (
     ItemReference,
     Reference,
 )
-from pysdmx.util import find_by_urn, is_final, parse_urn
+from pysdmx.util import ensure_tz_aware, find_by_urn, is_final, parse_urn
 
 
 class JsonCategorisation(
@@ -49,8 +49,8 @@ class JsonCategorisation(
             description=self.description,
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             annotations=tuple(a.to_model() for a in self.annotations),
         )
 
@@ -71,8 +71,8 @@ class JsonCategorisation(
             name=cat.name,
             version=cat.version,
             isExternalReference=cat.is_external_reference,
-            validFrom=cat.valid_from,
-            validTo=cat.valid_to,
+            validFrom=ensure_tz_aware(cat.valid_from),
+            validTo=ensure_tz_aware(cat.valid_to),
             description=cat.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in cat.annotations]
@@ -202,8 +202,8 @@ class JsonCategoryScheme(
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             is_partial=self.isPartial,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             annotations=tuple(a.to_model() for a in self.annotations),
         )
 
@@ -224,8 +224,8 @@ class JsonCategoryScheme(
             name=cs.name,
             version=cs.version,
             isExternalReference=cs.is_external_reference,
-            validFrom=cs.valid_from,
-            validTo=cs.valid_to,
+            validFrom=ensure_tz_aware(cs.valid_from),
+            validTo=ensure_tz_aware(cs.valid_to),
             description=cs.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in cs.annotations]
