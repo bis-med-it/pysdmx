@@ -55,8 +55,8 @@ jobs:
       - name: Install pip dependencies (duckdb, pyarrow, vtlengine)
         run: |
           pip install --break-system-packages --force-reinstall --no-dependencies duckdb
-          pip install --break-system-packages --force-reinstall --no-dependencies pyarrow
-          pip install --no-dependencies --break-system-packages vtlengine==1.8.0rc2
+          pip install --break-system-packages --force-reinstall --no-dependencies "pyarrow<26.0.0"
+          pip install --no-dependencies --break-system-packages "vtlengine<2.0"
 
       - name: Install package
         run: |
