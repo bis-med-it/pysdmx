@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import msgspec
 import pytest
@@ -16,6 +16,8 @@ from pysdmx.model import (
     decoders,
     encoders,
 )
+
+GENERATED = datetime(2020, 1, 1, tzinfo=timezone.utc)
 
 
 @pytest.fixture
@@ -129,8 +131,8 @@ def test_immutable(context, agency, id, components):
 
 
 def test_equal(context, agency, id, components):
-    org1 = Schema(context, agency, id, components)
-    org2 = Schema(context, agency, id, components)
+    org1 = Schema(context, agency, id, components, generated=GENERATED)
+    org2 = Schema(context, agency, id, components, generated=GENERATED)
 
     assert org1 == org2
 
@@ -143,28 +145,45 @@ def test_not_equal(context, agency, id, components):
 
 
 def test_tostr(context, agency, id, components, artefacts):
-    o = Schema(context, agency, id, components, artefacts=artefacts)
+    o = Schema(
+        context,
+        agency,
+        id,
+        components,
+        artefacts=artefacts,
+        generated=GENERATED,
+    )
 
     s = str(o)
 
     assert s == (
         "context: dataflow, agency: BIS, id: 5B0, components: 5 components, "
-        "artefacts: 2 artefacts"
+        "artefacts: 2 artefacts, generated: 2020-01-01 00:00:00+00:00"
     )
 
 
 def test_tostr_empty(context, agency, id, components, artefacts):
-    o = Schema(context, agency, id, components, artefacts=[])
+    o = Schema(
+        context, agency, id, components, artefacts=[], generated=GENERATED
+    )
 
     s = str(o)
 
     assert s == (
-        "context: dataflow, agency: BIS, id: 5B0, components: 5 components"
+        "context: dataflow, agency: BIS, id: 5B0, components: 5 components, "
+        "generated: 2020-01-01 00:00:00+00:00"
     )
 
 
 def test_torepr(context, agency, id, components, artefacts):
-    o = Schema(context, agency, id, components, artefacts=artefacts)
+    o = Schema(
+        context,
+        agency,
+        id,
+        components,
+        artefacts=artefacts,
+        generated=GENERATED,
+    )
 
     s = repr(o)
 
@@ -184,12 +203,16 @@ def test_torepr(context, agency, id, components, artefacts):
         "role=Role.ATTRIBUTE, concept=Concept(id='CONF'), "
         "local_dtype=DataType.STRING, attachment_level='O', "
         "array_def=ArrayBoundaries(min_size=1, max_size=3))]), "
-        "artefacts=['urn1', 'urn2'])"
+        "artefacts=['urn1', 'urn2'], "
+        "generated=datetime.datetime(2020, 1, 1, 0, 0, "
+        "tzinfo=datetime.timezone.utc))"
     )
 
 
 def test_torepr_empty(context, agency, id, components):
-    o = Schema(context, agency, id, components, artefacts=[])
+    o = Schema(
+        context, agency, id, components, artefacts=[], generated=GENERATED
+    )
 
     s = repr(o)
 
@@ -208,7 +231,9 @@ def test_torepr_empty(context, agency, id, components):
         "local_dtype=DataType.INTEGER), Component(id='CONF', required=True, "
         "role=Role.ATTRIBUTE, concept=Concept(id='CONF'), "
         "local_dtype=DataType.STRING, attachment_level='O', "
-        "array_def=ArrayBoundaries(min_size=1, max_size=3))]))"
+        "array_def=ArrayBoundaries(min_size=1, max_size=3))]), "
+        "generated=datetime.datetime(2020, 1, 1, 0, 0, "
+        "tzinfo=datetime.timezone.utc))"
     )
 
 
@@ -218,3 +243,18 @@ def test_serialization(context, agency, id, components, version, artefacts):
     ser = msgspec.msgpack.Encoder(enc_hook=encoders).encode(schema)
     out = msgspec.msgpack.Decoder(Schema, dec_hook=decoders).decode(ser)
     assert out == schema
+
+
+def test_generated_is_evaluated_per_instance(
+    monkeypatch, context, agency, id, components
+):
+    fixed = datetime(2030, 1, 1, tzinfo=timezone.utc)
+
+    class FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return fixed
+
+    monkeypatch.setattr("pysdmx.model.dataflow.datetime", FrozenDatetime)
+
+    assert Schema(context, agency, id, components).generated == fixed

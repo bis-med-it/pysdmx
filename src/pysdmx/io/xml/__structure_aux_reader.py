@@ -323,6 +323,7 @@ from pysdmx.model.vtl import (
     VtlMappingScheme,
 )
 from pysdmx.util import (
+    ensure_tz_aware,
     find_by_urn,
     is_final,
     parse_short_item_urn,
@@ -429,6 +430,46 @@ FACETS_MAPPING = {
     "endTime": "end_time",
     "isSequence": "is_sequence",
 }
+
+# Facets holding SDMX datetimes, read as timezone-aware datetimes.
+TIME_FACETS = ("start_time", "end_time")
+
+
+def _parse_datetime(value: str) -> datetime:
+    """Parses an SDMX-ML datetime into a timezone-aware datetime.
+
+    Datetimes without timezone information are assumed to be expressed
+    in UTC.
+
+    Args:
+        value: The datetime to be parsed.
+
+    Returns:
+        A timezone-aware datetime.
+    """
+    return ensure_tz_aware(
+        datetime.fromisoformat(value.replace("Z", "+00:00"))
+    )
+
+
+def _parse_time_facet(value: str) -> Union[datetime, str]:
+    """Parses a time facet into a timezone-aware datetime.
+
+    SDMX-ML time facets accept any standard time period, so values that
+    cannot be parsed as ISO 8601 datetimes (e.g. reporting periods such
+    as ``2000-Q1``) are kept as strings. Datetimes without timezone
+    information are assumed to be expressed in UTC.
+
+    Args:
+        value: The facet value to be parsed.
+
+    Returns:
+        A timezone-aware datetime, or the original string.
+    """
+    try:
+        return _parse_datetime(value)
+    except ValueError:
+        return value
 
 
 def _extract_text(element: Any) -> str:
@@ -607,18 +648,19 @@ class StructureParser(Struct):
                     for k, v in json_fac.items()
                     if k in FACETS_MAPPING
                 }
+                for time_facet in TIME_FACETS:
+                    if time_facet in facet_kwargs:
+                        facet_kwargs[time_facet] = _parse_time_facet(
+                            facet_kwargs[time_facet]
+                        )
                 json_obj[FACETS.lower()] = Facets(**facet_kwargs)
 
     @staticmethod
     def __format_validity(element: Dict[str, Any]) -> Dict[str, Any]:
         if VALID_FROM in element:
-            element[VALID_FROM_LOW] = datetime.fromisoformat(
-                element.pop(VALID_FROM)
-            )
+            element[VALID_FROM_LOW] = _parse_datetime(element.pop(VALID_FROM))
         if VALID_TO in element:
-            element[VALID_TO_LOW] = datetime.fromisoformat(
-                element.pop(VALID_TO)
-            )
+            element[VALID_TO_LOW] = _parse_datetime(element.pop(VALID_TO))
         return element
 
     @staticmethod
@@ -1466,10 +1508,8 @@ class StructureParser(Struct):
             id=kv[ID],
             values=tuple(values),
             time_range=time_range,
-            valid_from=(
-                datetime.fromisoformat(valid_from) if valid_from else None
-            ),
-            valid_to=datetime.fromisoformat(valid_to) if valid_to else None,
+            valid_from=_parse_datetime(valid_from) if valid_from else None,
+            valid_to=_parse_datetime(valid_to) if valid_to else None,
         )
 
     def __format_time_range(self, tr: Dict[str, Any]) -> CubeTimeRange:
@@ -1933,6 +1973,8 @@ class StructureParser(Struct):
         converters: Dict[str, Callable[[Any], Any]] = {
             "SourceDataType": DataType,
             "TargetDataType": DataType,
+            "validFrom": _parse_datetime,
+            "validTo": _parse_datetime,
         }
 
         for xml_key, py_key in renames.items():
@@ -2245,14 +2287,12 @@ class StructureParser(Struct):
             else []
         )
         rel_valid_from = (
-            datetime.fromisoformat(hc_elem[VALID_FROM])
+            _parse_datetime(hc_elem[VALID_FROM])
             if VALID_FROM in hc_elem
             else None
         )
         rel_valid_to = (
-            datetime.fromisoformat(hc_elem[VALID_TO])
-            if VALID_TO in hc_elem
-            else None
+            _parse_datetime(hc_elem[VALID_TO]) if VALID_TO in hc_elem else None
         )
         level = (
             self.__format_level_ref(hc_elem[LEVEL])

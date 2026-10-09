@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import msgspec
 import pytest
@@ -168,8 +168,8 @@ def test_constraint_key_value_validity_round_trip(
 
     encoded = msgspec.json.encode(sjson)
     assert b'"timeRange"' not in encoded
-    assert b'"validFrom":"2020-01-01T00:00:00"' in encoded
-    assert b'"validTo":"2024-01-01T00:00:00"' in encoded
+    assert b'"validFrom":"2020-01-01T00:00:00Z"' in encoded
+    assert b'"validTo":"2024-01-01T00:00:00Z"' in encoded
 
     back = msgspec.json.Decoder(JsonDataConstraint).decode(encoded)
     constraint = back.to_model()
@@ -178,8 +178,8 @@ def test_constraint_key_value_validity_round_trip(
     assert kv.time_range is None
     assert len(kv.values) == 1
     assert kv.values[0].value == "A"
-    assert kv.valid_from == datetime(2020, 1, 1)
-    assert kv.valid_to == datetime(2024, 1, 1)
+    assert kv.valid_from == datetime(2020, 1, 1, tzinfo=timezone.utc)
+    assert kv.valid_to == datetime(2024, 1, 1, tzinfo=timezone.utc)
 
 
 def test_data_constraint_ser_has_allowed_role():
