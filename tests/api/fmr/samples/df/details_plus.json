@@ -2,7 +2,7 @@
     "meta": {
         "id": "IREF033897",
         "test": false,
-        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
         "prepared": "2023-08-08T14:03:01Z",
         "contentLanguages": [
             "en"
@@ -18,7 +18,7 @@
                     {
                         "rel": "self",
                         "type": "agencyscheme",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=BIS:AGENCIES(1.0)"
                     }
                 ],
@@ -37,7 +37,7 @@
                             {
                                 "rel": "self",
                                 "type": "agency",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=BIS:AGENCIES(1.0).CBS"
                             }
                         ],
@@ -52,7 +52,7 @@
                             {
                                 "rel": "self",
                                 "type": "agency",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=BIS:AGENCIES(1.0).MEDIT"
                             }
                         ],
@@ -69,7 +69,7 @@
                     {
                         "rel": "self",
                         "type": "agencyscheme",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
                     }
                 ],
@@ -88,7 +88,7 @@
                             {
                                 "rel": "self",
                                 "type": "agency",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).SDMX"
                             }
                         ],
@@ -129,7 +129,7 @@
                             {
                                 "rel": "self",
                                 "type": "agency",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BIS"
                             }
                         ],
@@ -148,7 +148,7 @@
                     {
                         "rel": "self",
                         "type": "dataproviderscheme",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProviderScheme=BIS:DATA_PROVIDERS(1.0)"
                     }
                 ],
@@ -167,7 +167,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).FR2"
                             }
                         ],
@@ -182,7 +182,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).DE2"
                             }
                         ],
@@ -197,7 +197,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).AT2"
                             }
                         ],
@@ -212,7 +212,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).AU2"
                             }
                         ],
@@ -227,7 +227,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).BE2"
                             }
                         ],
@@ -242,7 +242,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).BR2"
                             }
                         ],
@@ -257,7 +257,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CA2"
                             }
                         ],
@@ -272,7 +272,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CH2"
                             }
                         ],
@@ -287,7 +287,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).CL2"
                             }
                         ],
@@ -302,7 +302,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).DK2"
                             }
                         ],
@@ -317,7 +317,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).ES2"
                             }
                         ],
@@ -332,7 +332,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).FI2"
                             }
                         ],
@@ -347,7 +347,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GB2"
                             }
                         ],
@@ -362,7 +362,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).GR2"
                             }
                         ],
@@ -377,7 +377,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).HK2"
                             }
                         ],
@@ -392,7 +392,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IE2"
                             }
                         ],
@@ -407,7 +407,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IN2"
                             }
                         ],
@@ -422,7 +422,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).IT2"
                             }
                         ],
@@ -437,7 +437,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).JP2"
                             }
                         ],
@@ -452,7 +452,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).KR2"
                             }
                         ],
@@ -467,7 +467,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).LU2"
                             }
                         ],
@@ -482,7 +482,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).MX2"
                             }
                         ],
@@ -497,7 +497,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).NL2"
                             }
                         ],
@@ -512,7 +512,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).NO2"
                             }
                         ],
@@ -527,7 +527,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).PT2"
                             }
                         ],
@@ -542,7 +542,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).SE2"
                             }
                         ],
@@ -557,7 +557,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).SG2"
                             }
                         ],
@@ -572,7 +572,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).US3"
                             }
                         ],
@@ -587,7 +587,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TW2"
                             }
                         ],
@@ -602,7 +602,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TH2"
                             }
                         ],
@@ -617,7 +617,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).TR2"
                             }
                         ],
@@ -632,7 +632,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).5B0"
                             }
                         ],
@@ -663,7 +663,7 @@
                             {
                                 "rel": "self",
                                 "type": "dataprovider",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.DataProvider=BIS:DATA_PROVIDERS(1.0).PA6"
                             }
                         ],
@@ -686,7 +686,7 @@
                     {
                         "rel": "self",
                         "type": "dataflow",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS_OLD(1.0)"
                     },
                     {
@@ -714,7 +714,7 @@
                     {
                         "rel": "self",
                         "type": "dataflow",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0.0)"
                     },
                     {
@@ -744,7 +744,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_5B0(1.0)"
                     }
                 ],
@@ -764,7 +764,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_AT2(1.0)"
                     }
                 ],
@@ -784,7 +784,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_AU2(1.0)"
                     }
                 ],
@@ -804,7 +804,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_BE2(1.0)"
                     }
                 ],
@@ -824,7 +824,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_BR2(1.0)"
                     }
                 ],
@@ -844,7 +844,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_CA2(1.0)"
                     }
                 ],
@@ -864,7 +864,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_CH2(1.0)"
                     }
                 ],
@@ -884,7 +884,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_CL2(1.0)"
                     }
                 ],
@@ -904,7 +904,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_DE2(1.0)"
                     }
                 ],
@@ -924,7 +924,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_DK2(1.0)"
                     }
                 ],
@@ -944,7 +944,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_ES2(1.0)"
                     }
                 ],
@@ -964,7 +964,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_FI2(1.0)"
                     }
                 ],
@@ -984,7 +984,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_FR2(1.0)"
                     }
                 ],
@@ -1004,7 +1004,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_GB2(1.0)"
                     }
                 ],
@@ -1024,7 +1024,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_GR2(1.0)"
                     }
                 ],
@@ -1044,7 +1044,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_HK2(1.0)"
                     }
                 ],
@@ -1064,7 +1064,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_IE2(1.0)"
                     }
                 ],
@@ -1084,7 +1084,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_IN2(1.0)"
                     }
                 ],
@@ -1104,7 +1104,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_IT2(1.0)"
                     }
                 ],
@@ -1124,7 +1124,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_JP2(1.0)"
                     }
                 ],
@@ -1144,7 +1144,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_KR2(1.0)"
                     }
                 ],
@@ -1164,7 +1164,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_LU2(1.0)"
                     }
                 ],
@@ -1184,7 +1184,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_MX2(1.0)"
                     }
                 ],
@@ -1204,7 +1204,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_NL2(1.0)"
                     }
                 ],
@@ -1224,7 +1224,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_NO2(1.0)"
                     }
                 ],
@@ -1244,7 +1244,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_PA6(1.0)"
                     }
                 ],
@@ -1264,7 +1264,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_PT2(1.0)"
                     }
                 ],
@@ -1284,7 +1284,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_SE2(1.0)"
                     }
                 ],
@@ -1304,7 +1304,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_SG2(1.0)"
                     }
                 ],
@@ -1324,7 +1324,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_TH2(1.0)"
                     }
                 ],
@@ -1344,7 +1344,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_TR2(1.0)"
                     }
                 ],
@@ -1364,7 +1364,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_TW2(1.0)"
                     }
                 ],
@@ -1384,7 +1384,7 @@
                     {
                         "rel": "self",
                         "type": "provisionagreement",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=BIS.CBS:CBS_BIS_US3(1.0)"
                     }
                 ],
