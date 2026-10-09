@@ -485,6 +485,21 @@ def format_datetime(value: datetime) -> str:
     )
 
 
+def format_date(value: datetime) -> str:
+    """Formats a datetime as an SDMX-ML date (``xs:date``).
+
+    The datetime is reduced to its calendar date in its own timezone,
+    without timezone information.
+
+    Args:
+        value: The datetime to be formatted.
+
+    Returns:
+        The formatted date.
+    """
+    return value.date().isoformat()
+
+
 def __write_header(
     header: Header,
     prettyprint: bool,
