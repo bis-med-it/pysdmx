@@ -1200,12 +1200,12 @@ def test_availability_constraint_roundtrip_31(complete_header):
     )
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
-            data_provider=None, dataflows=[urn]
+            data_provider=None, dataflows=(urn,)
         ),
         cube_region=CubeRegion(
-            key_values=[
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
-            ]
+            key_values=(
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
+            )
         ),
         series_count=3,
         obs_count=42,
@@ -1216,7 +1216,7 @@ def test_availability_constraint_roundtrip_31(complete_header):
     assert 'obsCount="42"' in out
     assert "ContentConstraint" not in out
     back = read_sdmx(out, validate=True).structures
-    assert back == [ac]
+    assert back == (ac,)
 
 
 def test_availability_constraint_roundtrip_31_with_annotation(
@@ -1229,12 +1229,12 @@ def test_availability_constraint_roundtrip_31_with_annotation(
     ac = AvailabilityConstraint(
         annotations=(Annotation(id="ANN1", title="Note", type="text"),),
         constraint_attachment=ConstraintAttachment(
-            data_provider=None, dataflows=[urn]
+            data_provider=None, dataflows=(urn,)
         ),
         cube_region=CubeRegion(
-            key_values=[
-                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),))
-            ]
+            key_values=(
+                CubeKeyValue(id="FREQ", values=(CubeValue(value="M"),)),
+            )
         ),
         series_count=3,
         obs_count=42,
@@ -1252,8 +1252,9 @@ def test_availability_constraint_roundtrip_31_with_annotation(
     # ac.annotations is a tuple (the idiomatic container type for this
     # field, matching the JSON native path); the reader must produce
     # a tuple too, or this equality would fail even though the
-    # content matches (list != tuple in Python).
-    assert back == [ac]
+    # content matches (list != tuple in Python). Likewise, .structures
+    # is now consistently a tuple across every read format.
+    assert back == (ac,)
     assert isinstance(back[0].annotations, tuple)
 
 
@@ -1283,16 +1284,16 @@ def test_availability_constraint_31_without_counts(complete_header):
     ac = AvailabilityConstraint(
         constraint_attachment=ConstraintAttachment(
             data_provider=None,
-            dataflows=[
+            dataflows=(
                 "urn:sdmx:org.sdmx.infomodel.datastructure."
-                "Dataflow=TEST_AGENCY:DF_TEST(1.0)"
-            ],
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)",
+            ),
         ),
-        cube_region=CubeRegion(key_values=[]),
+        cube_region=CubeRegion(key_values=()),
     )
     out = write([ac], prettyprint=True, header=complete_header)
     assert "seriesCount" not in out
-    assert read_sdmx(out, validate=True).structures == [ac]
+    assert read_sdmx(out, validate=True).structures == (ac,)
 
 
 def test_annotations_31_apostrophes_preserved(complete_header):
@@ -1307,13 +1308,13 @@ def test_annotations_31_apostrophes_preserved(complete_header):
             Code(
                 id="CI",
                 name="Côte d'Ivoire",
-                annotations=[
+                annotations=(
                     Annotation(id="c1", title="Item's first"),
                     Annotation(id="c2", title="Item's last"),
-                ],
+                ),
             ),
         ],
-        annotations=[
+        annotations=(
             Annotation(
                 id="a1",
                 title="It's the first title",
@@ -1327,7 +1328,7 @@ def test_annotations_31_apostrophes_preserved(complete_header):
                 title="It's the last title",
                 text="It's the last text",
             ),
-        ],
+        ),
     )
 
     result = write([codelist], header=complete_header, prettyprint=True)
@@ -1353,7 +1354,7 @@ def test_annotations_31_element_order(complete_header):
         agency="BIS",
         version="1.0.0",
         items=[Code(id="A", name="a")],
-        annotations=[
+        annotations=(
             Annotation(
                 id="a1",
                 title="Title",
@@ -1361,7 +1362,7 @@ def test_annotations_31_element_order(complete_header):
                 url="https://example.com/note",
                 text="Some text",
             ),
-        ],
+        ),
     )
 
     result = write([codelist], header=complete_header, prettyprint=True)
@@ -1396,10 +1397,10 @@ def test_vtl_item_31_apostrophes_preserved(complete_header):
                 expression="ds",
                 is_persistent=False,
                 result="r",
-                annotations=[
+                annotations=(
                     Annotation(id="a1", title="Ann's first"),
                     Annotation(id="a2", title="Ann's last"),
-                ],
+                ),
             )
         ],
     )
