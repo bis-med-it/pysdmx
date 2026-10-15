@@ -66,6 +66,7 @@ def _check_data_constraint(
     assert constraint.agency == agency
     assert constraint.version == "1.0"
     assert constraint.name == "Constraints for the CBS dataflow"
+    assert constraint.description is None
     assert not constraint.constraint_attachment.data_structures
     assert not constraint.constraint_attachment.data_provider
     assert not constraint.constraint_attachment.provision_agreements
