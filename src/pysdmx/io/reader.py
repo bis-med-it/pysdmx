@@ -222,7 +222,7 @@ def read_sdmx(  # noqa: C901
         # a service reports an empty catalogue), so it is returned as an
         # empty Message rather than rejected.
         # TODO: Ensure we have changed the signature of the structure readers
-        return Message(header=header, structures=result_structures)
+        return Message(header=header, structures=tuple(result_structures))
 
     if read_format in (
         Format.DATA_SDMX_CSV_1_0_0,
@@ -242,9 +242,9 @@ def read_sdmx(  # noqa: C901
         # TODO: Ensure we have changed the signature of the data readers
         return Message(header=header, data=result_data)
     elif read_format == Format.REGISTRY_SDMX_ML_2_1:
-        return Message(header=header, submission=result_submission)
+        return Message(header=header, submission=tuple(result_submission))
     # SDMX-ML and SDMX-JSON reference metadata, with or without reports
-    return Message(header=header, reports=reports)
+    return Message(header=header, reports=tuple(reports))
 
 
 def __manage_dataset_level_attributes(dataset: Dataset) -> None:
