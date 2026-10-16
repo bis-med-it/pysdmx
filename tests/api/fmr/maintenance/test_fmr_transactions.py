@@ -7,8 +7,8 @@ from pysdmx.api.fmr.maintenance import (
     RegistryMaintenanceClient,
     RegistryTransactionsClient,
 )
-from pysdmx.errors import InternalError
-from pysdmx.model.message import MetadataMessage, StructureMessage
+from pysdmx.errors import InternalError, Invalid
+from pysdmx.model.message import Message, MetadataMessage, StructureMessage
 
 
 @pytest.mark.parametrize(
@@ -103,6 +103,31 @@ def test_list_transactions_with_updated_after(respx_mock) -> None:
     assert transactions == []
 
 
+def test_list_transactions_with_naive_updated_after(respx_mock) -> None:
+    endpoint = (
+        "https://registry.sdmx.org/ws/registry/transactions?"
+        "updatedAfter=1787731013976"
+    )
+    respx_mock.get(endpoint).mock(return_value=httpx.Response(200, json=[]))
+    client = RegistryTransactionsClient("https://registry.sdmx.org")
+
+    transactions = client.list_transactions(
+        datetime(2026, 8, 26, 7, 56, 53, 976000)
+    )
+
+    assert transactions == []
+
+
+def test_list_transactions_maps_http_errors(respx_mock) -> None:
+    respx_mock.get("https://registry.sdmx.org/ws/registry/transactions").mock(
+        return_value=httpx.Response(409, text="Conflict")
+    )
+    client = RegistryTransactionsClient("https://registry.sdmx.org")
+
+    with pytest.raises(Invalid, match="Client error 409"):
+        client.list_transactions()
+
+
 def test_get_structure_transaction(respx_mock) -> None:
     with open(
         "tests/io/json/sdmxjson2/deser/samples/reader/structs.json", "rb"
@@ -162,3 +187,14 @@ def test_get_transaction_with_unsupported_schema(respx_mock) -> None:
 
     with pytest.raises(InternalError, match="Unexpected transaction format"):
         client.get_transaction("unknown")
+
+
+def test_get_transaction_with_unexpected_message(mocker, respx_mock) -> None:
+    respx_mock.get(
+        "https://registry.sdmx.org/ws/registry/transactions/unexpected"
+    ).mock(return_value=httpx.Response(200, content=b"{}"))
+    mocker.patch("pysdmx.io.reader.read_sdmx", return_value=Message())
+    client = RegistryTransactionsClient("https://registry.sdmx.org")
+
+    with pytest.raises(InternalError, match="Unexpected transaction format"):
+        client.get_transaction("unexpected")
