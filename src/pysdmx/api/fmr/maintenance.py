@@ -1,13 +1,14 @@
 """Upload metadata to an FMR instance."""
 
 import warnings
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Optional, Sequence, Union
 
 import httpx
 import msgspec
 
-from pysdmx.errors import Unauthorized
+from pysdmx.errors import InternalError, Invalid, NotImplemented, Unauthorized
 from pysdmx.io.json.sdmxjson2.writer import serializers
 from pysdmx.model import AvailabilityConstraint, MetadataReport
 from pysdmx.model.__base import MaintainableArtefact
@@ -16,6 +17,7 @@ from pysdmx.model.message import (
     MetadataMessage,
     StructureMessage,
 )
+from pysdmx.util import experimental
 from pysdmx.util._net_utils import BearerAuth, map_httpx_errors
 
 
@@ -43,7 +45,184 @@ class StructureAction(Enum):
     Replace = "Replace"
 
 
-class RegistryMaintenanceClient:
+class RegistryTxHeader(
+    msgspec.Struct,
+    frozen=True,
+    rename={"transaction_id": "txId", "transaction_time": "txTs"},
+):
+    """Metainformation for a Registry transaction.
+
+    Contains metadata about a transaction, such as its unique identifier.
+
+    Attributes:
+        transaction_id: The unique identifier for the transaction.
+
+    Properties:
+        transaction_time: The time at which the transaction occurred, in UTC.
+    """
+
+    transaction_id: str
+    txTs: int
+
+    @property
+    def transaction_time(self) -> datetime:
+        """Return the transaction time as a UTC datetime."""
+        epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
+        return epoch + timedelta(milliseconds=self.txTs)
+
+
+class RegistryTxPayload(
+    msgspec.Struct,
+    frozen=True,
+    rename={"inserted": "ins", "updated": "upd", "deleted": "del"},
+):
+    """Payload content for a Registry transaction.
+
+    Contains lists of URNs for artefacts that were inserted, updated, or
+    deleted in the Registry as part of a transaction.
+
+    Attributes:
+        inserted: Sequence of URNs for newly inserted artefacts
+        updated: Sequence of URNs for modified artefacts
+        deleted: Sequence of URNs for removed artefacts
+    """
+
+    inserted: Sequence[str] = ()
+    updated: Sequence[str] = ()
+    deleted: Sequence[str] = ()
+
+
+class RegistryTx(msgspec.Struct, frozen=True):
+    """Registry transaction structure.
+
+    Attributes:
+        meta: Metainformation about the transaction
+        data: Payload containing the URNs of affected artefacts
+    """
+
+    meta: RegistryTxHeader
+    data: RegistryTxPayload
+
+
+@experimental
+class RegistryTransactionsClient:
+    """EXPERIMENTAL: Client for accessing FMR registry transactions.
+
+    Args:
+        api_endpoint: The endpoint of the target FMR service.
+        pem: A PEM file for an otherwise untrusted certificate authority.
+        timeout: The maximum number of seconds to wait for a request. Defaults
+            to 60 seconds.
+    """
+
+    def __init__(
+        self,
+        api_endpoint: str,
+        pem: Optional[str] = None,
+        timeout: float = 60.0,
+    ) -> None:
+        """Instantiate a registry transactions client."""
+        self._api_endpoint = self._sanitize_endpoint(api_endpoint)
+        self._timeout = timeout
+        self._ssl_context = (
+            httpx.create_ssl_context(
+                verify=pem,
+            )
+            if pem
+            else httpx.create_ssl_context()
+        )
+
+    def _sanitize_endpoint(self, endpoint: str) -> str:
+        if endpoint.endswith("/"):
+            endpoint = endpoint[0:-1]
+        endpoint = endpoint.replace("/ws/secure/sdmx/v2/metadata", "")
+        endpoint = endpoint.replace("/sdmx/v2", "")
+        endpoint = endpoint.replace("/ws/secure/sdmxapi/rest", "")
+        return endpoint
+
+    def __get(self, endpoint: str) -> bytes:
+        with httpx.Client(verify=self._ssl_context) as client:
+            try:
+                response = client.get(endpoint, timeout=self._timeout)
+                response.raise_for_status()
+            except (httpx.RequestError, httpx.HTTPStatusError) as error:
+                map_httpx_errors(error)
+            return response.content
+
+    def list_transactions(
+        self, updated_after: Optional[datetime] = None
+    ) -> Sequence[RegistryTx]:
+        """List transactions that occurred after an optional point in time.
+
+        Args:
+            updated_after: Return only transactions updated after this time.
+                If not provided, return all transactions. A timezone-naive
+                datetime is interpreted as UTC.
+
+        Returns:
+            The transactions returned by the FMR.
+        """
+        endpoint = f"{self._api_endpoint}/ws/registry/transactions"
+        if updated_after is not None:
+            if updated_after.tzinfo is None:
+                updated_after = updated_after.replace(tzinfo=timezone.utc)
+            timestamp = int(updated_after.timestamp() * 1000)
+            endpoint = f"{endpoint}?updatedAfter={timestamp}"
+        return msgspec.json.decode(self.__get(endpoint), type=list[RegistryTx])
+
+    def get_transaction(
+        self, transaction_id: str
+    ) -> Union[StructureMessage, MetadataMessage]:
+        """Retrieve the content of a registry transaction.
+
+        Args:
+            transaction_id: The identifier of the transaction to retrieve.
+
+        Returns:
+            The SDMX structure or reference metadata message contained in the
+            transaction.
+
+        Raises:
+            InternalError: If the transaction content cannot be read as an
+                SDMX structure or reference metadata message.
+        """
+        from pysdmx.io.reader import read_sdmx
+
+        endpoint = (
+            f"{self._api_endpoint}/ws/registry/transactions/{transaction_id}"
+        )
+        content = self.__get(endpoint).decode("utf-8", errors="replace")
+        try:
+            message = read_sdmx(content, validate=False)
+        except (Invalid, NotImplemented) as error:
+            raise InternalError(
+                "Unexpected transaction format",
+                (
+                    "The transaction content could not be read as an "
+                    "SDMX message."
+                ),
+                {
+                    "read_error": str(error),
+                    "endpoint": endpoint,
+                },
+            ) from error
+
+        if message.structures is not None:
+            return StructureMessage(message.header, message.structures)
+        if message.reports is not None:
+            return MetadataMessage(message.header, message.reports)
+
+        raise InternalError(
+            "Unexpected transaction format",
+            (
+                "The transaction content is neither an SDMX structure nor "
+                "reference metadata message."
+            ),
+            {"endpoint": endpoint},
+        )
+
+
+class RegistryMaintenanceClient(RegistryTransactionsClient):
     """EXPERIMENTAL: A client to update metadata in the FMR.
 
     The client supports two authentication modes:
@@ -89,11 +268,10 @@ class RegistryMaintenanceClient:
             Unauthorized: If neither ``access_token`` nor both ``user`` and
                 ``password`` are provided.
         """
-        self._api_endpoint = self.__sanitize_endpoint(api_endpoint)
+        super().__init__(api_endpoint, pem, timeout)
         self._user = user
         self._password = password
         self._access_token = access_token
-        self._timeout = timeout
 
         if self._access_token is None and not (self._user and self._password):
             raise Unauthorized(
@@ -104,13 +282,6 @@ class RegistryMaintenanceClient:
                 ),
             )
 
-        self._ssl_context = (
-            httpx.create_ssl_context(
-                verify=pem,
-            )
-            if pem
-            else httpx.create_ssl_context()
-        )
         self._encoder = msgspec.json.Encoder()
 
     def __build_auth(self) -> httpx.Auth:
@@ -231,11 +402,3 @@ class RegistryMaintenanceClient:
         message = MetadataMessage(header=header, reports=reports)
         endpoint = f"{self._api_endpoint}/ws/secure/sdmx/v2/metadata"
         return self.__post(message, action, endpoint)
-
-    def __sanitize_endpoint(self, endpoint: str) -> str:
-        if endpoint.endswith("/"):
-            endpoint = endpoint[0:-1]
-        endpoint = endpoint.replace("/ws/secure/sdmx/v2/metadata", "")
-        endpoint = endpoint.replace("/sdmx/v2", "")
-        endpoint = endpoint.replace("/ws/secure/sdmxapi/rest", "")
-        return endpoint
