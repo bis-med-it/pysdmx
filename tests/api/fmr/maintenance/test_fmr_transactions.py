@@ -128,6 +128,7 @@ def test_list_transactions_maps_http_errors(respx_mock) -> None:
         client.list_transactions()
 
 
+@pytest.mark.json
 def test_get_structure_transaction(respx_mock) -> None:
     with open(
         "tests/io/json/sdmxjson2/deser/samples/reader/structs.json", "rb"
@@ -144,6 +145,7 @@ def test_get_structure_transaction(respx_mock) -> None:
     assert len(transaction.structures) == 261
 
 
+@pytest.mark.json
 def test_get_metadata_transaction(respx_mock) -> None:
     with open(
         "tests/io/json/sdmxjson2/deser/samples/reports/report.json", "rb"
