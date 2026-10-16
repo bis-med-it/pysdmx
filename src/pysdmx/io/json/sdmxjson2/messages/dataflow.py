@@ -7,7 +7,10 @@ from msgspec import Struct
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
-from pysdmx.io.json.sdmxjson2.messages.constraint import JsonDataConstraint
+from pysdmx.io.json.sdmxjson2.messages.constraint import (
+    JsonAvailabilityConstraint,
+    JsonDataConstraint,
+)
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
@@ -23,7 +26,12 @@ from pysdmx.model import (
     DataStructureDefinition,
 )
 from pysdmx.model.dataflow import Group
-from pysdmx.util import is_final, parse_urn, semver_final_pattern
+from pysdmx.util import (
+    ensure_tz_aware,
+    is_final,
+    parse_urn,
+    semver_final_pattern,
+)
 
 
 def __parse_annotation_metrics(
@@ -44,25 +52,39 @@ def __parse_annotation_metrics(
 
 
 def _extract_metrics(
-    df: "JsonDataflow", constraints: Sequence[JsonDataConstraint]
+    df: "JsonDataflow",
+    constraints: Sequence[JsonDataConstraint],
+    availability_constraints: Sequence[JsonAvailabilityConstraint],
 ) -> tuple[Optional[int], Optional[int]]:
     dfurn = (
         "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
         f"{df.agency}:{df.id}({df.version})"
     )
-    const = [
+    legacy_constraints = [
         c
         for c in constraints
-        if c.constraintAttachment
+        if c.role == "Actual"
+        and c.constraintAttachment
         and c.constraintAttachment.dataflows
         and dfurn in c.constraintAttachment.dataflows
     ]
-    if const:
-        obs_count, series_count = __parse_annotation_metrics(const[0])
-    else:
-        obs_count = None
-        series_count = None
-    return (obs_count, series_count)
+    native_constraints = [
+        c
+        for c in availability_constraints
+        if c.constraintAttachment and c.constraintAttachment.dataflow == dfurn
+    ]
+    matches = legacy_constraints + native_constraints
+    if len(matches) > 1:
+        raise errors.Invalid(
+            "Invalid availability constraints",
+            f"Two availability constraints for the same dataflow: {dfurn}.",
+        )
+    if not matches:
+        return None, None
+    constraint = matches[0]
+    if isinstance(constraint, JsonAvailabilityConstraint):
+        return constraint.obsCount, constraint.seriesCount
+    return __parse_annotation_metrics(constraint)
 
 
 class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
@@ -77,6 +99,7 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
         valuelists: Sequence[JsonValuelist] = (),
         codelists: Sequence[JsonCodelist] = (),
         constraints: Sequence[JsonDataConstraint] = (),
+        availability_constraints: Sequence[JsonAvailabilityConstraint] = (),
     ) -> Dataflow:
         """Converts a FusionDataflow to a standard dataflow."""
         dsd: Optional[Union[DataStructureDefinition, str]] = None
@@ -92,7 +115,9 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             if len(m) == 1:
                 dsd = m[0].to_model(concepts, codelists, valuelists, ())
         dsd = dsd if dsd is not None else self.structure
-        obs_count, series_count = _extract_metrics(self, constraints)
+        obs_count, series_count = _extract_metrics(
+            self, constraints, availability_constraints
+        )
         return Dataflow(
             id=self.id,
             agency=self.agency,
@@ -101,10 +126,10 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             is_final=is_final(self.version),
             structure=dsd,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             obs_count=obs_count,
             series_count=series_count,
         )
@@ -139,8 +164,8 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             name=df.name,
             version=df.version,
             isExternalReference=df.is_external_reference,
-            validFrom=df.valid_from,
-            validTo=df.valid_to,
+            validFrom=ensure_tz_aware(df.valid_from),
+            validTo=ensure_tz_aware(df.valid_to),
             description=df.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in df.annotations]
@@ -159,6 +184,7 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
     valuelists: Sequence[JsonValuelist] = ()
     codelists: Sequence[JsonCodelist] = ()
     dataConstraints: Sequence[JsonDataConstraint] = ()
+    availabilityConstraints: Sequence[JsonAvailabilityConstraint] = ()
 
     def __filter(
         self, df: JsonDataflow, agency: str, id_: str, version: str
@@ -204,7 +230,9 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
 
         df = dfs[0]
 
-        obs_count, series_count = _extract_metrics(df, self.dataConstraints)
+        obs_count, series_count = _extract_metrics(
+            df, self.dataConstraints, self.availabilityConstraints
+        )
 
         return DataflowInfo(
             id=df.id,
@@ -213,7 +241,7 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
             name=df.name,
             description=df.description,
             version=df.version,
-            providers=prvs,
+            providers=tuple(prvs),
             dsd_ref=df.structure,
             groups=grps,
             obs_count=obs_count,
@@ -229,6 +257,7 @@ class JsonDataflows(Struct, frozen=True, omit_defaults=True):
                 self.valuelists,
                 self.codelists,
                 self.dataConstraints,
+                self.availabilityConstraints,
             )
             for df in self.dataflows
         ]

@@ -241,7 +241,9 @@ By default, dtypes are applied from the DSD schema (`apply_schema=True`).
 Disable if needed:
 
 ```python
-df = conn.data(cbs, "L_POSITION = 'D' AND L_REP_CTY = 'CH'", apply_schema=False)
+df = conn.data(
+    cbs, "L_POSITION = 'D' AND L_REP_CTY = 'CH'", apply_schema=False
+)
 print(df.dtypes)
 ```
 

@@ -26,7 +26,7 @@ from pysdmx.model import (
 from pysdmx.model import (
     HierarchyAssociation as HA,
 )
-from pysdmx.util import find_by_urn, parse_item_urn
+from pysdmx.util import find_by_urn, parse_item_urn, parse_validity_ts
 
 
 class FusionCode(Struct, frozen=True):
@@ -38,18 +38,15 @@ class FusionCode(Struct, frozen=True):
     names: Sequence[FusionString] = ()
     descriptions: Sequence[FusionString] = ()
 
-    def __handle_date(self, datestr: str) -> datetime:
-        return datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S%z")
-
     def __get_val(
         self, a: FusionAnnotation
     ) -> Tuple[Optional[datetime], Optional[datetime]]:
         vals = a.title.split("/")  # type: ignore[union-attr]
         if a.title.startswith("/"):  # type: ignore[union-attr]
-            return (None, self.__handle_date(vals[1]))
+            return (None, parse_validity_ts(vals[1]))
         else:
-            valid_from = self.__handle_date(vals[0])
-            valid_to = self.__handle_date(vals[1]) if vals[1] else None
+            valid_from = parse_validity_ts(vals[0])
+            valid_to = parse_validity_ts(vals[1]) if vals[1] else None
             return (valid_from, valid_to)
 
     def to_model(self, extract_urn: bool = False) -> Code:
@@ -91,7 +88,7 @@ class FusionCodelist(Struct, frozen=True, rename={"agency": "agencyId"}):
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            items=[i.to_model(extract_urns) for i in self.items],
+            items=tuple([i.to_model(extract_urns) for i in self.items]),
             sdmx_type=t,  # type: ignore[arg-type]
         )
 
@@ -175,7 +172,7 @@ class FusionHierarchicalCode(Struct, frozen=True):
             code.valid_to,
             rvf,
             rvt,
-            codes,
+            tuple(codes),
             tuple(annotations),
             urn,
             self.level,
@@ -231,7 +228,7 @@ class FusionHierarchy(Struct, frozen=True, rename={"agency": "agencyId"}):
             version=self.version,
             has_formal_levels=self.formalLevels,
             level=self.__get_levels(),
-            codes=[i.to_model(codelists) for i in self.codes],
+            codes=tuple([i.to_model(codelists) for i in self.codes]),
         )
 
 

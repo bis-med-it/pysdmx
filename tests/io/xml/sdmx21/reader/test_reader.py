@@ -1,8 +1,9 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
+import pyarrow as pa
 import pytest
 
 import pysdmx
@@ -318,7 +319,7 @@ def test_org_schemes_mixed_read(samples_folder):
     assert provider.id == "5B0"
     assert len(provider.contacts) == 1
     assert provider.contacts[0].name == "Statistics Department"
-    assert provider.contacts[0].emails == ["stats@bis.org"]
+    assert provider.contacts[0].emails == ("stats@bis.org",)
 
     dcs = by_type[DataConsumerScheme]
     assert isinstance(dcs.items[0], DataConsumer)
@@ -335,9 +336,9 @@ def test_provider_scheme_enrichment_read(samples_folder):
     assert len(schemes) == 1
     provider = schemes[0].items[0]
     assert provider.id == "TEST"
-    assert provider.dataflows == [
-        DataflowRef(id="DF1", agency="BIS", version="1.0")
-    ]
+    assert provider.dataflows == (
+        DataflowRef(id="DF1", agency="BIS", version="1.0"),
+    )
 
 
 def test_code_list_read(codelist_path):
@@ -354,6 +355,16 @@ def test_code_list_read(codelist_path):
     )
     assert codelist_sdmx.items[0].id == "0"
     assert codelist_sdmx.items[0].name == "Units"
+
+
+def test_code_list_read_is_hashable(codelist_path):
+    # Acceptance test: a reader-built, non-constraint artefact must
+    # also be hashable -- ItemScheme.items and each Code's annotations
+    # must be tuples, not lists, for the frozen struct's default
+    # __hash__ to work.
+    input_str, read_format = process_string_to_read(codelist_path)
+    codelists = read_structure(input_str, validate=True)
+    hash(codelists[0])  # must not raise TypeError (unhashable list field)
 
 
 def test_codelist_with_explicit_is_final(codelist_path):
@@ -395,7 +406,7 @@ def test_item_scheme_read(item_scheme_path):
 
     assert agency_uis.id == "UIS"
     assert isinstance(agency_uis.contacts[0], Contact)
-    assert agency_uis.contacts[0].emails == ["uis.datarequests@unesco.org"]
+    assert agency_uis.contacts[0].emails == ("uis.datarequests@unesco.org",)
 
     # Codelist
     codelists = [r for r in result if isinstance(r, Codelist)]
@@ -798,7 +809,9 @@ def test_vtl_transformation_scheme(samples_folder):
     assert transformation_scheme.id == "TEST"
     assert transformation_scheme.name == "TEST"
     assert transformation_scheme.description == "TEST Transformation Scheme"
-    assert transformation_scheme.valid_from == datetime(2024, 12, 3, 0, 0)
+    assert transformation_scheme.valid_from == datetime(
+        2024, 12, 3, tzinfo=timezone.utc
+    )
 
     assert len(transformation_scheme.items) == 2
     tr1 = transformation_scheme.items[0]
@@ -1187,8 +1200,8 @@ def test_attribute_relationship_attachment_group(samples_folder):
     assert isinstance(result[0], DataStructureDefinition)
     dsd = result[0]
     assert len(dsd.groups) == 2
-    assert dsd.groups[0].dimensions == ["TEST_DIM_3"]
-    assert dsd.groups[1].dimensions == ["TEST_DIM_4"]
+    assert dsd.groups[0].dimensions == ("TEST_DIM_3",)
+    assert dsd.groups[1].dimensions == ("TEST_DIM_4",)
     attribute = dsd.components.attributes[0]
     assert attribute.id == "TEST"
     assert (
@@ -1205,7 +1218,7 @@ def test_datastructure_group(datastructure_group):
     assert isinstance(dsd, DataStructureDefinition)
     group = dsd.groups
     assert group[0].id == "Sibling"
-    assert group[0].dimensions == [
+    assert group[0].dimensions == (
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",
@@ -1216,7 +1229,7 @@ def test_datastructure_group(datastructure_group):
         "CURR_TYPE_BOOK",
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
-    ]
+    )
     attribute_1 = dsd.components.attributes[4]
     assert attribute_1.attachment_level == ",".join(group[0].dimensions)
     attribute_2 = dsd.components.attributes[8]
@@ -1281,7 +1294,8 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
             "GATTR": ["G1", "G1", "G2", "G2"],
             "OTHER_ATTR": ["OTHER", "OTHER", None, None],
             "MISMATCH_ATTR": [None, None, None, None],
-        }
+        },
+        dtype=pd.ArrowDtype(pa.string()),
     )
 
     pd.testing.assert_frame_equal(
@@ -1306,10 +1320,10 @@ def test_constraint_with_cube_region(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 3
     region = constraint.cube_regions[0]
@@ -1370,10 +1384,10 @@ def test_constraint_with_keyset(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)",
+    )
     # Key Set
     assert len(constraint.key_sets) == 1
     ks = constraint.key_sets[0]
@@ -1406,10 +1420,10 @@ def test_constraint_with_data_structure(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.data_structures == [
+    assert att.data_structures == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)"
-    ]
+        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     assert isinstance(constraint.cube_regions[0], CubeRegion)
@@ -1461,10 +1475,10 @@ def test_constraint_with_provision_agreement(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.provision_agreements == [
+    assert att.provision_agreements == (
         "urn:sdmx:org.sdmx.infomodel.registry."
-        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)"
-    ]
+        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     assert isinstance(constraint.cube_regions[0], CubeRegion)
@@ -1686,6 +1700,36 @@ def test_category_scheme_21_enrichment_edge_cases(samples_folder):
     )
 
 
+@pytest.mark.xml
+def test_time_facets_are_timezone_aware(samples_folder):
+    structure_path = samples_folder / "datastructure_time_facets.xml"
+    input_str, read_format = process_string_to_read(structure_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_2_1
+
+    result = read_structure(input_str)
+
+    dsd = result[0]
+    facets = dsd.components["REFERENTIE_DATUM"].local_facets
+    # Datetimes without timezone information are assumed to be UTC.
+    assert facets.start_time == datetime(2000, 1, 1, tzinfo=timezone.utc)
+    assert facets.end_time == datetime(
+        2020, 12, 31, 23, 59, 59, tzinfo=timezone.utc
+    )
+    tp_facets = dsd.components["TIME_PERIOD"].local_facets
+    # Time facets that are not ISO 8601 datetimes (e.g. reporting
+    # periods) are kept as strings.
+    assert tp_facets.start_time == "2000-Q1"
+
+    output = write_structure(result)
+
+    assert 'startTime="2000-01-01T00:00:00Z"' in output
+    assert 'endTime="2020-12-31T23:59:59Z"' in output
+    assert 'startTime="2000-Q1"' in output
+    roundtrip = read_structure(output)
+    assert roundtrip[0].components["REFERENTIE_DATUM"].local_facets == facets
+    assert roundtrip[0].components["TIME_PERIOD"].local_facets == tp_facets
+
+
 def test_component_enum_ref_kept_without_codelist_21(samples_folder):
     data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -1737,7 +1781,7 @@ def test_read_empty_structure_containers_21(samples_folder):
     # returns an empty Message instead of raising.
     msg = read_sdmx(input_str, validate=False)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -1749,7 +1793,7 @@ def test_read_no_structure_containers_21(samples_folder):
 
     msg = read_sdmx(input_str, validate=True)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -1761,7 +1805,7 @@ def test_read_header_only_structure_message_21(samples_folder):
 
     msg = read_sdmx(input_str, validate=True)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -1816,3 +1860,23 @@ def test_submission_response_without_results():
 
     with pytest.raises(Invalid, match="SubmissionResult"):
         read_sub(doc, validate=False)
+
+
+@pytest.mark.xml
+def test_header_prepared_without_timezone_is_assumed_utc(samples_folder):
+    structure_path = samples_folder / "datastructure_time_facets.xml"
+    input_str, _ = process_string_to_read(structure_path)
+
+    header = read_sdmx(input_str).header
+
+    assert header.prepared == datetime(2026, 5, 21, 10, tzinfo=timezone.utc)
+
+
+@pytest.mark.xml
+def test_header_prepared_keeps_its_timezone(samples_folder):
+    structure_path = samples_folder / "agencies.xml"
+    input_str, _ = process_string_to_read(structure_path)
+
+    header = read_sdmx(input_str).header
+
+    assert header.prepared.isoformat() == "2010-11-13T08:00:33+08:00"

@@ -405,3 +405,20 @@ def test_structures_accept_availability_constraint():
 def test_get_availability_constraints_without_structures():
     with pytest.raises(NotFound):
         StructureMessage().get_availability_constraints()
+
+
+def test_header_id_is_generated_per_instance():
+    assert Header().id != Header().id
+
+
+def test_header_prepared_is_evaluated_per_instance(monkeypatch):
+    fixed = datetime(2030, 1, 1, tzinfo=timezone.utc)
+
+    class FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return fixed
+
+    monkeypatch.setattr("pysdmx.model.message.datetime", FrozenDatetime)
+
+    assert Header().prepared == fixed

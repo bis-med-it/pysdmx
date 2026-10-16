@@ -36,6 +36,7 @@ from pysdmx.model import (
     CategoryScheme,
     Codelist,
     ConceptScheme,
+    DataConstraint,
     Dataflow,
     DataflowInfo,
     DataProvider,
@@ -267,6 +268,13 @@ class __BaseRegistryClient:
         self, agency: str, id: str, version: str
     ) -> StructureQuery:
         return StructureQuery(StructureType.DATAFLOW, agency, id, version)
+
+    def _data_constraint_q(
+        self, agency: str, id: str, version: str
+    ) -> StructureQuery:
+        return StructureQuery(
+            StructureType.DATA_CONSTRAINT, agency, id, version
+        )
 
     def _vtl_ts_q(self, agency: str, id: str, version: str) -> StructureQuery:
         return StructureQuery(
@@ -675,6 +683,27 @@ class RegistryClient(__BaseRegistryClient):
         query = super()._dataflows_q(agency, id, version)
         out = self.__fetch(query)
         return super()._out(out, self.deser.dataflows)
+
+    def get_data_constraint(
+        self,
+        agency: str,
+        id: str,
+        version: str = "~",
+    ) -> DataConstraint:
+        """Get one data constraint.
+
+        Args:
+            agency: The agency maintaining the data constraint.
+            id: The ID of the data constraint to return.
+            version: The version of the data constraint to return. The most
+                recent version will be returned, unless specified otherwise.
+
+        Returns:
+            The requested data constraint.
+        """
+        query = super()._data_constraint_q(agency, id, version)
+        out = self.__fetch(query)
+        return super()._out(out, self.deser.data_constraint)[0]
 
     def get_data_structures(
         self,
@@ -1249,6 +1278,27 @@ class AsyncRegistryClient(__BaseRegistryClient):
         query = super()._dataflows_q(agency, id, version)
         out = await self.__fetch(query)
         return super()._out(out, self.deser.dataflows)
+
+    async def get_data_constraint(
+        self,
+        agency: str,
+        id: str,
+        version: str = "~",
+    ) -> DataConstraint:
+        """Get one data constraint.
+
+        Args:
+            agency: The agency maintaining the data constraint.
+            id: The ID of the data constraint to return.
+            version: The version of the data constraint to return. The most
+                recent version will be returned, unless specified otherwise.
+
+        Returns:
+            The requested data constraint.
+        """
+        query = super()._data_constraint_q(agency, id, version)
+        out = await self.__fetch(query)
+        return super()._out(out, self.deser.data_constraint)[0]
 
     async def get_data_structures(
         self,

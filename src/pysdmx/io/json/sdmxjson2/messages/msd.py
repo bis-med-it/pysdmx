@@ -24,7 +24,7 @@ from pysdmx.model import (
     MetadataComponent,
     MetadataStructure,
 )
-from pysdmx.util import is_final, parse_item_urn
+from pysdmx.util import ensure_tz_aware, is_final, parse_item_urn
 
 
 def _get_attr_repr(comp: MetadataComponent) -> Optional[JsonRepresentation]:
@@ -77,7 +77,7 @@ class JsonMetadataAttribute(Struct, frozen=True, omit_defaults=True):
             array_def=ab,
             local_enum_ref=local_enum_ref,
             components=tuple(
-                a.to_model(cs, cls) for a in self.metadataAttributes
+                [a.to_model(cs, cls) for a in self.metadataAttributes]
             ),
         )
 
@@ -118,7 +118,7 @@ class JsonMetadataAttributes(Struct, frozen=True, omit_defaults=True):
         self, cs: Sequence[JsonConceptScheme], cls: Sequence[Codelist]
     ) -> Sequence[MetadataComponent]:
         """Returns the list of metadata attributes."""
-        return tuple(a.to_model(cs, cls) for a in self.metadataAttributes)
+        return tuple([a.to_model(cs, cls) for a in self.metadataAttributes])
 
     @classmethod
     def from_model(
@@ -185,11 +185,11 @@ class JsonMetadataStructure(MaintainableType, frozen=True, omit_defaults=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            annotations=tuple(a.to_model() for a in self.annotations),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             components=c,
         )
 
@@ -211,8 +211,8 @@ class JsonMetadataStructure(MaintainableType, frozen=True, omit_defaults=True):
             name=msd.name,
             version=msd.version,
             isExternalReference=msd.is_external_reference,
-            validFrom=msd.valid_from,
-            validTo=msd.valid_to,
+            validFrom=ensure_tz_aware(msd.valid_from),
+            validTo=ensure_tz_aware(msd.valid_to),
             description=msd.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in msd.annotations]

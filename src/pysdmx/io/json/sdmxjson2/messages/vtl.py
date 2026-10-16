@@ -30,7 +30,7 @@ from pysdmx.model.vtl import (
     VtlMapping,
     VtlMappingScheme,
 )
-from pysdmx.util import is_final, parse_urn
+from pysdmx.util import ensure_tz_aware, is_final, parse_urn
 
 
 class JsonCustomType(NameableType, frozen=True, omit_defaults=True):
@@ -53,7 +53,7 @@ class JsonCustomType(NameableType, frozen=True, omit_defaults=True):
             output_format=self.outputFormat,
             vtl_literal_format=self.vtlLiteralFormat,
             vtl_scalar_type=self.vtlScalarType,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -94,15 +94,15 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -122,8 +122,8 @@ class JsonCustomTypeScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=cts.name,
             version=cts.version,
             isExternalReference=cts.is_external_reference,
-            validFrom=cts.valid_from,
-            validTo=cts.valid_to,
+            validFrom=ensure_tz_aware(cts.valid_from),
+            validTo=ensure_tz_aware(cts.valid_to),
             description=cts.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in cts.annotations]
@@ -152,7 +152,7 @@ class JsonNamePersonalisation(NameableType, frozen=True, omit_defaults=True):
             vtl_default_name=self.vtlDefaultName,
             personalised_name=self.personalisedName,
             vtl_artefact=self.vtlArtefact,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -193,15 +193,15 @@ class JsonNamePersonalisationScheme(
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -223,8 +223,8 @@ class JsonNamePersonalisationScheme(
             name=nps.name,
             version=nps.version,
             isExternalReference=nps.is_external_reference,
-            validFrom=nps.valid_from,
-            validTo=nps.valid_to,
+            validFrom=ensure_tz_aware(nps.valid_from),
+            validTo=ensure_tz_aware(nps.valid_to),
             description=nps.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in nps.annotations]
@@ -249,7 +249,7 @@ class JsonUserDefinedOperator(NameableType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             operator_definition=self.operatorDefinition,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -290,17 +290,17 @@ class JsonUserDefinedOperatorScheme(
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=self.vtlMappingScheme,
-            ruleset_schemes=self.rulesetSchemes,
-            annotations=[a.to_model() for a in self.annotations],
+            ruleset_schemes=tuple(self.rulesetSchemes),
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -358,8 +358,8 @@ class JsonUserDefinedOperatorScheme(
             name=udos.name,
             version=udos.version,
             isExternalReference=udos.is_external_reference,
-            validFrom=udos.valid_from,
-            validTo=udos.valid_to,
+            validFrom=ensure_tz_aware(udos.valid_from),
+            validTo=ensure_tz_aware(udos.valid_to),
             description=udos.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in udos.annotations]
@@ -394,7 +394,7 @@ class JsonRuleset(Struct, frozen=True, omit_defaults=True):
             ruleset_definition=self.rulesetDefinition,
             ruleset_type=self.rulesetType,
             ruleset_scope=self.rulesetScope,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -446,16 +446,16 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=self.vtlMappingScheme,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -494,8 +494,8 @@ class JsonRulesetScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=rss.name,
             version=rss.version,
             isExternalReference=rss.is_external_reference,
-            validFrom=rss.valid_from,
-            validTo=rss.valid_to,
+            validFrom=ensure_tz_aware(rss.valid_from),
+            validTo=ensure_tz_aware(rss.valid_to),
             description=rss.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in rss.annotations]
@@ -515,7 +515,7 @@ class JsonToVtlMapping(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> ToVtlMapping:
         """Converts deserialized class to pysdmx model class."""
-        return ToVtlMapping(self.toVtlSubSpace["keys"], self.method)
+        return ToVtlMapping(tuple(self.toVtlSubSpace["keys"]), self.method)
 
     @classmethod
     def from_model(cls, mapping: ToVtlMapping) -> "JsonToVtlMapping":
@@ -533,7 +533,9 @@ class JsonFromVtlMapping(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> FromVtlMapping:
         """Converts deserialized class to pysdmx model class."""
-        return FromVtlMapping(self.fromVtlSuperSpace["keys"], self.method)
+        return FromVtlMapping(
+            tuple(self.fromVtlSuperSpace["keys"]), self.method
+        )
 
     @classmethod
     def from_model(cls, mapping: FromVtlMapping) -> "JsonFromVtlMapping":
@@ -597,7 +599,7 @@ class JsonVtlMapping(NameableType, frozen=True, omit_defaults=True):
                 to_vtl_mapping_method=(
                     self.toVtlMapping.to_model() if self.toVtlMapping else None
                 ),
-                annotations=[a.to_model() for a in self.annotations],
+                annotations=tuple([a.to_model() for a in self.annotations]),
             )
 
     @classmethod
@@ -714,14 +716,14 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -741,8 +743,8 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=vms.name,
             version=vms.version,
             isExternalReference=vms.is_external_reference,
-            validFrom=vms.valid_from,
-            validTo=vms.valid_to,
+            validFrom=ensure_tz_aware(vms.valid_from),
+            validTo=ensure_tz_aware(vms.valid_to),
             description=vms.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in vms.annotations]
@@ -777,7 +779,7 @@ class JsonTransformation(Struct, frozen=True, omit_defaults=True):
             expression=self.expression,
             is_persistent=self.isPersistent,
             result=self.result,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -840,20 +842,20 @@ class JsonTransformationScheme(
             name=self.name,
             description=self.description,
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=vms[0] if vms else None,
             custom_type_scheme=cts[0] if cts else None,
             name_personalisation_scheme=nps[0] if nps else None,
-            ruleset_schemes=rss,
-            user_defined_operator_schemes=dos,
-            annotations=[a.to_model() for a in self.annotations],
+            ruleset_schemes=tuple(rss),
+            user_defined_operator_schemes=tuple(dos),
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -918,8 +920,8 @@ class JsonTransformationScheme(
             name=ts.name,
             version=ts.version,
             isExternalReference=ts.is_external_reference,
-            validFrom=ts.valid_from,
-            validTo=ts.valid_to,
+            validFrom=ensure_tz_aware(ts.valid_from),
+            validTo=ensure_tz_aware(ts.valid_to),
             description=ts.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in ts.annotations]

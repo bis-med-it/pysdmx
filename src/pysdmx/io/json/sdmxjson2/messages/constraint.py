@@ -26,7 +26,7 @@ from pysdmx.model import (
     KeySet,
     TimePeriodBoundary,
 )
-from pysdmx.util import Reference, is_final, parse_urn
+from pysdmx.util import Reference, ensure_tz_aware, is_final, parse_urn
 
 
 class JsonValue(Struct, frozen=True, omit_defaults=True):
@@ -38,12 +38,20 @@ class JsonValue(Struct, frozen=True, omit_defaults=True):
 
     def to_model(self) -> CubeValue:
         """Converts a JsonValue to a CubeValue."""
-        return CubeValue(self.value, self.validFrom, self.validTo)
+        return CubeValue(
+            self.value,
+            ensure_tz_aware(self.validFrom),
+            ensure_tz_aware(self.validTo),
+        )
 
     @classmethod
     def from_model(self, cv: CubeValue) -> "JsonValue":
         """Converts a pysdmx cube value to an SDMX-JSON one."""
-        return JsonValue(cv.value, cv.valid_from, cv.valid_to)
+        return JsonValue(
+            cv.value,
+            ensure_tz_aware(cv.valid_from),
+            ensure_tz_aware(cv.valid_to),
+        )
 
 
 class JsonTimePeriod(Struct, frozen=True, omit_defaults=True):
@@ -119,8 +127,8 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
             self.id,
             tuple([v.to_model() for v in self.values]),
             self.timeRange.to_model() if self.timeRange else None,
-            self.validFrom,
-            self.validTo,
+            ensure_tz_aware(self.validFrom),
+            ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -138,8 +146,8 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
             key_value.id,
             values,
             time_range,
-            key_value.valid_from,
-            key_value.valid_to,
+            ensure_tz_aware(key_value.valid_from),
+            ensure_tz_aware(key_value.valid_to),
         )
 
 
@@ -220,8 +228,8 @@ class JsonDataKey(Struct, frozen=True, omit_defaults=True):
         """Converts a JsonDataKey to a DataKey."""
         return DataKey(
             tuple([kv.to_model() for kv in self.keyValues]),
-            self.validFrom,
-            self.validTo,
+            ensure_tz_aware(self.validFrom),
+            ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -229,8 +237,8 @@ class JsonDataKey(Struct, frozen=True, omit_defaults=True):
         """Converts a pysdmx key constraint to an SDMX-JSON one."""
         return JsonDataKey(
             [JsonDataKeyValue.from_model(val) for val in kv.keys_values],
-            kv.valid_from,
-            kv.valid_to,
+            ensure_tz_aware(kv.valid_from),
+            ensure_tz_aware(kv.valid_to),
         )
 
 
@@ -380,8 +388,8 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             constraint_attachment=at,
             cube_regions=(
                 tuple([r.to_model() for r in self.cubeRegions])
@@ -445,8 +453,8 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in cons.annotations]
             ),
             isExternalReference=cons.is_external_reference,
-            validFrom=cons.valid_from,
-            validTo=cons.valid_to,
+            validFrom=ensure_tz_aware(cons.valid_from),
+            validTo=ensure_tz_aware(cons.valid_to),
             role="Allowed" if with_role else None,
             constraintAttachment=JsonConstraintAttachment.from_model(
                 cons.constraint_attachment

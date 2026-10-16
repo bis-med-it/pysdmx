@@ -311,7 +311,8 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
         enums.extend(vls)
         cmps = self.get_components(cs, enums, constraints)
         grps = [
-            Group(g.id, dimensions=g.dimensionReferences) for g in self.groups
+            Group(g.id, dimensions=tuple(g.dimensionReferences))
+            for g in self.groups
         ]
         return DataStructureDefinition(
             id=self.id,
@@ -322,7 +323,7 @@ class FusionDataStructure(Struct, frozen=True, rename={"agency": "agencyId"}):
             ),
             version=self.version,
             components=cmps,
-            groups=grps,
+            groups=tuple(grps),
         )
 
 

@@ -38,7 +38,7 @@ from pysdmx.io.xml.utils import add_list
 from pysdmx.model import Organisation, Reference
 from pysdmx.model.dataset import ActionType
 from pysdmx.model.message import Header
-from pysdmx.util import parse_maintainable_urn
+from pysdmx.util import ensure_tz_aware, parse_maintainable_urn
 
 
 def __parse_sender_receiver(
@@ -157,8 +157,13 @@ def __parse_dataset_action(
 
 
 def __parse_prepared(prepared: str) -> datetime:
-    """Parses the prepared date of the SDMX message."""
-    return datetime.fromisoformat(prepared.replace("Z", "+00:00"))
+    """Parses the prepared date of the SDMX message.
+
+    A datetime without timezone information is assumed to be in UTC.
+    """
+    return ensure_tz_aware(
+        datetime.fromisoformat(prepared.replace("Z", "+00:00"))
+    )
 
 
 def __parse_header(header: Dict[str, Any]) -> Header:

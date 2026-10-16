@@ -161,8 +161,10 @@ def test_stringify_dataframe():
     result = stringify_dataframe(ds.data)
     assert result["A"].tolist() == ["1", ""]
     assert result["B"].tolist() == ["x", ""]
-    # All columns should be plain string dtype
-    assert all(result[c].dtype == "object" for c in result.columns)
+    # All columns should use the plain string dtype of the installed pandas
+    # version (object in pandas 2, str in pandas 3)
+    plain_str = pd.Series(dtype=str).dtype
+    assert all(result[c].dtype == plain_str for c in result.columns)
 
 
 def test_stringify_dataframe_empty():
@@ -192,6 +194,8 @@ def test_regression_509_all_none_column():
 
     # All columns should be string[pyarrow], not dictionary
     assert ds.data["ATTR"].dtype == pd.ArrowDtype(pa.string())
-    # Verify no ArrowNotImplementedError on string conversion
-    result = ds.data.astype(str)
-    assert result["ATTR"].tolist() == ["<NA>", "<NA>"]
+    # Verify no ArrowNotImplementedError on the writers' string conversion
+    from pysdmx.io.pd import stringify_dataframe
+
+    result = stringify_dataframe(ds.data)
+    assert result["ATTR"].tolist() == ["", ""]

@@ -45,3 +45,6 @@ coverage-report.xml
 qa/
 dist/
 .env
+
+# Local capability specifications
+docs/capabilities/

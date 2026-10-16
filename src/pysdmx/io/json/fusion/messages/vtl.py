@@ -28,7 +28,7 @@ from pysdmx.model.vtl import (
 from pysdmx.model.vtl import (
     TransformationScheme as TS,
 )
-from pysdmx.util import parse_urn
+from pysdmx.util import ensure_tz_aware, parse_urn
 
 
 class FusionCustomType(Struct, frozen=True):
@@ -86,11 +86,11 @@ class FusionCustomTypeScheme(
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
         )
@@ -147,11 +147,11 @@ class FusionNamePersonalisationScheme(
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
         )
@@ -206,15 +206,15 @@ class FusionUserDefinedOperatorScheme(
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=self.vtlMappingScheme,
-            ruleset_schemes=self.rulesetSchemes,
+            ruleset_schemes=tuple(self.rulesetSchemes),
         )
 
 
@@ -268,11 +268,11 @@ class FusionRulesetScheme(Struct, frozen=True, rename={"agency": "agencyId"}):
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=self.vtlMappingScheme,
@@ -330,12 +330,14 @@ class FusionVtlMapping(Struct, frozen=True):
                 dataflow=dataflow,
                 dataflow_alias=self.alias,
                 from_vtl_mapping_method=(
-                    FromVtlMapping(self.fromVtlSuperSpace, self.fromVtlMethod)
+                    FromVtlMapping(
+                        tuple(self.fromVtlSuperSpace), self.fromVtlMethod
+                    )
                     if self.fromVtlMethod
                     else None
                 ),
                 to_vtl_mapping_method=(
-                    ToVtlMapping(self.toVtlSubSpace, self.toVtlMethod)
+                    ToVtlMapping(tuple(self.toVtlSubSpace), self.toVtlMethod)
                     if self.toVtlMethod
                     else None
                 ),
@@ -368,11 +370,11 @@ class FusionVtlMappingScheme(
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
         )
 
@@ -449,18 +451,18 @@ class FusionTransformationScheme(
                 self.descriptions[0].value if self.descriptions else None
             ),
             version=self.version,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             is_external_reference=self.isExternalReference,
             agency=self.agency,
-            items=items,
+            items=tuple(items),
             is_partial=self.isPartial,
             vtl_version=self.vtlVersion,
             vtl_mapping_scheme=vms[0] if vms else None,
             custom_type_scheme=cts[0] if cts else None,
             name_personalisation_scheme=nps[0] if nps else None,
-            ruleset_schemes=rss,
-            user_defined_operator_schemes=dos,
+            ruleset_schemes=tuple(rss),
+            user_defined_operator_schemes=tuple(dos),
         )
 
 
