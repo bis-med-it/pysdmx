@@ -605,6 +605,21 @@ def test_get_json20_empty_refmeta(file_name):
 
 
 @pytest.mark.json
+def test_get_json21_refmeta_with_dollar_schema():
+    # The official SDMX-JSON 2.1 constructed sample declares its schema only
+    # in the top-level ``$schema`` (issue #720).
+    file_path = Path(__file__).parent / "samples" / "refmeta_message_21.json"
+
+    msg = read_sdmx(file_path)
+
+    assert [r.id for r in msg.reports] == [
+        "METADATASET1",
+        "META_UPDATE",
+        "STAT_PRES",
+    ]
+
+
+@pytest.mark.json
 def test_get_json2_data(sdmx_json_data):
     with pytest.raises(
         NotImplemented, match="This flavour of SDMX-JSON is not supported."

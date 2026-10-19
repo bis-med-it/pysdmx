@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -182,6 +183,36 @@ def test_json_21_metadata_valid(valid_metadata_21):
     msg = read_metadata(valid_metadata_21, validate=True)
 
     assert len(msg.reports) == 3
+
+
+def test_json_21_schema_declared_in_dollar_schema(valid_metadata_21):
+    # The official SDMX-JSON 2.1 samples declare their schema only in the
+    # top-level ``$schema``, as ``meta.schema`` is optional. The message is
+    # only valid under 2.1, so reading it pins the schema selection.
+    message = json.loads(valid_metadata_21)
+    del message["meta"]["schema"]
+
+    msg = read_metadata(json.dumps(message), validate=True)
+
+    assert len(msg.reports) == 3
+
+
+def test_json_without_schema_is_invalid(valid_metadata_21):
+    message = json.loads(valid_metadata_21)
+    del message["$schema"]
+    del message["meta"]["schema"]
+
+    with pytest.raises(Invalid, match="supported SDMX-JSON schema"):
+        validate_sdmx_json(json.dumps(message))
+
+
+def test_json_with_unknown_schema_is_invalid(valid_metadata_21):
+    message = json.loads(valid_metadata_21)
+    del message["$schema"]
+    message["meta"]["schema"] = "https://example.org/schema.json"
+
+    with pytest.raises(Invalid, match="supported SDMX-JSON schema"):
+        validate_sdmx_json(json.dumps(message))
 
 
 @pytest.fixture
