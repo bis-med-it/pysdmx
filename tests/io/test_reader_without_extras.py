@@ -9,13 +9,12 @@ from pysdmx.io.json.sdmxjson2.reader.structure import read as read_structure
 
 # The noextra CI job runs these tests without any extra installed. SDMX-JSON
 # messages must be readable without validation (issue #719), while validating
-# them, or reading SDMX-ML messages, must point to the missing extra. The
-# SDMX-JSON messages are the constructed samples of the official SDMX-JSON
-# repository (https://github.com/sdmx-twg/sdmx-json).
+# them, or reading SDMX-ML messages, must point to the missing extra.
 
 SAMPLES = Path(__file__).parent / "samples"
-JSON_STRUCTURE = SAMPLES / "structure_message_20.json"
-JSON_REFMETA = SAMPLES / "refmeta_message_20.json"
+FMR_SAMPLES = Path(__file__).parent.parent / "api" / "fmr" / "samples"
+JSON_STRUCTURE = FMR_SAMPLES / "code" / "freq.json"
+JSON_REFMETA = FMR_SAMPLES / "refmeta" / "report.json"
 JSON_EXTRA = all(
     find_spec(name)
     for name in ("jsonschema", "rfc3339_validator", "sdmxschemas")
@@ -25,25 +24,20 @@ XML_EXTRA = all(
 )
 
 
-def test_read_json_structure_without_validation():
-    msg = read_sdmx(JSON_STRUCTURE, validate=False)
+@pytest.mark.parametrize("file_name", ["freq.json", "freq_21.json"])
+def test_read_json_structure_without_validation(file_name):
+    msg = read_sdmx(FMR_SAMPLES / "code" / file_name, validate=False)
 
-    assert [df.short_urn for df in msg.get_dataflows()] == [
-        "Dataflow=ECB:EXR(1.0)"
+    assert [cl.short_urn for cl in msg.get_codelists()] == [
+        "Codelist=SDMX:CL_FREQ(2.0)"
     ]
 
 
-@pytest.mark.parametrize(
-    "file_name", ["refmeta_message_20.json", "refmeta_message_21.json"]
-)
+@pytest.mark.parametrize("file_name", ["report.json", "report_21.json"])
 def test_read_json_refmeta_without_validation(file_name):
-    msg = read_sdmx(SAMPLES / file_name, validate=False)
+    msg = read_sdmx(FMR_SAMPLES / "refmeta" / file_name, validate=False)
 
-    assert [r.id for r in msg.reports] == [
-        "METADATASET1",
-        "META_UPDATE",
-        "STAT_PRES",
-    ]
+    assert [r.id for r in msg.reports] == ["DTI_BIS_MACRO"]
 
 
 def test_json_structure_reader_without_validation():
@@ -51,8 +45,8 @@ def test_json_structure_reader_without_validation():
 
     msg = read_structure(text, validate=False)
 
-    assert [df.short_urn for df in msg.get_dataflows()] == [
-        "Dataflow=ECB:EXR(1.0)"
+    assert [cl.short_urn for cl in msg.get_codelists()] == [
+        "Codelist=SDMX:CL_FREQ(2.0)"
     ]
 
 
@@ -61,11 +55,7 @@ def test_json_metadata_reader_without_validation():
 
     msg = read_metadata(text, validate=False)
 
-    assert [r.id for r in msg.reports] == [
-        "METADATASET1",
-        "META_UPDATE",
-        "STAT_PRES",
-    ]
+    assert [r.id for r in msg.reports] == ["DTI_BIS_MACRO"]
 
 
 @pytest.mark.skipif(JSON_EXTRA, reason="the json extra is installed")
