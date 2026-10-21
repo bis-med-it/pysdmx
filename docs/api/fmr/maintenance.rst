@@ -10,7 +10,7 @@ FMR Transactions client
 
 Use this client to browse and retrieve transactions in an FMR. Each
 transaction records a change to structural or reference metadata. The target
-FMR instance must be version 12.4.0 or later.
+FMR instance must be version 12.5.0 or later.
 
 >>> from datetime import UTC, datetime
 >>> from pysdmx.api.fmr.maintenance import RegistryTransactionsClient
