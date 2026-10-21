@@ -26,6 +26,7 @@ PATH_RULES = {
     # vtl tests
     "/tests/toolkit/vtl/": ("vtl", True),
     # noextra tests
+    "/tests/io/test_reader_without_extras.py": ("noextra", True),
     "/tests/model/": ("noextra", True),
     "/tests/api/fmr/": ("noextra", True),
     "/tests/api/gds/": ("noextra", True),
