@@ -171,8 +171,8 @@ def test_value_map_validity_is_written_as_dates(fmt):
         target=[DataType.STRING],
         maps=[
             MultiValueMap(
-                source=["A", "B"],
-                target=["C"],
+                source=("A", "B"),
+                target=("C",),
                 valid_from=valid_from,
                 valid_to=valid_to,
             )
