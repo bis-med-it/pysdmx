@@ -131,7 +131,7 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
                 codes = [
                     c.to_model() for c in a.items if not valid or c.id in valid
                 ]
-                return msgspec.structs.replace(cl, items=codes)
+                return msgspec.structs.replace(cl, items=tuple(codes))
             except NotFound:
                 # This is OK. In case of schema queries, if a component
                 # has both a local and a core representations, only the

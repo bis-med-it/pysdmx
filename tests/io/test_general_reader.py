@@ -376,7 +376,7 @@ def test_empty_result(empty_message):
     # empty Message instead of being rejected.
     msg = read_sdmx(empty_message, validate=False)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -536,7 +536,7 @@ def test_get_json20_empty_structure(sdmx_json_20_empty_structure):
 
     assert isinstance(msg, Message)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -548,7 +548,7 @@ def test_get_json20_structure_meta_only(sdmx_json_20_structure_meta_only):
 
     assert isinstance(msg, Message)
     assert msg.header is not None
-    assert msg.structures == []
+    assert msg.structures == ()
     assert msg.get_dataflows() == []
 
 
@@ -600,8 +600,8 @@ def test_get_json20_empty_refmeta(file_name):
 
     assert isinstance(msg, Message)
     assert msg.header is not None
-    assert msg.reports == []
-    assert msg.get_reports() == []
+    assert msg.reports == ()
+    assert msg.get_reports() == ()
 
 
 @pytest.mark.json

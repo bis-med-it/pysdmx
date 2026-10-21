@@ -10,6 +10,9 @@ from pysdmx.io.json.fusion.messages.code import (
     FusionHierarchyMessage,
 )
 from pysdmx.io.json.fusion.messages.concept import FusionConceptSchemeMessage
+from pysdmx.io.json.fusion.messages.constraint import (
+    FusionDataConstraintMessage,
+)
 from pysdmx.io.json.fusion.messages.dataflow import (
     FusionDataflowMessage,
     FusionDataflowsMessage,
@@ -47,6 +50,7 @@ __all__ = [
     "FusionHierarchyAssociationMessage",
     "FusionHierarchyMessage",
     "FusionConceptSchemeMessage",
+    "FusionDataConstraintMessage",
     "FusionDataflowMessage",
     "FusionDataflowsMessage",
     "FusionMappingMessage",

@@ -2,7 +2,8 @@ from typing import Iterable
 
 import pytest
 
-from pysdmx.model import MetadataAttribute
+from pysdmx.model import Annotation, Facets, MetadataAttribute
+from pysdmx.model.metadata import merge_attributes, unmerge_attributes
 
 
 @pytest.fixture
@@ -89,3 +90,78 @@ def test_repr(id, value):
     r = repr(attr)
 
     assert r == f"MetadataAttribute(id={repr(id)}, value={repr(value)})"
+
+
+def test_unmerge_attributes_returns_tuples():
+    # unmerge_attributes fed model objects a list, making the resulting
+    # attributes unhashable and unequal to tuple-built ones (issue #680).
+    attrs = (
+        MetadataAttribute("A", ["v1", "v2"], ()),
+        MetadataAttribute("B", "v3", (MetadataAttribute("C", "v4", ()),)),
+    )
+
+    out = unmerge_attributes(attrs)
+
+    assert isinstance(out, tuple)
+    assert isinstance(out[-1].attributes, tuple)
+    for a in out:
+        hash(a)  # must not raise TypeError (unhashable list field)
+
+
+def test_merge_attributes_returns_tuples():
+    # merge_attributes built lists for the merged attributes, the nested
+    # attributes and the grouped values, so reader-built attributes were
+    # unhashable and unequal to tuple-built ones (issue #680).
+    attrs = (
+        MetadataAttribute(
+            "A",
+            attributes=(
+                MetadataAttribute("B", "v1"),
+                MetadataAttribute("B", "v2"),
+            ),
+        ),
+        MetadataAttribute("C", "v3"),
+    )
+
+    out = merge_attributes(attrs)
+
+    assert out == (
+        MetadataAttribute(
+            "A", attributes=(MetadataAttribute("B", ("v1", "v2")),)
+        ),
+        MetadataAttribute("C", "v3"),
+    )
+    hash(out)  # must not raise TypeError (unhashable list field)
+
+
+def test_merge_attributes_keeps_annotations_and_format():
+    # merge_attributes rebuilt every attribute from its id and value only,
+    # so the annotations and format of the attributes were lost. A merged
+    # attribute keeps each distinct annotation of its occurrences once.
+    note = Annotation(id="note")
+    other = Annotation(id="other")
+    fmt = Facets(max_length=10)
+    child = MetadataAttribute("B", "v1", annotations=(note,), format=fmt)
+    attrs = (
+        MetadataAttribute(
+            "A", attributes=(child,), annotations=(note,), format=fmt
+        ),
+        MetadataAttribute("C", "v2", annotations=(note,), format=fmt),
+        MetadataAttribute("C", "v3", annotations=(note, other), format=fmt),
+    )
+
+    out = merge_attributes(attrs)
+
+    assert out == (
+        MetadataAttribute(
+            "A",
+            attributes=(
+                MetadataAttribute("B", "v1", annotations=(note,), format=fmt),
+            ),
+            annotations=(note,),
+            format=fmt,
+        ),
+        MetadataAttribute(
+            "C", ("v2", "v3"), annotations=(note, other), format=fmt
+        ),
+    )

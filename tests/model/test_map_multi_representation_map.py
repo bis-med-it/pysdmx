@@ -168,9 +168,9 @@ def test_serialization(
 def test_empty_maps_allow_missing_source_and_target(id, name, agency):
     sm = MultiRepresentationMap(id=id, name=name, agency=agency)
 
-    assert sm.source == []
-    assert sm.target == []
-    assert sm.maps == []
+    assert sm.source == ()
+    assert sm.target == ()
+    assert sm.maps == ()
 
 
 def test_missing_source(id, name, agency, target, mappings):
@@ -214,3 +214,14 @@ def test_invalid_target_length(id, name, agency, source, mappings):
             ],
             maps=mappings,
         )
+
+
+def test_default_sequences_are_tuples_and_hashable(id, name, agency):
+    # Sequence fields default to () so that instances built without them
+    # stay hashable and compare equal to tuple-built ones (issue #680).
+    mrm = MultiRepresentationMap(id=id, name=name, agency=agency)
+
+    hash(mrm)  # must not raise TypeError (unhashable list field)
+    assert mrm == MultiRepresentationMap(
+        id=id, name=name, agency=agency, source=(), target=(), maps=()
+    )

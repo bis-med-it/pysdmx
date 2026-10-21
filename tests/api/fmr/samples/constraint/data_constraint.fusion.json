@@ -1,0 +1,31 @@
+{
+    "DataConstraint": [
+        {
+            "id": "CBS_CONSTRAINTS",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:CBS_CONSTRAINTS(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Constraints for the CBS dataflow"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "definingDataPresent": false,
+            "type": "CubeRegionConstraint",
+            "attachments": [
+                "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS(1.0)"
+            ],
+            "includeCube": {
+                "CBS_BANK_TYPE": {
+                    "removePrefix": false,
+                    "values": [
+                        "4C",
+                        "4D"
+                    ],
+                    "cascade": []
+                }
+            }
+        }
+    ]
+}
