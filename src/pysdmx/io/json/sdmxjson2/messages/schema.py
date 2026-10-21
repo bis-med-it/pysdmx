@@ -52,7 +52,7 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
         for ks in keysets:
             keys.extend(
                 [
-                    {kv.id: kv.value for kv in k.keyValues}
+                    {kv.id: kv.to_model().value for kv in k.keyValues}
                     for k in ks.keys
                     if (ks.isIncluded if included else not ks.isIncluded)
                 ]

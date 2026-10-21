@@ -202,14 +202,37 @@ class JsonConstraintAttachment(Struct, frozen=True, omit_defaults=True):
 
 
 class JsonDataKeyValue(Struct, frozen=True, omit_defaults=True):
-    """SDMX-JSON payload for a data key value."""
+    """SDMX-JSON payload for a data key value.
+
+    SDMX-JSON 2.1 lists the values in ``values``, and keeps the single
+    ``value`` of SDMX-JSON 2.0 as a deprecated alternative.
+    """
 
     id: str
-    value: str
+    value: Optional[str] = None
+    values: Sequence[str] = ()
 
     def to_model(self) -> DataKeyValue:
-        """Converts a JsonDataKeyValue to a DataKeyValue."""
-        return DataKeyValue(self.id, self.value)
+        """Converts a JsonDataKeyValue to a DataKeyValue.
+
+        Raises:
+            NotImplemented: If several values are listed, as a
+                DataKeyValue holds a single value.
+            Invalid: If no value is given.
+        """
+        if len(self.values) > 1:
+            raise errors.NotImplemented(
+                "Unsupported data key value",
+                f"The data key value for {self.id} lists several values "
+                f"({', '.join(self.values)}), which is not supported yet.",
+            )
+        value = self.values[0] if self.values else self.value
+        if value is None:
+            raise errors.Invalid(
+                "Invalid data key value",
+                f"The data key value for {self.id} has no value.",
+            )
+        return DataKeyValue(self.id, value)
 
     @classmethod
     def from_model(self, kv: DataKeyValue) -> "JsonDataKeyValue":
