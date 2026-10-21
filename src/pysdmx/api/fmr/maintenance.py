@@ -111,8 +111,7 @@ class RegistryTransactionsClient:
     Args:
         api_endpoint: The endpoint of the target FMR service.
         pem: A PEM file for an otherwise untrusted certificate authority.
-        timeout: The maximum number of seconds to wait for a request. Defaults
-            to 60 seconds.
+        timeout: Seconds to wait for a request. Defaults to 60.
     """
 
     def __init__(
