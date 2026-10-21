@@ -1,3 +1,5 @@
+import json
+
 import msgspec
 import pytest
 
@@ -86,6 +88,20 @@ def test_dsd_two_cubes(body_two_cubes):
             assert len(comp.enumeration) == 249
         elif comp.id == "CURR_TYPE_BOOK":
             assert len(comp.enumeration) == 4
+
+
+def test_dsd_cube_with_plain_string_values(body_two_cubes):
+    data = json.loads(body_two_cubes)
+    data["data"]["dataConstraints"][0]["cubeRegions"] = [
+        {"keyValues": [{"id": "CURR_TYPE_BOOK", "values": ["FC1", "LC1"]}]}
+    ]
+    modified_body = json.dumps(data).encode()
+
+    res = msgspec.json.Decoder(JsonDataStructuresMessage).decode(modified_body)
+    dsds = res.to_model()
+
+    ctb = dsds[0].components["CURR_TYPE_BOOK"]
+    assert [c.id for c in ctb.enumeration] == ["FC1", "LC1"]
 
 
 def test_dsd_missing_cs(body_missing_cs):

@@ -5,7 +5,7 @@ import pytest
 
 from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages import JsonDataConstraintMessage
-from pysdmx.model import AvailabilityConstraint, DataConstraint
+from pysdmx.model import AvailabilityConstraint, CubeValue, DataConstraint
 
 
 @pytest.fixture
@@ -50,6 +50,19 @@ def test_cube_deser(body):
             assert v.value == "N"
             assert v.valid_from is None
             assert v.valid_to is None
+
+
+def test_cube_deser_plain_string_values(body):
+    data = json.loads(body)
+    region = data["data"]["dataConstraints"][0]["cubeRegions"][0]
+    region["keyValues"][0]["values"] = ["G", "N"]
+    modified_body = json.dumps(data).encode()
+
+    res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(modified_body)
+    cubes = res.to_model()
+
+    kv = cubes[0].cube_regions[0].key_values[0]
+    assert kv.values == (CubeValue("G"), CubeValue("N"))
 
 
 def test_cube_deser_without_attachment(body):
