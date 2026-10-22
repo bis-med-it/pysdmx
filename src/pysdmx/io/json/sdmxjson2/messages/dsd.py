@@ -490,7 +490,9 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
                 )
             if len(incl_cubes) == 1:
                 cons = {
-                    kv.id: [v.value for v in kv.values]
+                    kv.id: [
+                        v if isinstance(v, str) else v.value for v in kv.values
+                    ]
                     for kv in incl_cubes[0].keyValues
                 }
             else:
