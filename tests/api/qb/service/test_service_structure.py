@@ -121,3 +121,20 @@ def test_called_as_expected(
     headers = route.calls[0].request.headers
     assert headers["Accept"] == StructureFormat.SDMX_JSON_2_0_0.value
     assert headers["Accept-Encoding"] == "gzip, deflate"
+
+
+def test_rest_service_sends_bearer_token(respx_mock):
+    bearer = "TKN"
+    svc = RestService(
+        "https://auth.test/rest/v2",
+        ApiVersion.V2_0_0,
+        structure_format=StructureFormat.SDMX_ML_2_1,
+        token=bearer,
+    )
+    route = respx_mock.get(url__startswith="https://auth.test").mock(
+        return_value=httpx.Response(200, content=b"<x/>")
+    )
+    svc.structure(StructureQuery(StructureType.DATAFLOW, "A", "DF", "1.0"))
+    assert (
+        route.calls.last.request.headers["Authorization"] == f"Bearer {bearer}"
+    )
