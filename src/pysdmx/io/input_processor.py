@@ -1,5 +1,6 @@
 """Processes the input that comes into read_sdmx function."""
 
+import contextlib
 import csv
 import os.path
 from io import BytesIO, StringIO, TextIOWrapper
@@ -258,6 +259,53 @@ def __chain(
         rest.close()
 
 
+def __lines(text: str) -> Iterator[str]:
+    """Yields the lines of a text as a StringIO does, without copying it."""
+    start = 0
+    while start < len(text):
+        end = text.find("\n", start) + 1 or len(text)
+        yield text[start:end]
+        start = end
+
+
+def __first_record_lines(text: str) -> int:
+    """Returns the number of lines the first CSV record of a text uses."""
+    reader = csv.reader(__lines(text))
+    with contextlib.suppress(csv.Error):
+        next(reader, None)
+    return reader.line_num
+
+
+def __csv_head(head: str, chunks: Iterator[str]) -> Tuple[str, str]:
+    """Reads on until the head holds the first CSV record and one more line.
+
+    Returns the head, and its start up to that line, with 100 characters at
+    least. The CSV checks read only that start, so they give the same result
+    on it as on the whole text. A head that ends within a quoted value ends
+    the record as well, so the record is only known to be complete when the
+    head holds a line more.
+    """
+    parts = [head]
+    newlines = head.count("\n")
+    record_lines = 1
+    while True:
+        if newlines > record_lines:
+            head = "".join(parts)
+            parts = [head]
+            record_lines = __first_record_lines(head)
+            if newlines > record_lines:
+                end = 0
+                for _ in range(record_lines + 1):
+                    end = head.index("\n", end) + 1
+                return head, head[: max(end, 100)]
+        chunk = next(chunks, None)
+        if chunk is None:
+            head = "".join(parts)
+            return head, head
+        parts.append(chunk)
+        newlines += chunk.count("\n")
+
+
 def head_and_rest(
     chunks: Iterator[str], size: int = 1000
 ) -> Tuple[str, Iterator[str]]:
@@ -310,8 +358,9 @@ def stream_sdmx(
     """Processes the input that comes into read_sdmx, as a stream of text.
 
     The text is decoded as in process_string_to_read. The format of an
-    SDMX-ML message is detected from its first characters, without reading
-    the rest of it; any other input is read whole to detect its format.
+    SDMX-ML or SDMX-CSV message is detected from its first characters or
+    lines, without reading the rest of it; any other input is read whole to
+    detect its format.
 
     Args:
         sdmx_document: Path to file, URL, or string.
@@ -331,7 +380,11 @@ def stream_sdmx(
         if __check_xml(head):
             _, read_format = __get_sdmx_ml_flavour(head)
         else:
-            head, read_format = __check_sdmx_str(head + "".join(chunks))
+            head, sample = __csv_head(head, chunks)
+            if __check_csv(sample):
+                _, read_format = __get_sdmx_csv_flavour(sample)
+            else:
+                head, read_format = __check_sdmx_str(head + "".join(chunks))
     except BaseException:
         chunks.close()
         raise
