@@ -39,9 +39,10 @@ def read_sdmx(  # noqa: C901
 
     Check the :ref:`formats supported <io-reader-formats-supported>`
 
-    SDMX-ML data messages are read in a single pass, while the file is
-    read or the URL downloaded, without holding the whole message in
-    memory. Their validation against the XSD happens in the same pass.
+    SDMX-ML and SDMX-CSV data messages are read in a single pass, while
+    the file is read or the URL downloaded, without holding the whole
+    message in memory. The validation of SDMX-ML data messages against
+    the XSD happens in the same pass.
 
     .. important::
         When reading a SDMX-JSON structure message, you can read it
@@ -78,6 +79,11 @@ def read_sdmx(  # noqa: C901
     """
     chunks, read_format = stream_sdmx(sdmx_document, pem=pem)
     with contextlib.closing(chunks):
+        # A data message without any DataSet is valid SDMX as well (it is
+        # how a service answers a query matching nothing), so it is
+        # returned as a Message with an empty data sequence.
+        # TODO: Add here the Schema download for Datasets, based on structure
+        # TODO: Ensure we have changed the signature of the data readers
         if read_format in (
             Format.DATA_SDMX_ML_2_1_GEN,
             Format.DATA_SDMX_ML_2_1_GENTS,
@@ -87,10 +93,15 @@ def read_sdmx(  # noqa: C901
             Format.DATA_SDMX_ML_3_1,
         ):
             return __read_sdmx_ml_data(chunks, read_format, validate)
+        if read_format in (
+            Format.DATA_SDMX_CSV_1_0_0,
+            Format.DATA_SDMX_CSV_2_0_0,
+            Format.DATA_SDMX_CSV_2_1_0,
+        ):
+            return __read_sdmx_csv_data(chunks, read_format)
         input_str = "".join(chunks)
 
     header = None
-    result_data: Sequence[Dataset] = []
     result_structures: Sequence[
         Union[MaintainableArtefact, AvailabilityConstraint]
     ] = []
@@ -158,21 +169,11 @@ def read_sdmx(  # noqa: C901
 
         # SDMX-ML 2.1 Submission
         result_submission = read_sub(input_str, validate=validate)
-    elif read_format == Format.ERROR_SDMX_ML_2_1:
+    else:
         from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 
         # SDMX-ML 2.1 Error
         read_error(input_str, validate=validate)
-    elif read_format == Format.DATA_SDMX_CSV_1_0_0:
-        from pysdmx.io.csv.sdmx10.reader import read as read_csv_v1
-
-        # SDMX-CSV 1.0
-        result_data = read_csv_v1(input_str)
-    else:
-        # SDMX-CSV 2.1
-        from pysdmx.io.csv.sdmx21.reader import read as read_csv_v2
-
-        result_data = read_csv_v2(input_str)
 
     if read_format in (
         Format.STRUCTURE_SDMX_ML_2_1,
@@ -200,18 +201,7 @@ def read_sdmx(  # noqa: C901
         # TODO: Ensure we have changed the signature of the structure readers
         return Message(header=header, structures=tuple(result_structures))
 
-    if read_format in (
-        Format.DATA_SDMX_CSV_1_0_0,
-        Format.DATA_SDMX_CSV_2_0_0,
-        Format.DATA_SDMX_CSV_2_1_0,
-    ):
-        # A data message without any DataSet is valid SDMX as well (it is
-        # how a service answers a query matching nothing), so it is
-        # returned as a Message with an empty data sequence.
-        # TODO: Add here the Schema download for Datasets, based on structure
-        # TODO: Ensure we have changed the signature of the data readers
-        return Message(header=header, data=result_data)
-    elif read_format == Format.REGISTRY_SDMX_ML_2_1:
+    if read_format == Format.REGISTRY_SDMX_ML_2_1:
         return Message(header=header, submission=tuple(result_submission))
     # SDMX-ML and SDMX-JSON reference metadata, with or without reports
     return Message(header=header, reports=tuple(reports))
@@ -251,6 +241,20 @@ def __read_sdmx_ml_data(
     # The header is parsed after the data, so that the errors in the data
     # come first, as when reading the whole message
     return Message(header=parse_header(header), data=datasets)
+
+
+def __read_sdmx_csv_data(
+    chunks: Iterator[str], read_format: Format
+) -> Message:
+    """Reads an SDMX-CSV data message in a single pass."""
+    if read_format == Format.DATA_SDMX_CSV_1_0_0:
+        # SDMX-CSV 1.0
+        from pysdmx.io.csv.sdmx10.reader import read_stream
+    else:
+        # SDMX-CSV 2.0 and 2.1
+        from pysdmx.io.csv.sdmx21.reader import read_stream
+
+    return Message(header=None, data=read_stream(chunks))
 
 
 def __manage_dataset_level_attributes(dataset: Dataset) -> None:
