@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:GenericData xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                 xmlns:gen="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic"
+                 xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <mes:Header>
+        <mes:ID>IREF001716</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2026-10-27T10:01:55</mes:Prepared>
+        <mes:Sender id="ESCAP">
+            <com:Name xml:lang="es">Comisión Económica y Social para Asia y el Pacífico</com:Name>
+        </mes:Sender>
+        <mes:Structure structureID="ESCAP_THEME" dimensionAtObservation="AllDimensions">
+            <com:StructureUsage>
+                <Ref agencyID="ESCAP" id="THEME_Dataflow" version="2.10"/>
+            </com:StructureUsage>
+        </mes:Structure>
+    </mes:Header>
+    <mes:DataSet structureRef="ESCAP_THEME">
+        <gen:Obs>
+            <gen:ObsKey>
+                <gen:Value id="REF_AREA" value="TH"/>
+                <gen:Value id="TIME_PERIOD" value="2024"/>
+            </gen:ObsKey>
+            <gen:ObsValue value="1.5"/>
+        </gen:Obs>
+    </mes:DataSet>
+</mes:GenericData>

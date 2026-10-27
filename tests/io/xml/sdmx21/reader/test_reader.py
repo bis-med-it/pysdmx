@@ -1065,6 +1065,20 @@ def test_read_header_after_leading_comment():
     }
 
 
+def test_read_header_non_ascii():
+    sample = IO_SAMPLES / "data_non_ascii_header.xml"
+    name = "Comisión Económica y Social para Asia y el Pacífico"
+
+    header = read_header(sample.read_text("utf-8"), validate=True)
+
+    assert header.id == "IREF001716"
+    assert header.sender.name == name
+    assert header.structure == {
+        "Dataflow=ESCAP:THEME_Dataflow(2.10)": "AllDimensions"
+    }
+    assert read_sdmx(sample, validate=True).header.sender.name == name
+
+
 def test_read_header_ignores_malformed_body():
     before, header, _ = split_on_header("data_prov_agree.xml")
     message = f"{before}{header}<message:DataSet><ss:Obs>"
