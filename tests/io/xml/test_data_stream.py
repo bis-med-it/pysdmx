@@ -1,7 +1,9 @@
 import re
 import threading
+from io import BytesIO
 from pathlib import Path
 
+import httpx
 import pandas as pd
 import pyarrow as pa
 import pytest
@@ -9,6 +11,7 @@ from lxml import etree
 
 import pysdmx.io.xml.__data_aux as data_aux
 from pysdmx.errors import Invalid
+from pysdmx.io import read_sdmx
 from pysdmx.io.xml.__data_stream import Columns, Names
 from pysdmx.io.xml.doc_validation import validate_doc
 from pysdmx.io.xml.header import parse_header
@@ -21,9 +24,12 @@ from pysdmx.io.xml.sdmx21.reader.structure_specific import (
 from pysdmx.io.xml.sdmx30.reader.structure_specific import (
     read as read_str_spe_30,
 )
+from tests.io.byte_chunks import ByteChunks, split
 
 SAMPLES_21 = Path(__file__).parent / "sdmx21" / "reader" / "samples"
 SAMPLES_30 = Path(__file__).parent / "sdmx30" / "reader" / "samples"
+SAMPLES_31 = Path(__file__).parent / "sdmx31" / "reader" / "samples"
+URL = "https://sdmx.example.org/data"
 FIRST_OBS_21 = (
     '<Obs TIME_PERIOD="2002" OBS_VALUE="" OBS_STATUS="M" OBS_CONF="F"/>'
 )
@@ -444,3 +450,55 @@ def test_ss_child_elements_ignored():
     assert_same_datasets(
         read_str_spe_30(component, validate=False), read_str_spe_30(text_30)
     )
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        SAMPLES_21 / "gen_ser.xml",
+        SAMPLES_21 / "str_ser.xml",
+        SAMPLES_30 / "data_dataflow_3.0.xml",
+        SAMPLES_31 / "ECB_EXR_data.xml",
+    ],
+)
+def test_read_sdmx_data_same_message_from_every_source(path, respx_mock):
+    text = path.read_text(encoding="utf-8")
+    body = path.read_bytes()
+    stream = ByteChunks(split(body, len(body) // 3 + 1))
+    respx_mock.get(URL).mock(return_value=httpx.Response(200, stream=stream))
+
+    expected = read_sdmx(path)
+
+    assert expected.header == read_header(text, validate=False)
+    for source in (str(path), text, BytesIO(body), URL):
+        message = read_sdmx(source)
+        assert message.header == expected.header
+        assert_same_datasets(message.data, expected.data)
+    assert stream.closed
+
+
+def test_read_sdmx_stops_reading_url_on_error(respx_mock):
+    text = sample("str_ser.xml").replace(
+        'ss:structureRef="BIS_DER"', 'ss:structureRef="ZZZ"', 1
+    )
+    chunks = split(text.encode("utf-8"), 1024)
+    without_validation = ByteChunks(chunks)
+    with_validation = ByteChunks(chunks)
+    respx_mock.get(URL).mock(
+        side_effect=[
+            httpx.Response(200, stream=without_validation),
+            httpx.Response(200, stream=with_validation),
+        ]
+    )
+    reference = "Dataset Structure Reference ZZZ"
+
+    with pytest.raises(Invalid, match=reference):
+        read_sdmx(URL, validate=False)
+    assert without_validation.closed
+    assert without_validation.yielded < len(chunks)
+
+    # The validation goes to the end of the message before reporting it
+    with pytest.raises(Invalid, match=reference):
+        read_sdmx(URL, validate=True)
+    assert with_validation.closed
+    assert with_validation.yielded == len(chunks)
