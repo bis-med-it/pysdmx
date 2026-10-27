@@ -14,6 +14,7 @@ PATH_RULES = {
     "/tests/io/xml/sdmx30/writer/test_data_writing.py": ("xml_data", True),
     "/tests/io/xml/sdmx31/writer/test_data_writing.py": ("xml_data", True),
     "/tests/io/xml/sdmx21/reader/test_reader.py": ("xml_data", False),
+    "/tests/io/xml/test_data_stream.py": ("xml_data", True),
     # data tests
     "/tests/io/csv/sdmx10/reader/": ("data", True),
     "/tests/io/csv/sdmx10/writer/": ("data", False),
