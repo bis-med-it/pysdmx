@@ -1,19 +1,13 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
 
-import pandas as pd
-
-from pysdmx.errors import Invalid
 from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
-    DATASET,
     DIM_OBS,
-    HEADER,
     ID,
     PROV_AGREEMENT,
     PROV_AGREMENT,
     REF,
     STR_ID,
-    STR_REF,
     STR_USAGE,
     STRUCTURE,
     URN,
@@ -22,24 +16,8 @@ from pysdmx.io.xml.__tokens import (
 from pysdmx.io.xml.utils import add_list
 from pysdmx.util import parse_urn
 
+# Rows read before converting them into Arrow arrays
 READING_CHUNKSIZE = 50000
-
-
-def __process_df(
-    test_list: List[Dict[str, Any]],
-    df: Optional[pd.DataFrame],
-    is_end: bool = False,
-) -> Any:
-    if not is_end and len(test_list) <= READING_CHUNKSIZE:
-        return test_list, df
-    if df is not None:
-        df = pd.concat([df, pd.DataFrame(test_list)], ignore_index=True)
-    else:
-        df = pd.DataFrame(test_list)
-
-    del test_list[:]
-
-    return test_list, df
 
 
 def __get_ids_from_structure(element: Dict[str, Any]) -> Any:
@@ -121,31 +99,3 @@ def __extract_structure(structure: Any) -> Any:
         }
 
     return str_info
-
-
-def get_data_objects(dict_info: Dict[str, Any]) -> Tuple[Any, Any]:
-    """Parse dataset.
-
-    Args:
-        dict_info: Dict.
-          XML dictionary (xmltodict).
-
-    Returns:
-        A dictionary of datasets.
-    """
-    str_info = __extract_structure(dict_info[HEADER][STRUCTURE])
-    if DATASET not in dict_info:
-        dataset_info = []
-        for key in dict_info:
-            if DATASET in key:
-                dataset_info = add_list(dict_info[key])
-    else:
-        dataset_info = add_list(dict_info[DATASET])
-
-    for d in dataset_info:
-        if d[STR_REF] not in str_info:
-            raise Invalid(
-                f"Dataset Structure Reference {d[STR_REF]} "
-                f"not found in the Header"
-            )
-    return dataset_info, str_info

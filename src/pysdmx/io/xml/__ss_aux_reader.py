@@ -1,116 +1,143 @@
 """SDMX XML StructureSpecificData reader aux module."""
 
-import itertools
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import pandas as pd
+from lxml import etree
 
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__data_aux import (
-    __process_df,
-)
-from pysdmx.io.xml.__tokens import (
-    EXCLUDED_ATTRIBUTES,
-    GROUP,
-    OBS,
-    SERIES,
-)
-from pysdmx.io.xml.utils import add_list
+from pysdmx.io.xml.__data_stream import Columns, Names, read_data
+from pysdmx.io.xml.__tokens import EXCLUDED_ATTRIBUTES
 from pysdmx.model.dataset import ActionType
 
+Row = Dict[str, Optional[str]]
 
-def _reading_str_series(dataset: Dict[str, Any]) -> pd.DataFrame:
-    # Structure Specific Series
-    test_list = []
-    df = None
-    dataset[SERIES] = add_list(dataset[SERIES])
-    for data in dataset[SERIES]:
-        keys = dict(itertools.islice(data.items(), len(data)))
-        if OBS in data:
-            del keys[OBS]
-            data[OBS] = add_list(data[OBS])
-            test_list.extend([{**keys, **j} for j in data[OBS]])
-        else:
-            test_list.append(keys)
-        test_list, df = __process_df(test_list, df)
 
-    test_list, df = __process_df(test_list, df, is_end=True)
+def _merge_groups(
+    df: pd.DataFrame, group_dfs: List[pd.DataFrame]
+) -> pd.DataFrame:
+    """Merges the attributes of the groups into the series."""
+    original_columns = df.columns.tolist()
+    for group_df in group_dfs:
+        # Find non-NaN columns in this group
+        non_nan_cols = [
+            col for col in group_df.columns if not group_df[col].isna().all()
+        ]
 
+        # Merge keys are intersection of original and non-NaN cols
+        merge_cols = list(
+            set(original_columns).intersection(set(non_nan_cols))
+        )
+
+        group_df = group_df.drop_duplicates(merge_cols, keep="first")
+        df = pd.merge(
+            df,
+            group_df,
+            on=merge_cols,
+            how="left",
+            suffixes=("", "_drop"),
+        )
+        for col in list(df.columns):
+            if col.endswith("_drop"):
+                original = col[:-5]
+                df[original] = df[original].fillna(df[col])
+                df.drop(col, axis=1, inplace=True)
     return df
 
 
-def _reading_group_data(dataset: Dict[str, Any]) -> List[pd.DataFrame]:
-    # Structure Specific Group Data
-    group_dfs = []
-    dataset[GROUP] = add_list(dataset[GROUP])
-    for data in dataset[GROUP]:
-        group_dict = dict(data.items())
-        group_df = pd.DataFrame([group_dict])
-
-        # Remove :type columns
-        cols_to_delete = [x for x in group_df.columns if ":type" in x]
-        for x in cols_to_delete:
-            del group_df[x]
-
-        group_dfs.append(group_df)
-
-    return group_dfs
+def _group_frame(group: Row) -> pd.DataFrame:
+    """Returns the single-row frame of a group, without the :type columns."""
+    columns = Columns(None)
+    columns.add({k: v for k, v in group.items() if ":type" not in k})
+    return columns.frame()
 
 
-def _get_at_att_str(dataset: Dict[str, Any]) -> Dict[str, Any]:
-    """Gets the elements of the dataset if it is Structure Specific Data."""
-    return {k: dataset[k] for k in dataset if k not in EXCLUDED_ATTRIBUTES}
+class _StructureSpecificDataSet:
+    """Reads the elements of a StructureSpecific DataSet."""
+
+    def __init__(
+        self,
+        attributes: Dict[str, str],
+        structure: Dict[str, Any],
+        names: Names,
+    ) -> None:
+        self.__attributes = attributes
+        self.__structure = structure
+        self.__names = names
+        self.__series = Columns(None)
+        self.__observations = Columns("")
+        self.__groups: List[Row] = []
+        self.__has_series = False
+        self.__keys: Row = {}
+        self.__series_has_obs = False
+
+    def series_start(self, series: etree._Element) -> None:
+        self.__has_series = True
+        self.__keys = dict(self.__names.attributes(series))
+        self.__series_has_obs = False
+
+    def series_end(self, series: etree._Element) -> None:
+        if not self.__series_has_obs:
+            self.__series.add(self.__keys)
+
+    def obs(self, obs: etree._Element, in_series: bool) -> None:
+        if in_series:
+            self.__series_has_obs = True
+            self.__series.add({**self.__keys, **self.__names.attributes(obs)})
+        else:
+            self.__observations.add(dict(self.__names.attributes(obs)))
+
+    def group(self, group: etree._Element) -> None:
+        self.__groups.append(dict(self.__names.attributes(group)))
+
+    def finish(self, dataset: etree._Element) -> PandasDataset:
+        if self.__has_series:
+            # Structure Specific Series
+            df = self.__series.frame()
+            if self.__groups:
+                group_dfs = [_group_frame(group) for group in self.__groups]
+                df = _merge_groups(df, group_dfs)
+        else:
+            # Structure Specific All dimensions
+            df = self.__observations.frame()
+        attached_attributes = {
+            k: v
+            for k, v in self.__attributes.items()
+            if k not in EXCLUDED_ATTRIBUTES
+        }
+        action = ActionType(self.__attributes.get("action", "Information"))
+        structure_type = self.__structure["structure_type"]
+        urn = f"{structure_type}={self.__structure['unique_id']}"
+        return PandasDataset(
+            structure=urn,
+            attributes=attached_attributes,
+            data=df,
+            action=action,
+        )
 
 
-def _parse_structure_specific_data(
-    dataset: Dict[str, Any], structure_info: Dict[str, Any]
-) -> PandasDataset:
-    attached_attributes = _get_at_att_str(dataset)
+def read_structure_specific(
+    chunks: Iterable[str], validate: bool, messages: Tuple[str, ...]
+) -> Tuple[Optional[Dict[str, Any]], List[PandasDataset]]:
+    """Reads an SDMX-ML StructureSpecific data message in a single pass.
 
-    df = pd.DataFrame()
+    Args:
+        chunks: The text of the message, in chunks.
+        validate: If True, the XML data will be validated against the XSD.
+        messages: The names of the expected message elements.
 
-    # Parsing data
-    if SERIES in dataset:
-        # Structure Specific Series
-        df = _reading_str_series(dataset)
-        if GROUP in dataset:
-            group_dfs = _reading_group_data(dataset)
-            original_columns = df.columns.tolist()
-            for group_df in group_dfs:
-                # Find non-NaN columns in this group
-                non_nan_cols = [
-                    col
-                    for col in group_df.columns
-                    if not group_df[col].isna().all()
-                ]
+    Returns:
+        The Header of the message, as xmltodict parses it, and the
+        datasets.
 
-                # Merge keys are intersection of original and non-NaN cols
-                merge_cols = list(
-                    set(original_columns).intersection(set(non_nan_cols))
-                )
-
-                group_df = group_df.drop_duplicates(merge_cols, keep="first")
-                df = pd.merge(
-                    df,
-                    group_df,
-                    on=merge_cols,
-                    how="left",
-                    suffixes=("", "_drop"),
-                )
-                for col in list(df.columns):
-                    if col.endswith("_drop"):
-                        original = col[:-5]
-                        df[original] = df[original].fillna(df[col])
-                        df.drop(col, axis=1, inplace=True)
-    elif OBS in dataset:
-        dataset[OBS] = add_list(dataset[OBS])
-        # Structure Specific All dimensions
-        df = pd.DataFrame(dataset[OBS]).fillna("")
-
-    urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
-    action = dataset.get("action", "Information")
-    action = ActionType(action)
-
-    return PandasDataset(
-        structure=urn, attributes=attached_attributes, data=df, action=action
+    Raises:
+        Invalid: If the message is not valid SDMX-ML StructureSpecific
+            data.
+    """
+    return read_data(
+        chunks,
+        validate,
+        messages,
+        "This SDMX document is not an SDMX-ML StructureSpecificData.",
+        _StructureSpecificDataSet,
     )
