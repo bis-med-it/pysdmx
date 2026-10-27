@@ -64,6 +64,22 @@ XML_OPTIONS_31 = {
 }
 
 
+def xml_options(input_str: str) -> Dict[str, Any]:
+    """Returns the xmltodict options for the SDMX-ML version of a message.
+
+    Args:
+        input_str: SDMX-ML message.
+
+    Returns:
+        The xmltodict options for SDMX-ML 3.1, 3.0 or 2.1.
+    """
+    if SCHEMA_ROOT_31 in input_str:
+        return XML_OPTIONS_31
+    if SCHEMA_ROOT_30 in input_str:
+        return XML_OPTIONS_30
+    return XML_OPTIONS_21
+
+
 def parse_xml(
     input_str: str,
     validate: bool = True,
@@ -83,21 +99,7 @@ def parse_xml(
     __check_xml_extra()
     if validate:
         validate_doc(input_str)
-    if SCHEMA_ROOT_31 in input_str:
-        dict_info = xmltodict.parse(
-            input_str,
-            **XML_OPTIONS_31,  # type: ignore[arg-type]
-        )
-    elif SCHEMA_ROOT_30 in input_str:
-        dict_info = xmltodict.parse(
-            input_str,
-            **XML_OPTIONS_30,  # type: ignore[arg-type]
-        )
-    else:
-        dict_info = xmltodict.parse(
-            input_str,
-            **XML_OPTIONS_21,  # type: ignore[arg-type]
-        )
+    dict_info = xmltodict.parse(input_str, **xml_options(input_str))
 
     del input_str
 
