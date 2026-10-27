@@ -226,6 +226,20 @@ def __read_header_element(input_str: str) -> Optional[Dict[str, Any]]:
     return header[0] if header else None
 
 
+def parse_header(header: Optional[Dict[str, Any]]) -> Optional[Header]:
+    """Parses the Header of an SDMX-ML message.
+
+    Args:
+        header: The Header, as xmltodict parses it, or None.
+
+    Returns:
+        The header of the SDMX message, or None if there is no Header.
+    """
+    if header is None:
+        return None
+    return __parse_header(header)
+
+
 def read(
     input_str: str,
     validate: bool = True,
@@ -244,7 +258,4 @@ def read(
     """
     if validate:
         validate_doc(input_str)
-    header = __read_header_element(input_str)
-    if header is None:
-        return None
-    return __parse_header(header)
+    return parse_header(__read_header_element(input_str))
