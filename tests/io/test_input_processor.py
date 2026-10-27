@@ -1,3 +1,4 @@
+import csv
 import json
 from io import BytesIO
 from pathlib import Path
@@ -15,6 +16,7 @@ from tests.io.byte_chunks import ByteChunks
 SAMPLES = Path(__file__).parent / "samples"
 DATA_SAMPLE = Path(__file__).parent / "xml/sdmx21/reader/samples/str_ser.xml"
 URL = "https://sdmx.example.org/data"
+CSV_SAMPLE = SAMPLES / "data_v1.csv"
 
 
 @pytest.fixture
@@ -330,4 +332,106 @@ def test_stream_sdmx_closes_url_stream(respx_mock):
 
     chunks.close()
 
+    assert stream.closed
+
+
+@pytest.mark.parametrize("kind", ["path", "bytes"])
+def test_stream_sdmx_csv_small_chunks(monkeypatch, tmp_path, kind):
+    text = CSV_SAMPLE.read_text(encoding="utf-8").replace("\n", "\r\n")
+    path = tmp_path / "data.csv"
+    path.write_bytes(("\ufeff" + text).encode("utf-8"))
+    expected = process_string_to_read(_source(path, kind))
+    monkeypatch.setattr(input_processor, "READ_CHUNK_CHARS", 7)
+
+    chunks, read_format = stream_sdmx(_source(path, kind))
+
+    head = next(chunks)
+    assert 1000 <= len(head) < len(expected[0])
+    assert (head + "".join(chunks), read_format) == expected
+    assert read_format == Format.DATA_SDMX_CSV_1_0_0
+
+
+@pytest.mark.parametrize("size", [1, 10, 1000])
+def test_stream_sdmx_csv_header_with_line_breaks(monkeypatch, size):
+    # The first 1000 characters end with a line break within a quoted
+    # header, so the header goes on in the next chunks
+    head = 'KEY,"' + "A" * 10 + "\n" + "B" * 983 + "\n"
+    text = head + 'C",DATAFLOW,X\nK,V,BIS:DF(1.0),1\n'
+    assert len(head) == 1000
+    monkeypatch.setattr(input_processor, "READ_CHUNK_CHARS", size)
+
+    chunks, read_format = stream_sdmx(BytesIO(text.encode("utf-8")))
+
+    assert "".join(chunks) == text
+    assert read_format == Format.DATA_SDMX_CSV_1_0_0
+    assert process_string_to_read(text) == (text, read_format)
+
+
+def test_stream_sdmx_one_line_csv(monkeypatch):
+    text = "DATAFLOW,DIM_1,OBS_VALUE"
+    monkeypatch.setattr(input_processor, "READ_CHUNK_CHARS", 7)
+
+    chunks, read_format = stream_sdmx(BytesIO(text.encode("utf-8")))
+
+    assert "".join(chunks) == text
+    assert read_format == Format.DATA_SDMX_CSV_1_0_0
+    assert process_string_to_read(text) == (text, read_format)
+
+
+@pytest.fixture
+def csv_samples(monkeypatch):
+    """The texts the SDMX-CSV check is given."""
+    samples = []
+    check_csv = input_processor.__check_csv
+
+    def spy(sample):
+        samples.append(sample)
+        return check_csv(sample)
+
+    monkeypatch.setattr(input_processor, "__check_csv", spy)
+    return samples
+
+
+def test_stream_sdmx_csv_checks_the_first_lines_only(csv_samples):
+    # A str is a single chunk, which the checks do not read whole
+    text = CSV_SAMPLE.read_text(encoding="utf-8")
+    second_line_end = text.index("\n", text.index("\n") + 1) + 1
+    assert second_line_end > 100
+
+    chunks, read_format = stream_sdmx(text)
+
+    assert csv_samples == [text[:second_line_end]]
+    assert read_format == Format.DATA_SDMX_CSV_1_0_0
+    assert "".join(chunks) == text
+
+
+def test_stream_sdmx_csv_checks_100_characters_at_least(csv_samples):
+    text = "DATAFLOW,DIM_1,OBS_VALUE\n" + "BIS:DF(1.0),A,1\n" * 100
+
+    chunks, read_format = stream_sdmx(text)
+
+    assert csv_samples == [text[:100]]
+    assert read_format == Format.DATA_SDMX_CSV_1_0_0
+    assert "".join(chunks) == text
+
+
+def test_stream_sdmx_csv_error_in_header():
+    # The csv module rejects a carriage return within an unquoted value
+    text = "DATAFLOW,A,B\rC\n1,2,3\n4,5,6\n"
+    with pytest.raises(csv.Error):
+        process_string_to_read(text)
+    with pytest.raises(csv.Error):
+        stream_sdmx(text)
+
+
+def test_stream_sdmx_csv_url_streams(respx_mock):
+    body = CSV_SAMPLE.read_bytes()
+    stream = ByteChunks([body[:1500], body[1500:3000], body[3000:]])
+    respx_mock.get(URL).mock(return_value=httpx.Response(200, stream=stream))
+
+    chunks, read_format = stream_sdmx(URL)
+
+    assert read_format == Format.DATA_SDMX_CSV_1_0_0
+    assert stream.yielded < 3
+    assert "".join(chunks) == body.decode("utf-8")
     assert stream.closed
