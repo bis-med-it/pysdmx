@@ -17,6 +17,7 @@ from typing import (
     Optional,
     Protocol,
     Sequence,
+    Set,
     Tuple,
     cast,
 )
@@ -69,8 +70,14 @@ XML_OPTIONS: Dict[str, Dict[str, Any]] = {
 }
 
 
-class Names:
-    """Names of elements and attributes, as xmltodict gives them."""
+class Names(Dict[str, str]):
+    """Names of elements and attributes, as xmltodict gives them.
+
+    It maps a name in Clark notation, as lxml gives it, to the local name,
+    prefixed with the prefix of its namespace, or with the namespace itself
+    when it has no prefix in the map. Being a dict, a name already seen is
+    looked up at C speed.
+    """
 
     def __init__(self, namespaces: Dict[str, Optional[str]]) -> None:
         """Maps the names with the namespaces of an SDMX-ML version.
@@ -78,34 +85,24 @@ class Names:
         Args:
             namespaces: The prefix of each namespace, None to drop it.
         """
+        super().__init__()
         self.__namespaces = namespaces
-        self.__cache: Dict[str, str] = {}
 
-    def __call__(self, clark: str) -> str:
-        """Returns the name of an element or attribute.
-
-        Args:
-            clark: The name in Clark notation, as lxml gives it.
-
-        Returns:
-            The local name, prefixed with the namespace prefix, or with the
-            namespace itself when it has no prefix in the map.
-        """
-        name = self.__cache.get(clark)
-        if name is None:
-            name = clark
-            if clark.startswith("{"):
-                uri, local = clark[1:].split("}", 1)
-                prefix = self.__namespaces.get(uri, uri)
-                name = f"{prefix}:{local}" if prefix else local
-            self.__cache[clark] = name
+    def __missing__(self, clark: str) -> str:
+        """Maps a name not seen yet."""
+        name = clark
+        if clark.startswith("{"):
+            uri, local = clark[1:].split("}", 1)
+            prefix = self.__namespaces.get(uri, uri)
+            name = f"{prefix}:{local}" if prefix else local
+        self[clark] = name
         return name
 
     def attributes(self, element: etree._Element) -> Dict[str, str]:
         """Returns the attributes of an element, by name."""
         # lxml returns str names and values for a str input
         items = cast(Sequence[Tuple[str, str]], element.items())
-        return {self(key): value for key, value in items}
+        return {self[key]: value for key, value in items}
 
 
 class Columns:
@@ -225,6 +222,8 @@ class _MessageReader:
         self.__current: Optional[DataSetReader] = None
         self.__root_seen = False
         self.__pending: Optional[Exception] = None
+        # Tags whose start events need no reading (Obs, Group)
+        self.__ignored_starts: Set[str] = set()
 
     def handle(
         self, events: Iterator[Tuple[str, etree._Element]], defer: bool
@@ -237,8 +236,11 @@ class _MessageReader:
                 raise it in result(), instead of raising it at once.
         """
         if self.__pending is None:
+            ignored_starts = self.__ignored_starts
             try:
                 for event, element in events:
+                    if event == "start" and element.tag in ignored_starts:
+                        continue
                     self.__dispatch(event, element)
                 return
             except Exception as e:
@@ -270,10 +272,15 @@ class _MessageReader:
             parent.remove(element)
 
     def __dispatch(self, event: str, element: etree._Element) -> None:
+        current = self.__current
+        # While a DataSet is open, the Series, Obs and Group are in it
+        if current is not None and self.__dataset_child(
+            event, element, current
+        ):
+            return
         parent = element.getparent()
         if not self.__root_seen:
-            name = self.__names(element.tag)
-            if parent is None and name in self.__messages:
+            if parent is None and self.__names[element.tag] in self.__messages:
                 self.__root_seen = True
                 return
             raise Invalid(self.__wrong_message)
@@ -282,13 +289,11 @@ class _MessageReader:
             self.__structure_info()
         elif parent.getparent() is None:
             self.__root_child(event, element, parent)
-        elif self.__current is not None:
-            self.__dataset_child(event, element, parent, self.__current)
 
     def __root_child(
         self, event: str, element: etree._Element, parent: etree._Element
     ) -> None:
-        if self.__names(element.tag) == HEADER:
+        if self.__names[element.tag] == HEADER:
             if event == "end":
                 item = self.__to_dict(element)
                 self.__message[HEADER] = item
@@ -305,26 +310,33 @@ class _MessageReader:
                 parent.remove(element)
 
     def __dataset_child(
-        self,
-        event: str,
-        element: etree._Element,
-        parent: etree._Element,
-        current: DataSetReader,
-    ) -> None:
-        name = self.__names(element.tag)
-        if name == SERIES:
+        self, event: str, element: etree._Element, current: DataSetReader
+    ) -> bool:
+        """Reads a Series, Obs or Group, if the element is one of them."""
+        names = self.__names
+        name = names[element.tag]
+        if name == OBS:
+            if event == "start":
+                self.__ignored_starts.add(element.tag)
+            else:
+                parent = cast(etree._Element, element.getparent())
+                current.obs(element, names[parent.tag] == SERIES)
+                parent.remove(element)
+        elif name == SERIES:
             if event == "start":
                 current.series_start(element)
             else:
                 current.series_end(element)
-                parent.remove(element)
-        elif name == OBS:
-            if event == "end":
-                current.obs(element, self.__names(parent.tag) == SERIES)
-                parent.remove(element)
-        elif name == GROUP and event == "end":
-            current.group(element)
-            parent.remove(element)
+                cast(etree._Element, element.getparent()).remove(element)
+        elif name == GROUP:
+            if event == "start":
+                self.__ignored_starts.add(element.tag)
+            else:
+                current.group(element)
+                cast(etree._Element, element.getparent()).remove(element)
+        else:
+            return False
+        return True
 
     def __start_dataset(self, element: etree._Element) -> None:
         structures = self.__structure_info()
@@ -429,18 +441,19 @@ def read_data(
     errors: List[str] = []
     etree.clear_error_log()
     for text in itertools.chain([head], rest):
+        if checker is not None:
+            checker.feed(text)
         for start in range(0, len(text), feed):
-            piece = text[start : start + feed]
-            if checker is not None:
-                checker.feed(piece)
-            parser.feed(piece)
+            parser.feed(text[start : start + feed])
             events = cast(
                 Iterator[Tuple[str, etree._Element]], parser.read_events()
             )
             message.handle(events, defer=validate)
             if validate:
-                errors.extend(_schema_errors(etree.LxmlError("").error_log))
-                etree.clear_error_log()
+                log = etree.LxmlError("").error_log
+                if len(log):  # type: ignore[arg-type]
+                    errors.extend(_schema_errors(log))
+                    etree.clear_error_log()
     if checker is not None:
         checker.close()
     try:

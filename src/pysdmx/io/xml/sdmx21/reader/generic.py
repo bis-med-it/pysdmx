@@ -23,19 +23,32 @@ from pysdmx.io.xml.__tokens import (
 from pysdmx.model.dataset import ActionType
 
 Row = Dict[str, Optional[str]]
+VALUE_ATTRIBUTE = VALUE.lower()
+OBS_CHILDREN = (OBS_DIM, OBS_KEY, OBS_VALUE_XML_TAG, ATTRIBUTES)
 
 
-# The children are typed Any: lxml returns str attribute values for a str
+# The elements are typed Any: lxml returns str attribute values for a str
 # input, while its stubs type them as str or bytes
 def _children(element: etree._Element, names: Names) -> Dict[str, Any]:
-    return {names(child.tag): child for child in element}
+    return {names[child.tag]: child for child in element}
+
+
+def _obs_children(obs: etree._Element, names: Names) -> Dict[str, Any]:
+    """Returns the ObsDimension, ObsKey, ObsValue and Attributes of an Obs."""
+    children: Dict[str, Any] = dict.fromkeys(OBS_CHILDREN)
+    for child in obs:
+        name = names[child.tag]
+        if name in children:
+            children[name] = child
+    return children
 
 
 def _values(element: Any, names: Names, row: Row) -> None:
     """Adds the id and value of the Value children of an element."""
     for child in element:
-        if names(child.tag) == VALUE:
-            row[child.attrib["id"]] = child.attrib[VALUE.lower()]
+        if names[child.tag] == VALUE:
+            attributes = child.attrib
+            row[attributes["id"]] = attributes[VALUE_ATTRIBUTE]
 
 
 class _GenericDataSet:
@@ -68,23 +81,29 @@ class _GenericDataSet:
             self.__series.add(self.__series_keys(series))
 
     def obs(self, obs: etree._Element, in_series: bool) -> None:
-        children = _children(obs, self.__names)
+        names = self.__names
+        children = _obs_children(obs, names)
         if in_series:
             if self.__keys is None:
                 series = cast(etree._Element, obs.getparent())
                 self.__keys = self.__series_keys(series)
+            dimension = children[OBS_DIM]
+            if dimension is None:
+                raise KeyError(OBS_DIM)
             row = dict(self.__keys)
-            row[OBS_DIM] = children[OBS_DIM].attrib[VALUE.lower()]
+            row[OBS_DIM] = dimension.attrib[VALUE_ATTRIBUTE]
         else:
+            key = children[OBS_KEY]
+            if key is None:
+                raise KeyError(OBS_KEY)
             row = {}
-            _values(children[OBS_KEY], self.__names, row)
+            _values(key, names, row)
+        value = children[OBS_VALUE_XML_TAG]
         row[OBS_VALUE_ID] = (
-            children[OBS_VALUE_XML_TAG].attrib[VALUE.lower()]
-            if OBS_VALUE_XML_TAG in children
-            else ""
+            value.attrib[VALUE_ATTRIBUTE] if value is not None else ""
         )
-        if ATTRIBUTES in children:
-            _values(children[ATTRIBUTES], self.__names, row)
+        if children[ATTRIBUTES] is not None:
+            _values(children[ATTRIBUTES], names, row)
         if in_series:
             self.__series_has_obs = True
             self.__series.add(row)
