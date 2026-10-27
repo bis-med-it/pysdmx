@@ -15,8 +15,18 @@ from pysdmx.io.xml.header import parse_header
 from pysdmx.io.xml.header import read as read_header
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.generic import read_stream
+from pysdmx.io.xml.sdmx21.reader.structure_specific import (
+    read as read_str_spe_21,
+)
+from pysdmx.io.xml.sdmx30.reader.structure_specific import (
+    read as read_str_spe_30,
+)
 
 SAMPLES_21 = Path(__file__).parent / "sdmx21" / "reader" / "samples"
+SAMPLES_30 = Path(__file__).parent / "sdmx30" / "reader" / "samples"
+FIRST_OBS_21 = (
+    '<Obs TIME_PERIOD="2002" OBS_VALUE="" OBS_STATUS="M" OBS_CONF="F"/>'
+)
 STRING = pd.ArrowDtype(pa.string())
 UNKNOWN_IN_HEADER = (
     "</message:Header>",
@@ -24,8 +34,8 @@ UNKNOWN_IN_HEADER = (
 )
 
 
-def sample(name):
-    return (SAMPLES_21 / name).read_text(encoding="utf-8")
+def sample(name, folder=SAMPLES_21):
+    return (folder / name).read_text(encoding="utf-8")
 
 
 def dataset_bounds(text):
@@ -115,6 +125,11 @@ def test_validation_matches_validate_doc(name, old, new):
     with pytest.raises(Invalid) as actual:
         read_generic(text, validate=True)
     assert actual.value.description == expected.value.description
+
+
+def test_validate_doc_accepts_allowed_errors():
+    # The xsi:type of a StructureSpecific DataSet cannot be resolved
+    assert validate_doc(sample("str_ser.xml")) is None
 
 
 def test_validation_errors_come_first():
@@ -328,3 +343,104 @@ def test_missing_structure_ref():
     )
     with pytest.raises(KeyError, match="structureRef"):
         read_generic(text, validate=False)
+
+
+def test_severe_error_kept_after_many_allowed_errors():
+    # Each DataSet adds 2 allowed xsi:type errors after the severe one: 600
+    # errors, while lxml only keeps the last 100 of the thread
+    text = sample("str_ser.xml")
+    start, end = dataset_bounds(text)
+    tiny = (
+        '<message:DataSet ss:structureRef="BIS_DER" '
+        'xsi:type="ns1:DataSetType"/>'
+    )
+    message = (text[:start] + tiny * 300 + text[end:]).replace(
+        *UNKNOWN_IN_HEADER, 1
+    )
+    with pytest.raises(Invalid) as expected:
+        validate_doc(message)
+    with pytest.raises(Invalid) as actual:
+        read_str_spe_21(message, validate=True)
+    assert actual.value.description == expected.value.description
+    datasets = read_str_spe_21(message, validate=False)
+    assert len(datasets) == 300
+    assert all(dataset.data.empty for dataset in datasets)
+
+
+def test_ss_series_missing_values_are_null():
+    text = sample("str_ser.xml").replace(
+        FIRST_OBS_21, FIRST_OBS_21.replace(' OBS_CONF="F"', ""), 1
+    )
+    data = read_str_spe_21(text)[0].data
+    assert pd.isna(data["OBS_CONF"].iloc[0])
+    assert data["OBS_CONF"].iloc[1] == "F"
+
+
+def test_ss_all_dimensions_missing_values_are_empty():
+    text = sample("str_all.xml").replace(' DER_RATING="A"', "", 1)
+    data = read_str_spe_21(text)[0].data
+    assert data["DER_RATING"].iloc[0] == ""
+    assert data["DER_RATING"].iloc[1] == "A"
+
+
+def test_ss_series_win_over_top_level_obs():
+    text = sample("str_ser.xml")
+    mixed = text.replace(
+        "</message:DataSet>",
+        '<Obs TIME_PERIOD="1999" OBS_VALUE="1"/></message:DataSet>',
+        1,
+    )
+    assert_same_datasets(
+        read_str_spe_21(mixed, validate=False), read_str_spe_21(text)
+    )
+
+
+def test_ss_default_namespace():
+    text = sample("str_ser.xml")
+    default = (
+        text.replace("xmlns:message=", "xmlns=")
+        .replace("<message:", "<")
+        .replace("</message:", "</")
+    )
+    assert_same_datasets(
+        read_str_spe_21(default, validate=False),
+        read_str_spe_21(text, validate=False),
+    )
+
+
+def test_ss_30_reader_reads_21_message():
+    # The namespaces come from the message, not from the reader
+    text = sample("str_ser.xml")
+    assert_same_datasets(read_str_spe_30(text), read_str_spe_21(text))
+
+
+def test_ss_namespace_declarations_ignored():
+    text = sample("str_ser.xml")
+    declared = text.replace(
+        "<message:DataSet ", '<message:DataSet xmlns:x="urn:x" ', 1
+    ).replace("<Obs ", '<Obs xmlns:o="urn:o" ', 1)
+    assert_same_datasets(read_str_spe_21(declared), read_str_spe_21(text))
+
+
+def test_ss_child_elements_ignored():
+    text_21 = sample("str_ser.xml")
+    provider = text_21.replace(
+        'action="Replace">',
+        'action="Replace"><DataProvider><Ref agencyID="BIS" '
+        'maintainableParentID="DATA_PROVIDERS" '
+        'maintainableParentVersion="1.0" id="P1"/></DataProvider>',
+        1,
+    )
+    assert_same_datasets(read_str_spe_21(provider), read_str_spe_21(text_21))
+
+    text_30 = sample("data_dataflow_3.0.xml", SAMPLES_30)
+    component = re.sub(
+        r"(<Obs\b[^>]*?)/>",
+        r'\1><Comp id="X"><Value>v</Value></Comp></Obs>',
+        text_30,
+        count=1,
+        flags=re.DOTALL,
+    )
+    assert_same_datasets(
+        read_str_spe_30(component, validate=False), read_str_spe_30(text_30)
+    )
