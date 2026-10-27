@@ -1,0 +1,330 @@
+import re
+import threading
+from pathlib import Path
+
+import pandas as pd
+import pyarrow as pa
+import pytest
+from lxml import etree
+
+import pysdmx.io.xml.__data_aux as data_aux
+from pysdmx.errors import Invalid
+from pysdmx.io.xml.__data_stream import Columns, Names
+from pysdmx.io.xml.doc_validation import validate_doc
+from pysdmx.io.xml.header import parse_header
+from pysdmx.io.xml.header import read as read_header
+from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
+from pysdmx.io.xml.sdmx21.reader.generic import read_stream
+
+SAMPLES_21 = Path(__file__).parent / "sdmx21" / "reader" / "samples"
+STRING = pd.ArrowDtype(pa.string())
+UNKNOWN_IN_HEADER = (
+    "</message:Header>",
+    "<message:Unknown/></message:Header>",
+)
+
+
+def sample(name):
+    return (SAMPLES_21 / name).read_text(encoding="utf-8")
+
+
+def dataset_bounds(text):
+    start = text.index("<message:DataSet")
+    end = text.index("</message:DataSet>") + len("</message:DataSet>")
+    return start, end
+
+
+def assert_same_datasets(actual, expected):
+    assert len(actual) == len(expected)
+    for a, e in zip(actual, expected):
+        assert (a.structure, a.attributes, a.action) == (
+            e.structure,
+            e.attributes,
+            e.action,
+        )
+        pd.testing.assert_frame_equal(a.data, e.data)
+
+
+@pytest.mark.parametrize("fill", ["", None])
+def test_columns_order_and_fill(fill):
+    columns = Columns(fill)
+    columns.add({"A": "1", "B": "2"})
+    columns.add({"C": "3", "A": "4"})
+    columns.add({})
+
+    expected = pd.DataFrame(
+        {
+            "A": ["1", "4", fill],
+            "B": ["2", fill, fill],
+            "C": [fill, "3", fill],
+        },
+        dtype=STRING,
+    )
+    pd.testing.assert_frame_equal(columns.frame(), expected)
+
+
+def test_columns_new_column_in_later_batch(monkeypatch):
+    monkeypatch.setattr(data_aux, "READING_CHUNKSIZE", 2)
+    columns = Columns(None)
+    for value in ("0", "1", "2"):
+        columns.add({"A": value})
+    columns.add({"A": "3", "B": "x"})
+    columns.add({"A": "4"})
+
+    expected = pd.DataFrame(
+        {
+            "A": ["0", "1", "2", "3", "4"],
+            "B": [None, None, None, "x", None],
+        },
+        dtype=STRING,
+    )
+    pd.testing.assert_frame_equal(columns.frame(), expected)
+
+
+def test_columns_empty():
+    pd.testing.assert_frame_equal(Columns("").frame(), pd.DataFrame())
+
+
+def test_columns_rows_without_columns():
+    columns = Columns(None)
+    columns.add({})
+    columns.add({})
+    pd.testing.assert_frame_equal(columns.frame(), pd.DataFrame([{}, {}]))
+
+
+def test_names():
+    names = Names({"urn:a": None, "urn:xsi": "xsi"})
+    assert names("Obs") == "Obs"
+    assert names("{urn:a}Obs") == "Obs"
+    assert names("{urn:a}Obs") == "Obs"
+    assert names("{urn:xsi}type") == "xsi:type"
+    assert names("{urn:other}Obs") == "urn:other:Obs"
+
+
+@pytest.mark.parametrize(
+    ("name", "old", "new"),
+    [
+        ("gen_all.xml", *UNKNOWN_IN_HEADER),
+        ("gen_ser.xml", "<generic:Obs>", "<generic:Obs><generic:Unknown/>"),
+    ],
+)
+def test_validation_matches_validate_doc(name, old, new):
+    text = sample(name).replace(old, new, 1)
+    with pytest.raises(Invalid) as expected:
+        validate_doc(text)
+    with pytest.raises(Invalid) as actual:
+        read_generic(text, validate=True)
+    assert actual.value.description == expected.value.description
+
+
+def test_validation_errors_come_first():
+    text = (
+        sample("gen_ser.xml")
+        .replace('structureRef="BIS_BIS_DER_1_0"', 'structureRef="ZZZ"')
+        .replace(*UNKNOWN_IN_HEADER, 1)
+    )
+    with pytest.raises(Invalid, match="Validation Error"):
+        read_generic(text, validate=True)
+    with pytest.raises(Invalid, match="Dataset Structure Reference ZZZ"):
+        read_generic(text, validate=False)
+
+
+@pytest.mark.parametrize("validate", [True, False])
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        (lambda t: t[: len(t) // 2], "Couldn't find end of Start Tag"),
+        (lambda t: t.rstrip() + "<!--", "Comment not terminated"),
+        (
+            lambda t: t.replace("</generic:Series>", "</generic:Seriez>", 1),
+            "Opening and ending tag mismatch",
+        ),
+    ],
+)
+def test_malformed_xml(change, message, validate):
+    text = change(sample("gen_ser.xml"))
+    with pytest.raises(etree.XMLSyntaxError, match=message):
+        read_generic(text, validate=validate)
+
+
+@pytest.mark.parametrize("validate", [True, False])
+def test_wrong_message_generic(validate):
+    with pytest.raises(
+        Invalid, match="This SDMX document is not SDMX-ML 2.1 Generic."
+    ):
+        read_generic(sample("str_ser.xml"), validate=validate)
+
+
+def test_validation_is_thread_safe():
+    valid = sample("gen_ser.xml")
+    invalid = valid.replace(*UNKNOWN_IN_HEADER, 1)
+    failures = []
+
+    def read(text, should_fail):
+        for _ in range(10):
+            try:
+                read_generic(text, validate=True)
+                failed = False
+            except Invalid as e:
+                failed = "Unknown" in str(e)
+            if failed != should_fail:
+                failures.append(text)
+
+    threads = [
+        threading.Thread(target=read, args=(valid, False)),
+        threading.Thread(target=read, args=(invalid, True)),
+    ]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert failures == []
+
+
+@pytest.mark.parametrize(
+    ("name", "element"),
+    [
+        ("gen_ser.xml", "<generic:SeriesKey>"),
+        ("gen_all.xml", "<generic:ObsKey>"),
+    ],
+)
+def test_generic_comments_and_pis_ignored(name, element):
+    text = sample(name)
+    noisy = text.replace(
+        "<generic:Obs>", "<generic:Obs><!-- c --><?pi x?>", 1
+    ).replace(element, f"{element}<!-- k --><?pi y?>", 1)
+    assert_same_datasets(read_generic(noisy), read_generic(text))
+
+
+def test_generic_dataset_attributes():
+    dataset = read_generic(sample("gen_ser.xml"))[0]
+    assert dataset.attributes == {
+        "DECIMALS": "3",
+        "UNIT_MULT": "6",
+        "UNIT_MEASURE": "USD",
+    }
+
+
+def test_generic_other_children_of_a_key_are_ignored():
+    text = sample("gen_all.xml")
+    extra = text.replace(
+        "<generic:ObsKey>", "<generic:ObsKey><generic:Extra/>", 1
+    )
+    assert_same_datasets(
+        read_generic(extra, validate=False), read_generic(text)
+    )
+
+
+def test_generic_missing_obs_value():
+    text = sample("gen_all.xml").replace('<generic:ObsValue value=""/>', "", 1)
+    data = read_generic(text)[0].data
+    assert data["OBS_VALUE"].iloc[0] == ""
+
+
+def test_generic_all_dimensions_without_obs():
+    text = re.sub(
+        r"<generic:Obs>.*?</generic:Obs>",
+        "",
+        sample("gen_all.xml"),
+        flags=re.DOTALL,
+    )
+    dataset = read_generic(text)[0]
+    pd.testing.assert_frame_equal(dataset.data, pd.DataFrame())
+    assert dataset.attributes == {
+        "DECIMALS": "3",
+        "UNIT_MULT": "6",
+        "UNIT_MEASURE": "USD",
+    }
+
+
+def test_generic_default_namespace():
+    # The unprefixed Ref elements move to the message namespace, which the
+    # XSD rejects: the names are what matters here
+    text = sample("gen_ser.xml")
+    default = (
+        text.replace("xmlns:message=", "xmlns=")
+        .replace("<message:", "<")
+        .replace("</message:", "</")
+    )
+    assert_same_datasets(
+        read_generic(default, validate=False),
+        read_generic(text, validate=False),
+    )
+
+
+def test_generic_two_datasets():
+    text = sample("gen_ser.xml")
+    start, end = dataset_bounds(text)
+    twice = text[:end] + text[start:end] + text[end:]
+    datasets = read_generic(twice)
+    assert_same_datasets(datasets[:1], datasets[1:])
+    assert_same_datasets(datasets[:1], read_generic(text))
+
+
+def test_generic_header_only():
+    text = sample("gen_ser.xml")
+    start, end = dataset_bounds(text)
+    header, datasets = read_stream([text[:start] + text[end:]])
+    assert datasets == []
+    assert parse_header(header) == read_header(text, validate=False)
+
+
+def test_read_stream_returns_the_header():
+    text = sample("gen_ser.xml")
+    header, datasets = read_stream([text])
+    assert parse_header(header) == read_header(text, validate=False)
+    assert_same_datasets(datasets, read_generic(text))
+
+
+def test_header_not_first_child():
+    text = sample("gen_ser.xml")
+    extra = text.replace(
+        "<message:Header>", "<message:Extra/><message:Header>", 1
+    )
+    header, datasets = read_stream([extra], validate=False)
+    assert header is None
+    assert_same_datasets(datasets, read_generic(text))
+
+
+def test_data_elements_outside_a_dataset_are_ignored():
+    text = sample("gen_ser.xml")
+    noisy = text.replace(
+        "</message:Header>", "<message:Obs/></message:Header>", 1
+    ).replace("<message:DataSet", "<message:Group/><message:DataSet", 1)
+    header, datasets = read_stream([noisy], validate=False)
+    assert parse_header(header) == read_header(text, validate=False)
+    assert_same_datasets(datasets, read_generic(text))
+
+
+def test_no_header():
+    text = sample("gen_ser.xml")
+    start = text.index("<message:Header>")
+    end = text.index("</message:Header>") + len("</message:Header>")
+    with pytest.raises(KeyError, match="Header"):
+        read_generic(text[:start] + text[end:], validate=False)
+
+
+def test_empty_header():
+    text = sample("gen_ser.xml")
+    start = text.index("<message:Header>")
+    end = text.index("</message:Header>") + len("</message:Header>")
+    with pytest.raises(TypeError):
+        read_generic(
+            text[:start] + "<message:Header/>" + text[end:], validate=False
+        )
+
+
+def test_empty_header_without_namespaces():
+    with pytest.raises(TypeError):
+        read_generic(
+            '<?xml version="1.0"?><GenericData><Header/></GenericData>',
+            validate=False,
+        )
+
+
+def test_missing_structure_ref():
+    text = sample("gen_ser.xml").replace(
+        'structureRef="BIS_BIS_DER_1_0" ', "", 1
+    )
+    with pytest.raises(KeyError, match="structureRef"):
+        read_generic(text, validate=False)
