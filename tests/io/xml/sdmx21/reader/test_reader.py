@@ -12,6 +12,7 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.__tokens import OBS_DIM, OBS_VALUE_ID
+from pysdmx.io.xml.header import read as read_header
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
@@ -1031,6 +1032,80 @@ def test_header_xmlns(samples_folder):
     assert result.structure == {
         "Dataflow=OECD.SDD.STES:DSD_STES@DF_CLI(4.1)": "TIME_PERIOD"
     }
+
+
+NSI_SCHEMA_ROOT = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/"
+NSI_NAMESPACES = (
+    f'xmlns:message="{NSI_SCHEMA_ROOT}message" '
+    f'xmlns:common="{NSI_SCHEMA_ROOT}common" '
+    f'xmlns:generic="{NSI_SCHEMA_ROOT}data/generic"'
+)
+NSI_HEADER = (
+    "<message:Header><message:ID>IREF001716</message:ID>"
+    "<message:Test>true</message:Test>"
+    "<message:Prepared>2026-10-27T10:01:55</message:Prepared>"
+    '<message:Sender id="ESCAP"><common:Name xml:lang="es">'
+    "Comisión Económica y Social para Asia y el Pacífico"
+    "</common:Name></message:Sender>"
+    '<message:Structure structureID="ESCAP_THEME" '
+    'dimensionAtObservation="AllDimensions"><common:StructureUsage>'
+    '<Ref agencyID="ESCAP" id="THEME_Dataflow" version="2.10"/>'
+    "</common:StructureUsage></message:Structure></message:Header>"
+)
+NSI_DATASET = '<message:DataSet structureRef="ESCAP_THEME"/>'
+
+
+def nsi_message(body):
+    return (
+        '<?xml version="1.0" encoding="utf-8"?>'
+        "<!--NSI Web Service v10.9.0.0-->"
+        f"<message:GenericData {NSI_NAMESPACES}>{NSI_HEADER}{body}"
+        "</message:GenericData>"
+    )
+
+
+def test_read_header_after_leading_comment():
+    header = read_header(nsi_message(NSI_DATASET), validate=True)
+    assert header.id == "IREF001716"
+    assert header.sender.name == (
+        "Comisión Económica y Social para Asia y el Pacífico"
+    )
+    assert header.structure == {
+        "Dataflow=ESCAP:THEME_Dataflow(2.10)": "AllDimensions"
+    }
+
+
+def test_read_header_ignores_malformed_body():
+    message = nsi_message("<message:DataSet><generic:Obs>")
+    assert read_header(message, validate=False).id == "IREF001716"
+
+
+def test_read_header_validates_whole_message():
+    message = nsi_message(
+        '<message:DataSet structureRef="ESCAP_THEME">'
+        "<message:Unknown/></message:DataSet>"
+    )
+    with pytest.raises(Invalid, match="Unknown': This element is not"):
+        read_header(message, validate=True)
+
+
+def test_read_header_default_namespace():
+    message = (
+        "<GenericData "
+        'xmlns="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message">'
+        "<Header><ID>DEF</ID><Test>false</Test>"
+        "<Prepared>2026-10-27T10:01:55</Prepared>"
+        '<Sender id="ESCAP"/></Header></GenericData>'
+    )
+    assert read_header(message, validate=False).id == "DEF"
+
+
+@pytest.mark.parametrize("body", ["<message:Header/>", NSI_DATASET])
+def test_read_header_without_content_is_none(body):
+    message = (
+        f"<message:GenericData {NSI_NAMESPACES}>{body}</message:GenericData>"
+    )
+    assert read_header(message, validate=False) is None
 
 
 def test_vtl_data_flow_mapping_reader(samples_folder):
