@@ -110,11 +110,11 @@ def test_columns_rows_without_columns():
 
 def test_names():
     names = Names({"urn:a": None, "urn:xsi": "xsi"})
-    assert names("Obs") == "Obs"
-    assert names("{urn:a}Obs") == "Obs"
-    assert names("{urn:a}Obs") == "Obs"
-    assert names("{urn:xsi}type") == "xsi:type"
-    assert names("{urn:other}Obs") == "urn:other:Obs"
+    assert names["Obs"] == "Obs"
+    assert names["{urn:a}Obs"] == "Obs"
+    assert names["{urn:a}Obs"] == "Obs"
+    assert names["{urn:xsi}type"] == "xsi:type"
+    assert names["{urn:other}Obs"] == "urn:other:Obs"
 
 
 @pytest.mark.parametrize(
@@ -234,6 +234,20 @@ def test_generic_other_children_of_a_key_are_ignored():
     assert_same_datasets(
         read_generic(extra, validate=False), read_generic(text)
     )
+
+
+@pytest.mark.parametrize(
+    ("name", "pattern", "key"),
+    [
+        ("gen_ser.xml", r"<generic:ObsDimension[^>]*/>", "ObsDimension"),
+        ("gen_all.xml", r"<generic:ObsKey>.*?</generic:ObsKey>", "ObsKey"),
+    ],
+)
+def test_generic_obs_without_dimension_or_key(name, pattern, key):
+    # As reading the whole message did, with its dictionary lookups
+    text = re.sub(pattern, "", sample(name), count=1, flags=re.DOTALL)
+    with pytest.raises(KeyError, match=key):
+        read_generic(text, validate=False)
 
 
 def test_generic_missing_obs_value():
