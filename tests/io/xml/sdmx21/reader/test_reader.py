@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -1034,77 +1035,73 @@ def test_header_xmlns(samples_folder):
     }
 
 
-NSI_SCHEMA_ROOT = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/"
-NSI_NAMESPACES = (
-    f'xmlns:message="{NSI_SCHEMA_ROOT}message" '
-    f'xmlns:common="{NSI_SCHEMA_ROOT}common" '
-    f'xmlns:generic="{NSI_SCHEMA_ROOT}data/generic"'
-)
-NSI_HEADER = (
-    "<message:Header><message:ID>IREF001716</message:ID>"
-    "<message:Test>true</message:Test>"
-    "<message:Prepared>2026-10-27T10:01:55</message:Prepared>"
-    '<message:Sender id="ESCAP"><common:Name xml:lang="es">'
-    "Comisión Económica y Social para Asia y el Pacífico"
-    "</common:Name></message:Sender>"
-    '<message:Structure structureID="ESCAP_THEME" '
-    'dimensionAtObservation="AllDimensions"><common:StructureUsage>'
-    '<Ref agencyID="ESCAP" id="THEME_Dataflow" version="2.10"/>'
-    "</common:StructureUsage></message:Structure></message:Header>"
-)
-NSI_DATASET = '<message:DataSet structureRef="ESCAP_THEME"/>'
+IO_SAMPLES = Path(__file__).parents[3] / "samples"
 
 
-def nsi_message(body):
-    return (
-        '<?xml version="1.0" encoding="utf-8"?>'
-        "<!--NSI Web Service v10.9.0.0-->"
-        f"<message:GenericData {NSI_NAMESPACES}>{NSI_HEADER}{body}"
-        "</message:GenericData>"
+def split_on_header(sample):
+    """Splits a sample into the text before, of, and after its Header."""
+    text = (IO_SAMPLES / sample).read_text(encoding="utf-8")
+    match = re.fullmatch(
+        r"(.*?)(<(\w+:)?Header>.*?</\3?Header>)(.*)", text, re.DOTALL
     )
+    before, header, _, after = match.groups()
+    return before, header, after
+
+
+def root_end(after):
+    return re.search(r"</[^>]+>\s*$", after).group(0)
 
 
 def test_read_header_after_leading_comment():
-    header = read_header(nsi_message(NSI_DATASET), validate=True)
-    assert header.id == "IREF001716"
-    assert header.sender.name == (
-        "Comisión Económica y Social para Asia y el Pacífico"
-    )
+    message = (IO_SAMPLES / "empty_data_message.xml").read_text("utf-8")
+    assert "?>\n<!--" in message
+
+    header = read_header(message, validate=True)
+
+    assert header.id == "ID"
+    assert header.sender.id == "ZZZ"
     assert header.structure == {
-        "Dataflow=ESCAP:THEME_Dataflow(2.10)": "AllDimensions"
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
     }
 
 
 def test_read_header_ignores_malformed_body():
-    message = nsi_message("<message:DataSet><generic:Obs>")
-    assert read_header(message, validate=False).id == "IREF001716"
+    before, header, _ = split_on_header("data_prov_agree.xml")
+    message = f"{before}{header}<message:DataSet><ss:Obs>"
+
+    result = read_header(message, validate=False)
+
+    assert result.id == "test"
+    assert result.structure == {
+        "ProvisionAgrement=MD:TEST(1.0)": "AllDimensions"
+    }
 
 
 def test_read_header_validates_whole_message():
-    message = nsi_message(
-        '<message:DataSet structureRef="ESCAP_THEME">'
-        "<message:Unknown/></message:DataSet>"
-    )
+    before, header, after = split_on_header("data.xml")
+    message = f"{before}{header}<message:Unknown/>{root_end(after)}"
+
     with pytest.raises(Invalid, match="Unknown': This element is not"):
         read_header(message, validate=True)
 
 
 def test_read_header_default_namespace():
-    message = (
-        "<GenericData "
-        'xmlns="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message">'
-        "<Header><ID>DEF</ID><Test>false</Test>"
-        "<Prepared>2026-10-27T10:01:55</Prepared>"
-        '<Sender id="ESCAP"/></Header></GenericData>'
-    )
-    assert read_header(message, validate=False).id == "DEF"
+    before, header, after = split_on_header("dataset_with_nulls.xml")
+    message = f"{before}{header}{root_end(after)}"
+    message = message.replace("xmlns:mes=", "xmlns=").replace("mes:", "")
+    assert "<Header>" in message
+
+    result = read_header(message, validate=False)
+
+    assert result.id == "032d13d3-fb62-4ac5-b84e-36507c60cba1"
+    assert result.structure == {"Dataflow=Short:Urn(1.0)": "AllDimensions"}
 
 
-@pytest.mark.parametrize("body", ["<message:Header/>", NSI_DATASET])
-def test_read_header_without_content_is_none(body):
-    message = (
-        f"<message:GenericData {NSI_NAMESPACES}>{body}</message:GenericData>"
-    )
+@pytest.mark.parametrize("header", ["<message:Header/>", ""])
+def test_read_header_without_content_is_none(header):
+    before, _, after = split_on_header("data_no_attached.xml")
+    message = f"{before}{header}{after}"
+
     assert read_header(message, validate=False) is None
 
 
