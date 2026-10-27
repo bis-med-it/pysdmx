@@ -22,6 +22,7 @@ PATH_RULES = {
     "/tests/io/csv/sdmx20/writer/": ("data", False),
     "/tests/io/csv/sdmx21/reader/": ("data", True),
     "/tests/io/csv/sdmx21/writer/": ("data", False),
+    "/tests/io/csv/test_csv_stream.py": ("data", True),
     "/tests/io/test_general_reader.py": ("data", False),
     "/tests/io/test_input_processor.py": ("data", True),
     # vtl tests
