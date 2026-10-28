@@ -31,10 +31,6 @@ class _TextChunks(io.TextIOBase):
         self.__text = ""
         self.__position = 0
 
-    def readable(self) -> bool:
-        """Returns True: the stream can be read."""
-        return True
-
     @property
     def mode(self) -> str:
         """Returns "r": the stream is read as text."""
@@ -42,8 +38,7 @@ class _TextChunks(io.TextIOBase):
 
     def read(self, size: Optional[int] = -1) -> str:
         """Reads size characters, or the rest of the text."""
-        if size is None or size < 0:
-            size = sys.maxsize
+        size = sys.maxsize if size is None or size < 0 else size
         end = self.__position + size
         if end > len(self.__text):
             rest = self.__text[self.__position :]
