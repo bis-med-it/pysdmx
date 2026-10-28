@@ -1,4 +1,4 @@
-from io import BytesIO, StringIO
+from io import BytesIO
 from pathlib import Path
 
 import httpx
@@ -7,22 +7,16 @@ import pandas as pd
 import pytest
 
 from pysdmx.io import read_sdmx
-from pysdmx.io.csv.__csv_aux_reader import _TextChunks, read_csv_chunks
 from pysdmx.io.csv.sdmx10 import reader as reader_10
 from pysdmx.io.csv.sdmx20 import reader as reader_20
 from pysdmx.io.csv.sdmx21 import reader as reader_21
 from tests.io.byte_chunks import ByteChunks, split
 
 TESTS = Path(__file__).parents[1]
-CSV_SAMPLES = sorted(TESTS.rglob("*.csv"))
 DATA_V1 = TESTS / "samples" / "data_v1.csv"
 DATA_V2 = TESTS / "csv" / "sdmx20" / "reader" / "samples" / "data_v2.csv"
 DATA_V21 = TESTS / "samples" / "large_csv_2.csv"
 URL = "https://sdmx.example.org/data"
-
-
-def _read_csv(text):
-    return pd.read_csv(StringIO(text), keep_default_na=False, na_values=[])
 
 
 def _assert_same_datasets(actual, expected):
@@ -34,66 +28,6 @@ def _assert_same_datasets(actual, expected):
             fields.pop("data"), other_fields.pop("data")
         )
         assert fields == other_fields
-
-
-def test_text_chunks_reads_the_size_asked():
-    stream = _TextChunks(iter(["ab", "", "cde", "f"]))
-
-    assert stream.readable()
-    assert stream.mode == "r"
-    assert stream.read(3) == "abc"
-    assert stream.read(1) == "d"
-    assert stream.read(0) == ""
-    assert stream.read(5) == "ef"
-    assert stream.read(5) == ""
-
-
-@pytest.mark.parametrize("size", [-1, None])
-def test_text_chunks_reads_the_rest(size):
-    stream = _TextChunks(["ab", "cd", "e"])
-
-    assert stream.read(1) == "a"
-    assert stream.read(size) == "bcde"
-    assert stream.read(size) == ""
-
-
-def test_text_chunks_reads_a_chunk_without_copying_it():
-    text = "x" * 1000 + "y"
-    stream = _TextChunks([text])
-
-    assert stream.read(1000) == "x" * 1000
-    assert stream._TextChunks__text is text
-    assert stream.read() == "y"
-
-
-@pytest.mark.parametrize(
-    "path",
-    CSV_SAMPLES,
-    ids=lambda path: path.relative_to(TESTS).as_posix(),
-)
-def test_read_csv_chunks_same_as_reading_the_text(path):
-    text = path.read_text(encoding="utf-8")
-    expected = _read_csv(text)
-
-    for size in (1, 7, 1000):
-        pd.testing.assert_frame_equal(
-            read_csv_chunks(split(text, size)), expected
-        )
-
-
-def test_read_csv_chunks_line_breaks_within_values():
-    text = (
-        "DATAFLOW,DIM_1,OBS_VALUE,COMMENT\r\n"
-        'BIS:DF(1.0),"A\r\nB",1.50,"x, ""y""\nz"\r\n'
-        "BIS:DF(1.0),C,2,\r\n"
-    )
-    expected = _read_csv(text)
-    assert len(expected) == 2
-
-    for size in (1, 2, 3):
-        pd.testing.assert_frame_equal(
-            read_csv_chunks(split(text, size)), expected
-        )
 
 
 @pytest.mark.parametrize(
@@ -129,6 +63,19 @@ def test_read_sdmx_csv(reader, path, kind):
     _assert_same_datasets(
         message.data, reader.read(path.read_text(encoding="utf-8"))
     )
+
+
+def test_read_sdmx_large_csv_string():
+    # A str is a single chunk, longer than two reads of pandas (256 Ki
+    # characters each): the reads after the first one slice it
+    header, rows = DATA_V1.read_text(encoding="utf-8").split("\n", 1)
+    text = header + "\n" + rows * 8
+    assert len(text) > 2 * 2**18
+
+    message = read_sdmx(text)
+
+    assert message.data[0].data.shape[0] == 8000
+    _assert_same_datasets(message.data, reader_10.read_stream(split(text, 7)))
 
 
 def test_read_sdmx_csv_from_url(respx_mock):

@@ -5,14 +5,12 @@ from pathlib import Path
 
 import httpx
 import pandas as pd
-import pyarrow as pa
 import pytest
 from lxml import etree
 
 import pysdmx.io.xml.__data_aux as data_aux
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
-from pysdmx.io.xml.__data_stream import Columns, Names, _remove
 from pysdmx.io.xml.doc_validation import validate_doc
 from pysdmx.io.xml.header import parse_header
 from pysdmx.io.xml.header import read as read_header
@@ -33,7 +31,6 @@ URL = "https://sdmx.example.org/data"
 FIRST_OBS_21 = (
     '<Obs TIME_PERIOD="2002" OBS_VALUE="" OBS_STATUS="M" OBS_CONF="F"/>'
 )
-STRING = pd.ArrowDtype(pa.string())
 UNKNOWN_IN_HEADER = (
     "</message:Header>",
     "<message:Unknown/></message:Header>",
@@ -59,78 +56,6 @@ def assert_same_datasets(actual, expected):
             e.action,
         )
         pd.testing.assert_frame_equal(a.data, e.data)
-
-
-@pytest.mark.parametrize("fill", ["", None])
-def test_columns_order_and_fill(fill):
-    columns = Columns(fill)
-    columns.add({"A": "1", "B": "2"})
-    columns.add({"C": "3", "A": "4"})
-    columns.add({})
-
-    expected = pd.DataFrame(
-        {
-            "A": ["1", "4", fill],
-            "B": ["2", fill, fill],
-            "C": [fill, "3", fill],
-        },
-        dtype=STRING,
-    )
-    pd.testing.assert_frame_equal(columns.frame(), expected)
-
-
-def test_columns_new_column_in_later_batch(monkeypatch):
-    monkeypatch.setattr(data_aux, "READING_CHUNKSIZE", 2)
-    columns = Columns(None)
-    for value in ("0", "1", "2"):
-        columns.add({"A": value})
-    columns.add({"A": "3", "B": "x"})
-    columns.add({"A": "4"})
-
-    expected = pd.DataFrame(
-        {
-            "A": ["0", "1", "2", "3", "4"],
-            "B": [None, None, None, "x", None],
-        },
-        dtype=STRING,
-    )
-    pd.testing.assert_frame_equal(columns.frame(), expected)
-
-
-def test_columns_empty():
-    pd.testing.assert_frame_equal(Columns("").frame(), pd.DataFrame())
-
-
-def test_columns_rows_without_columns():
-    columns = Columns(None)
-    columns.add({})
-    columns.add({})
-    pd.testing.assert_frame_equal(columns.frame(), pd.DataFrame([{}, {}]))
-
-
-def test_names():
-    names = Names({"urn:a": None, "urn:xsi": "xsi"})
-    assert names["Obs"] == "Obs"
-    assert names["{urn:a}Obs"] == "Obs"
-    assert names["{urn:a}Obs"] == "Obs"
-    assert names["{urn:xsi}type"] == "xsi:type"
-    assert names["{urn:other}Obs"] == "urn:other:Obs"
-
-
-@pytest.mark.parametrize("before", ["", "<a/>"])
-def test_remove_takes_the_text_before_the_element(before):
-    # Before 2.14, libxml2 appends the next text of <s> to a text node
-    # left last as if it had created it, and writes past its end
-    parser = etree.XMLPullParser(events=("end",), tag="o")
-    parser.feed(f"<r><s>{before}\n  <o>{' ' * 50}<v/>{' ' * 70}</o>")
-    for _, element in parser.read_events():
-        _remove(element, element.getparent())
-    parser.feed("\n\n\n</s></r>")
-
-    s = parser.close()[0]
-
-    assert [child.tag for child in s] == (["a"] if before else [])
-    assert "".join(s.itertext()) == "\n\n\n"
 
 
 @pytest.mark.parametrize(
@@ -410,6 +335,18 @@ def test_ss_series_missing_values_are_null():
     data = read_str_spe_21(text)[0].data
     assert pd.isna(data["OBS_CONF"].iloc[0])
     assert data["OBS_CONF"].iloc[1] == "F"
+
+
+def test_ss_attribute_first_reported_in_a_later_batch(monkeypatch):
+    # The rows of the batches already built get a null value
+    monkeypatch.setattr(data_aux, "READING_CHUNKSIZE", 100)
+    text = sample("str_ser.xml")
+    last = text.rindex("<Obs ")
+    late = text[:last] + '<Obs OBS_PRE_BREAK="9" ' + text[last + 5 :]
+    data = read_str_spe_21(late)[0].data
+    assert len(data) == 1000
+    assert data["OBS_PRE_BREAK"].iloc[-1] == "9"
+    assert data["OBS_PRE_BREAK"].iloc[:-1].isna().all()
 
 
 def test_ss_all_dimensions_missing_values_are_empty():
