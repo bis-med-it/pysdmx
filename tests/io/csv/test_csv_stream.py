@@ -143,7 +143,9 @@ def test_read_sdmx_csv_from_url(respx_mock):
 
 
 def test_read_sdmx_invalid_csv_closes_the_url_stream(respx_mock):
-    header, rows = DATA_V1.read_bytes().split(b"\n", 1)
+    # From the text, whose line breaks do not depend on the checkout
+    text = DATA_V1.read_text(encoding="utf-8").encode("utf-8")
+    header, rows = text.split(b"\n", 1)
     lines = rows.split(b"\n")
     lines[9] += b",X"
     body = header + b"\n" + b"\n".join(lines) + rows * 4
