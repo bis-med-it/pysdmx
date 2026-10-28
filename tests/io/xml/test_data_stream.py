@@ -12,7 +12,7 @@ from lxml import etree
 import pysdmx.io.xml.__data_aux as data_aux
 from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx
-from pysdmx.io.xml.__data_stream import Columns, Names
+from pysdmx.io.xml.__data_stream import Columns, Names, _remove
 from pysdmx.io.xml.doc_validation import validate_doc
 from pysdmx.io.xml.header import parse_header
 from pysdmx.io.xml.header import read as read_header
@@ -115,6 +115,22 @@ def test_names():
     assert names["{urn:a}Obs"] == "Obs"
     assert names["{urn:xsi}type"] == "xsi:type"
     assert names["{urn:other}Obs"] == "urn:other:Obs"
+
+
+@pytest.mark.parametrize("before", ["", "<a/>"])
+def test_remove_takes_the_text_before_the_element(before):
+    # Before 2.14, libxml2 appends the next text of <s> to a text node
+    # left last as if it had created it, and writes past its end
+    parser = etree.XMLPullParser(events=("end",), tag="o")
+    parser.feed(f"<r><s>{before}\n  <o>{' ' * 50}<v/>{' ' * 70}</o>")
+    for _, element in parser.read_events():
+        _remove(element, element.getparent())
+    parser.feed("\n\n\n</s></r>")
+
+    s = parser.close()[0]
+
+    assert [child.tag for child in s] == (["a"] if before else [])
+    assert "".join(s.itertext()) == "\n\n\n"
 
 
 @pytest.mark.parametrize(
