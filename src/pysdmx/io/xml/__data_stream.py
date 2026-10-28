@@ -269,7 +269,7 @@ class _MessageReader:
     def __discard(event: str, element: etree._Element) -> None:
         parent = element.getparent()
         if event == "end" and parent is not None:
-            parent.remove(element)
+            _remove(element, parent)
 
     def __dispatch(self, event: str, element: etree._Element) -> None:
         current = self.__current
@@ -299,7 +299,7 @@ class _MessageReader:
                 self.__message[HEADER] = item
                 if element.getprevious() is None:
                     self.__header = item
-                parent.remove(element)
+                _remove(element, parent)
         elif element.tag.rpartition("}")[2] == DATASET:
             if event == "start":
                 self.__start_dataset(element)
@@ -307,7 +307,7 @@ class _MessageReader:
                 current = cast(DataSetReader, self.__current)
                 self.__datasets.append(current.finish(element))
                 self.__current = None
-                parent.remove(element)
+                _remove(element, parent)
 
     def __dataset_child(
         self, event: str, element: etree._Element, current: DataSetReader
@@ -321,19 +321,19 @@ class _MessageReader:
             else:
                 parent = cast(etree._Element, element.getparent())
                 current.obs(element, names[parent.tag] == SERIES)
-                parent.remove(element)
+                _remove(element, parent)
         elif name == SERIES:
             if event == "start":
                 current.series_start(element)
             else:
                 current.series_end(element)
-                cast(etree._Element, element.getparent()).remove(element)
+                _remove(element, cast(etree._Element, element.getparent()))
         elif name == GROUP:
             if event == "start":
                 self.__ignored_starts.add(element.tag)
             else:
                 current.group(element)
-                cast(etree._Element, element.getparent()).remove(element)
+                _remove(element, cast(etree._Element, element.getparent()))
         else:
             return False
         return True
@@ -374,6 +374,23 @@ class _MessageReader:
 
 def _schema_errors(log: Any) -> List[str]:
     return [entry.message for entry in log if entry.domain_name == "SCHEMASV"]
+
+
+def _remove(element: etree._Element, parent: etree._Element) -> None:
+    """Removes an element whose end has been parsed, and the text before it.
+
+    Before 2.14, libxml2 appends the next text of an element to its last
+    child, if that is a text node, as if it were the text node the parser
+    created last, whose length and size it keeps. Removing the element
+    alone could leave the text before it as the last child, and the parser
+    would then write past the end of that text and corrupt the heap.
+    """
+    previous = element.getprevious()
+    if previous is None:
+        parent.text = None
+    else:
+        previous.tail = None
+    parent.remove(element)
 
 
 class _WellFormed:
