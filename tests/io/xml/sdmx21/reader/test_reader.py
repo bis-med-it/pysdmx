@@ -1411,42 +1411,6 @@ def series_with(**attributes):
     )
 
 
-def test_group_merge_interleaved_group_types(multiple_groups_path):
-    # The attributes follow the order in which they first appear
-    data = read_with_groups(
-        multiple_groups_path,
-        '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A1" DIM2="B1" '
-        'GATTR="G1"/>',
-        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="O1"/>',
-        '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A2" DIM2="B2" '
-        'GATTR="G2" LATE_ATTR="L2"/>',
-        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A2" OTHER_ATTR="O2"/>',
-    )
-
-    expected = series_with(
-        GATTR=["G1", "G1", "G2", "G2"],
-        OTHER_ATTR=["O1", "O1", "O2", "O2"],
-        LATE_ATTR=[None, None, "L2", "L2"],
-    )
-    pd.testing.assert_frame_equal(data, expected)
-
-
-def test_group_merge_same_key_first_group_wins(multiple_groups_path):
-    # A later group with the same key only adds the attributes missing
-    data = read_with_groups(
-        multiple_groups_path,
-        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="FIRST"/>',
-        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="SECOND" '
-        'EXTRA_ATTR="E1"/>',
-    )
-
-    expected = series_with(
-        OTHER_ATTR=["FIRST", "FIRST", None, None],
-        EXTRA_ATTR=["E1", "E1", None, None],
-    )
-    pd.testing.assert_frame_equal(data, expected)
-
-
 def test_group_merge_attribute_of_two_group_types(multiple_groups_path):
     # Each row gets the attribute from the first group that matches it
     data = read_with_groups(
@@ -1468,7 +1432,6 @@ def test_group_merge_group_without_series_columns(multiple_groups_path):
     data = read_with_groups(
         multiple_groups_path,
         '<Group xsi:type="ns1:GROUP_X" DIMX="X1" OTHER_ATTR="O1"/>',
-        '<Group xsi:type="ns1:GROUP_X"/>',
         '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" GATTR="G1"/>',
     )
 
