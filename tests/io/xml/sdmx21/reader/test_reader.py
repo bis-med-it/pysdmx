@@ -1463,6 +1463,23 @@ def test_group_merge_attribute_of_two_group_types(multiple_groups_path):
     pd.testing.assert_frame_equal(data, expected)
 
 
+def test_group_merge_group_without_series_columns(multiple_groups_path):
+    # Such a group matches no row, as a group whose key no series has
+    data = read_with_groups(
+        multiple_groups_path,
+        '<Group xsi:type="ns1:GROUP_X" DIMX="X1" OTHER_ATTR="O1"/>',
+        '<Group xsi:type="ns1:GROUP_X"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" GATTR="G1"/>',
+    )
+
+    expected = series_with(
+        DIMX=[None, None, None, None],
+        OTHER_ATTR=[None, None, None, None],
+        GATTR=["G1", "G1", None, None],
+    )
+    pd.testing.assert_frame_equal(data, expected)
+
+
 def test_constraint_with_cube_region(samples_folder):
     data_path = samples_folder / "constraint_cube.xml"
     input_str, read_format = process_string_to_read(data_path)

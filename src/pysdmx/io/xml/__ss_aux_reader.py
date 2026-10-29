@@ -3,6 +3,7 @@
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import pandas as pd
+import pyarrow as pa
 from lxml import etree
 
 from pysdmx.io.pd import PandasDataset
@@ -20,7 +21,8 @@ def _batches(groups: List[Row], columns: List[str]) -> List[Batch]:
     The key columns of a group are its columns that the series have, and
     its other columns are its attributes. A batch has groups with the
     same key columns, as one row per key: the values of the key columns,
-    and each attribute from the first of these groups that has it.
+    and each attribute from the first of these groups that has it. A
+    group without key columns matches no row, so it is in no batch.
 
     A row keeps the first value it gets for an attribute, so the batches
     must set each attribute in the order of the groups: a group joins the
@@ -34,6 +36,8 @@ def _batches(groups: List[Row], columns: List[str]) -> List[Batch]:
     setting: Dict[str, int] = {}
     for group in groups:
         keys = tuple(column for column in columns if column in group)
+        if not keys:
+            continue
         attributes = [name for name in group if name not in keys]
         index = with_keys.get(keys)
         if index is None or any(
@@ -53,9 +57,9 @@ def _merge_groups(df: pd.DataFrame, groups: List[Row]) -> pd.DataFrame:
     """Merges the attributes of the groups into the series.
 
     A row gets each attribute from the first group that has it, among the
-    groups with the values of the row in their key columns. The attributes
-    follow the columns of the series, in the order they first appear in
-    the groups.
+    groups with the values of the row in their key columns. A group
+    without key columns matches no row. The attributes follow the columns
+    of the series, in the order they first appear in the groups.
     """
     columns = df.columns.tolist()
     for keys, rows in _batches(groups, columns):
@@ -78,7 +82,13 @@ def _merge_groups(df: pd.DataFrame, groups: List[Row]) -> pd.DataFrame:
     attributes = dict.fromkeys(
         name for group in groups for name in group if name not in series
     )
-    return df[columns + list(attributes)]
+    # Attributes set only by groups without key columns
+    nulls = {
+        name: pd.arrays.ArrowExtensionArray(pa.nulls(len(df), pa.string()))
+        for name in attributes
+        if name not in df.columns
+    }
+    return df.assign(**nulls)[columns + list(attributes)]
 
 
 class _StructureSpecificDataSet:
