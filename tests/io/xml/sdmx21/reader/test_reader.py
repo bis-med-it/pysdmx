@@ -1389,6 +1389,95 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
     )
 
 
+def read_with_groups(path, *groups):
+    # Reads the sample of multiple_groups_path with these Group elements
+    text = path.read_text(encoding="utf-8")
+    start = text.index("<Group ")
+    end = text.index("<Series ")
+    message = text[:start] + "".join(groups) + text[end:]
+    return read_sdmx(message, validate=True).data[0].data
+
+
+def series_with(**attributes):
+    return pd.DataFrame(
+        {
+            "DIM1": ["A1", "A1", "A2", "A2"],
+            "DIM2": ["B1", "B1", "B2", "B2"],
+            "TIME_PERIOD": ["2010", "2011", "2010", "2011"],
+            "OBS_VALUE": ["1.0", "2.0", "3.0", "4.0"],
+            **attributes,
+        },
+        dtype=pd.ArrowDtype(pa.string()),
+    )
+
+
+def test_group_merge_interleaved_group_types(multiple_groups_path):
+    # The attributes follow the order in which they first appear
+    data = read_with_groups(
+        multiple_groups_path,
+        '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A1" DIM2="B1" '
+        'GATTR="G1"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="O1"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A2" DIM2="B2" '
+        'GATTR="G2" LATE_ATTR="L2"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A2" OTHER_ATTR="O2"/>',
+    )
+
+    expected = series_with(
+        GATTR=["G1", "G1", "G2", "G2"],
+        OTHER_ATTR=["O1", "O1", "O2", "O2"],
+        LATE_ATTR=[None, None, "L2", "L2"],
+    )
+    pd.testing.assert_frame_equal(data, expected)
+
+
+def test_group_merge_same_key_first_group_wins(multiple_groups_path):
+    # A later group with the same key only adds the attributes missing
+    data = read_with_groups(
+        multiple_groups_path,
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="FIRST"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="SECOND" '
+        'EXTRA_ATTR="E1"/>',
+    )
+
+    expected = series_with(
+        OTHER_ATTR=["FIRST", "FIRST", None, None],
+        EXTRA_ATTR=["E1", "E1", None, None],
+    )
+    pd.testing.assert_frame_equal(data, expected)
+
+
+def test_group_merge_attribute_of_two_group_types(multiple_groups_path):
+    # Each row gets the attribute from the first group that matches it
+    data = read_with_groups(
+        multiple_groups_path,
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" SHARED_ATTR="G1"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A2" DIM2="B2" '
+        'SHARED_ATTR="G2"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A1" DIM2="B1" '
+        'SHARED_ATTR="G3"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A2" SHARED_ATTR="G4"/>',
+    )
+
+    expected = series_with(SHARED_ATTR=["G1", "G1", "G2", "G2"])
+    pd.testing.assert_frame_equal(data, expected)
+
+
+def test_group_merge_attribute_ending_in_drop(multiple_groups_path):
+    # Not taken for the suffix of a column renamed by the merge
+    data = read_with_groups(
+        multiple_groups_path,
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="O1" '
+        'OTHER_ATTR_drop="D1"/>',
+    )
+
+    expected = series_with(
+        OTHER_ATTR=["O1", "O1", None, None],
+        OTHER_ATTR_drop=["D1", "D1", None, None],
+    )
+    pd.testing.assert_frame_equal(data, expected)
+
+
 def test_constraint_with_cube_region(samples_folder):
     data_path = samples_folder / "constraint_cube.xml"
     input_str, read_format = process_string_to_read(data_path)
