@@ -14,6 +14,8 @@ from pysdmx.io.json.sdmxjson2.messages.constraint import (
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
 from pysdmx.io.json.sdmxjson2.messages.provider import JsonDataProviderScheme
@@ -128,6 +130,7 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             structure=dsd,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
             obs_count=obs_count,
@@ -170,6 +173,7 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in df.annotations]
             ),
+            links=_self_link(df.structure_url),
             structure=dsdref,
         )
 

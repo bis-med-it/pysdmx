@@ -11,6 +11,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     JsonHeader,
     JsonTextFormat,
+    _self_link,
+    _self_link_href,
     get_facets,
 )
 from pysdmx.model import Agency
@@ -87,6 +89,7 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
             version=self.version,
             agency=self.agency,
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             metadataflow=self.metadataflow,
             targets=tuple(self.targets),
             attributes=tuple(attrs),
@@ -118,6 +121,7 @@ class JsonMetadataReport(ItemSchemeType, frozen=True, omit_defaults=True):
             name=report.name,
             version=report.version,
             isExternalReference=report.is_external_reference,
+            links=_self_link(report.structure_url),
             validFrom=ensure_tz_aware(report.valid_from),
             validTo=ensure_tz_aware(report.valid_to),
             description=report.description,

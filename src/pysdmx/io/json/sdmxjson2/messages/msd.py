@@ -11,6 +11,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     JsonRepresentation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.io.json.sdmxjson2.messages.dsd import (
     _find_concept,
@@ -187,6 +189,7 @@ class JsonMetadataStructure(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
@@ -211,6 +214,7 @@ class JsonMetadataStructure(MaintainableType, frozen=True, omit_defaults=True):
             name=msd.name,
             version=msd.version,
             isExternalReference=msd.is_external_reference,
+            links=_self_link(msd.structure_url),
             validFrom=ensure_tz_aware(msd.valid_from),
             validTo=ensure_tz_aware(msd.valid_to),
             description=msd.description,

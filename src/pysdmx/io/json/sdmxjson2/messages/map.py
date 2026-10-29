@@ -9,6 +9,8 @@ from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import (
     Agency,
@@ -142,6 +144,7 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
                 version=self.version,
                 is_final=is_final(self.version),
                 is_external_reference=self.isExternalReference,
+                structure_url=_self_link_href(self.links),
             )
         else:
             return RepresentationMap(
@@ -155,6 +158,7 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
                 version=self.version,
                 is_final=is_final(self.version),
                 is_external_reference=self.isExternalReference,
+                structure_url=_self_link_href(self.links),
             )
 
     @classmethod
@@ -190,6 +194,7 @@ class JsonRepresentationMap(MaintainableType, frozen=True, omit_defaults=True):
             name=rm.name,
             version=rm.version,
             isExternalReference=rm.is_external_reference,
+            links=_self_link(rm.structure_url),
             validFrom=ensure_tz_aware(rm.valid_from),
             validTo=ensure_tz_aware(rm.valid_to),
             description=rm.description,
@@ -373,6 +378,7 @@ class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
@@ -398,6 +404,7 @@ class JsonStructureMap(MaintainableType, frozen=True, omit_defaults=True):
             name=sm.name,
             version=sm.version,
             isExternalReference=sm.is_external_reference,
+            links=_self_link(sm.structure_url),
             validFrom=ensure_tz_aware(sm.valid_from),
             validTo=ensure_tz_aware(sm.valid_to),
             description=sm.description,
