@@ -248,7 +248,8 @@ def mock_http_client(monkeypatch, structures_path):
         status_code=200,
         text=xml_text,
         raise_for_status=lambda: None,
-        iter_text=lambda: iter([xml_text]),
+        encoding="utf-8",
+        iter_bytes=lambda: iter([xml_text.encode("utf-8")]),
     )
 
     class DummyClient:
