@@ -11,45 +11,74 @@ from pysdmx.io.xml.__tokens import EXCLUDED_ATTRIBUTES
 from pysdmx.model.dataset import ActionType
 
 Row = Dict[str, Optional[str]]
+Batch = Tuple[Tuple[str, ...], Dict[Tuple[Optional[str], ...], Row]]
 
 
-def _merge_groups(
-    df: pd.DataFrame, group_dfs: List[pd.DataFrame]
-) -> pd.DataFrame:
-    """Merges the attributes of the groups into the series."""
-    original_columns = df.columns.tolist()
-    for group_df in group_dfs:
-        # Find non-NaN columns in this group
-        non_nan_cols = [
-            col for col in group_df.columns if not group_df[col].isna().all()
+def _batches(groups: List[Row], columns: List[str]) -> List[Batch]:
+    """Splits the groups into batches that can be merged at once.
+
+    The key columns of a group are its columns that the series have, and
+    its other columns are its attributes. A batch has groups with the
+    same key columns, as one row per key: the values of the key columns,
+    and each attribute from the first of these groups that has it.
+
+    A row keeps the first value it gets for an attribute, so the batches
+    must set each attribute in the order of the groups: a group joins the
+    last batch with its key columns, unless a later batch sets one of its
+    attributes.
+    """
+    batches: List[Batch] = []
+    # The index of the last batch with some key columns, or setting an
+    # attribute
+    with_keys: Dict[Tuple[str, ...], int] = {}
+    setting: Dict[str, int] = {}
+    for group in groups:
+        keys = tuple(column for column in columns if column in group)
+        attributes = [name for name in group if name not in keys]
+        index = with_keys.get(keys)
+        if index is None or any(
+            setting.get(name, index) > index for name in attributes
+        ):
+            index = with_keys[keys] = len(batches)
+            batches.append((keys, {}))
+        values = tuple(group[key] for key in keys)
+        row = batches[index][1].setdefault(values, dict(zip(keys, values)))
+        for name in attributes:
+            row.setdefault(name, group[name])
+            setting[name] = index
+    return batches
+
+
+def _merge_groups(df: pd.DataFrame, groups: List[Row]) -> pd.DataFrame:
+    """Merges the attributes of the groups into the series.
+
+    A row gets each attribute from the first group that has it, among the
+    groups with the values of the row in their key columns. The attributes
+    follow the columns of the series, in the order they first appear in
+    the groups.
+    """
+    columns = df.columns.tolist()
+    for keys, rows in _batches(groups, columns):
+        frame = Columns(None)
+        for row in rows.values():
+            frame.add(row)
+        batch = frame.frame()
+        # A row keeps the attributes that an earlier batch has set
+        filled = [
+            name
+            for name in batch.columns
+            if name in df.columns and name not in keys
         ]
-
-        # Merge keys are intersection of original and non-NaN cols
-        merge_cols = list(
-            set(original_columns).intersection(set(non_nan_cols))
-        )
-
-        group_df = group_df.drop_duplicates(merge_cols, keep="first")
         df = pd.merge(
-            df,
-            group_df,
-            on=merge_cols,
-            how="left",
-            suffixes=("", "_drop"),
+            df, batch, on=list(keys), how="left", suffixes=("", "_drop")
         )
-        for col in list(df.columns):
-            if col.endswith("_drop"):
-                original = col[:-5]
-                df[original] = df[original].fillna(df[col])
-                df.drop(col, axis=1, inplace=True)
-    return df
-
-
-def _group_frame(group: Row) -> pd.DataFrame:
-    """Returns the single-row frame of a group, without the :type columns."""
-    columns = Columns(None)
-    columns.add({k: v for k, v in group.items() if ":type" not in k})
-    return columns.frame()
+        for name in filled:
+            df[name] = df[name].fillna(df.pop(f"{name}_drop"))
+    series = set(columns)
+    attributes = dict.fromkeys(
+        name for group in groups for name in group if name not in series
+    )
+    return df[columns + list(attributes)]
 
 
 class _StructureSpecificDataSet:
@@ -88,15 +117,20 @@ class _StructureSpecificDataSet:
             self.__observations.add(dict(self.__names.attributes(obs)))
 
     def group(self, group: etree._Element) -> None:
-        self.__groups.append(dict(self.__names.attributes(group)))
+        self.__groups.append(
+            {
+                name: value
+                for name, value in self.__names.attributes(group).items()
+                if ":type" not in name
+            }
+        )
 
     def finish(self, dataset: etree._Element) -> PandasDataset:
         if self.__has_series:
             # Structure Specific Series
             df = self.__series.frame()
             if self.__groups:
-                group_dfs = [_group_frame(group) for group in self.__groups]
-                df = _merge_groups(df, group_dfs)
+                df = _merge_groups(df, self.__groups)
         else:
             # Structure Specific All dimensions
             df = self.__observations.frame()
