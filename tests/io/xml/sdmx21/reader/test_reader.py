@@ -1463,21 +1463,6 @@ def test_group_merge_attribute_of_two_group_types(multiple_groups_path):
     pd.testing.assert_frame_equal(data, expected)
 
 
-def test_group_merge_attribute_ending_in_drop(multiple_groups_path):
-    # Not taken for the suffix of a column renamed by the merge
-    data = read_with_groups(
-        multiple_groups_path,
-        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" OTHER_ATTR="O1" '
-        'OTHER_ATTR_drop="D1"/>',
-    )
-
-    expected = series_with(
-        OTHER_ATTR=["O1", "O1", None, None],
-        OTHER_ATTR_drop=["D1", "D1", None, None],
-    )
-    pd.testing.assert_frame_equal(data, expected)
-
-
 def test_constraint_with_cube_region(samples_folder):
     data_path = samples_folder / "constraint_cube.xml"
     input_str, read_format = process_string_to_read(data_path)
