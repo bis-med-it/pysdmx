@@ -18,7 +18,11 @@ from pysdmx.io.json.sdmxjson2.messages.consumer import (
 )
 from pysdmx.io.json.sdmxjson2.messages.core import JsonLink
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
-from pysdmx.io.json.sdmxjson2.messages.dsd import JsonDataStructure
+from pysdmx.io.json.sdmxjson2.messages.dsd import (
+    JsonComponents,
+    JsonDataStructure,
+    JsonDimensions,
+)
 from pysdmx.io.json.sdmxjson2.messages.map import (
     JsonRepresentationMap,
     JsonStructureMap,
@@ -27,7 +31,10 @@ from pysdmx.io.json.sdmxjson2.messages.metadataflow import JsonMetadataflow
 from pysdmx.io.json.sdmxjson2.messages.mpa import (
     JsonMetadataProvisionAgreement,
 )
-from pysdmx.io.json.sdmxjson2.messages.msd import JsonMetadataStructure
+from pysdmx.io.json.sdmxjson2.messages.msd import (
+    JsonMetadataComponents,
+    JsonMetadataStructure,
+)
 from pysdmx.io.json.sdmxjson2.messages.pa import JsonProvisionAgreement
 from pysdmx.io.json.sdmxjson2.messages.provider import (
     JsonDataProviderScheme,
@@ -126,7 +133,7 @@ _STUB_URL = "https://example.test/structure/TEST/STUB/1.0"
         pytest.param(
             JsonDataStructure,
             ((), (), (), ()),
-            {},
+            {"dataStructureComponents": JsonComponents(JsonDimensions())},
             "STUB",
             "Stub artefact",
             id="data-structure",
@@ -166,7 +173,7 @@ _STUB_URL = "https://example.test/structure/TEST/STUB/1.0"
         pytest.param(
             JsonMetadataStructure,
             ((), (), ()),
-            {},
+            {"metadataStructureComponents": JsonMetadataComponents()},
             "STUB",
             "Stub artefact",
             id="metadata-structure",
