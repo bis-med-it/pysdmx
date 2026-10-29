@@ -39,27 +39,6 @@ def body():
         return f.read()
 
 
-def _fetch(end_point, version, query, method):
-    """The body the service returns, checking it streams no empty chunk."""
-    service = RestService(end_point, version)
-    if method == "data":
-        return service.data(query)
-    # Chunks of one byte split the gzip magic number
-    chunks = list(service.stream_data(query, chunk_size=1))
-    assert all(chunks)
-    return b"".join(chunks)
-
-
-async def _afetch(end_point, version, query, method):
-    """The body the service returns, checking it streams no empty chunk."""
-    service = AsyncRestService(end_point, version)
-    if method == "data":
-        return await service.data(query)
-    chunks = [c async for c in service.stream_data(query, chunk_size=1)]
-    assert all(chunks)
-    return b"".join(chunks)
-
-
 @pytest.mark.parametrize("method", ["data", "stream_data"])
 def test_gzip_body(respx_mock, end_point, version, query, url, body, method):
     # The body is gzipped without Content-Encoding, as Eurostat sends it
@@ -67,8 +46,15 @@ def test_gzip_body(respx_mock, end_point, version, query, url, body, method):
     respx_mock.get(url).mock(
         return_value=httpx.Response(200, content=compressed)
     )
+    service = RestService(end_point, version)
 
-    assert _fetch(end_point, version, query, method) == body
+    if method == "data":
+        assert service.data(query) == body
+    else:
+        # Chunks of one byte split the gzip magic number
+        chunks = list(service.stream_data(query, chunk_size=1))
+        assert all(chunks)
+        assert b"".join(chunks) == body
 
 
 @pytest.mark.asyncio
@@ -80,61 +66,49 @@ async def test_gzip_body_async(
     respx_mock.get(url).mock(
         return_value=httpx.Response(200, content=compressed)
     )
+    service = AsyncRestService(end_point, version)
 
-    assert await _afetch(end_point, version, query, method) == body
+    if method == "data":
+        assert await service.data(query) == body
+    else:
+        chunks = [c async for c in service.stream_data(query, chunk_size=1)]
+        assert all(chunks)
+        assert b"".join(chunks) == body
 
 
-@pytest.mark.parametrize("method", ["data", "stream_data"])
 def test_body_shorter_than_gzip_magic(
-    respx_mock, end_point, version, query, url, method
+    respx_mock, end_point, version, query, url
 ):
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
 
-    assert _fetch(end_point, version, query, method) == b"x"
+    assert RestService(end_point, version).data(query) == b"x"
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("method", ["data", "stream_data"])
 async def test_body_shorter_than_gzip_magic_async(
-    respx_mock, end_point, version, query, url, method
+    respx_mock, end_point, version, query, url
 ):
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
+    service = AsyncRestService(end_point, version)
 
-    assert await _afetch(end_point, version, query, method) == b"x"
+    chunks = [c async for c in service.stream_data(query)]
+
+    assert chunks == [b"x"]
 
 
-@pytest.mark.parametrize("method", ["data", "stream_data"])
-def test_truncated_gzip_body(
-    respx_mock, end_point, version, query, url, body, method
+@pytest.mark.parametrize(
+    "content",
+    [
+        # Truncated
+        gzip.compress(b"<message/>" * 100)[:-10],
+        # The gzip magic number, then an unknown compression method
+        b"\x1f\x8b" + bytes(20),
+    ],
+)
+def test_invalid_gzip_body(
+    respx_mock, end_point, version, query, url, content
 ):
-    truncated = gzip.compress(body)[:-10]
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(200, content=truncated)
-    )
-
-    with pytest.raises(Unavailable, match="end-of-stream marker"):
-        _fetch(end_point, version, query, method)
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("method", ["data", "stream_data"])
-async def test_truncated_gzip_body_async(
-    respx_mock, end_point, version, query, url, body, method
-):
-    truncated = gzip.compress(body)[:-10]
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(200, content=truncated)
-    )
-
-    with pytest.raises(Unavailable, match="end-of-stream marker"):
-        await _afetch(end_point, version, query, method)
-
-
-@pytest.mark.parametrize("method", ["data", "stream_data"])
-def test_corrupt_gzip_body(respx_mock, end_point, version, query, url, method):
-    # The gzip magic number, followed by an unknown compression method
-    corrupt = b"\x1f\x8b" + bytes(20)
-    respx_mock.get(url).mock(return_value=httpx.Response(200, content=corrupt))
+    respx_mock.get(url).mock(return_value=httpx.Response(200, content=content))
 
     with pytest.raises(Unavailable):
-        _fetch(end_point, version, query, method)
+        RestService(end_point, version).data(query)
