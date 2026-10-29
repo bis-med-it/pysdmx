@@ -4,9 +4,7 @@ import codecs
 import contextlib
 import csv
 import gzip
-import itertools
 import os.path
-import zlib
 from io import BytesIO, StringIO, TextIOWrapper
 from os import PathLike
 from pathlib import Path
@@ -29,13 +27,12 @@ from httpx import HTTPStatusError, create_ssl_context
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
 from pysdmx.util import map_httpx_errors
+from pysdmx.util._net_utils import GZIP_MAGIC, decompress_gzip
 
 SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
 SCHEMA_ROOT_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
 # Characters read at a time from a file or a BytesIO
 READ_CHUNK_CHARS = 65536
-# First bytes of a gzip stream
-GZIP_MAGIC = b"\x1f\x8b"
 
 
 def __remove_bom(input_string: str) -> str:
@@ -212,41 +209,11 @@ def __string_chunks(text: str) -> Generator[str, None, None]:
     yield __remove_bom(text)
 
 
-def __gunzip(chunks: Iterable[bytes]) -> Generator[bytes, None, None]:
-    """Decompresses the chunks of a gzip stream, member after member."""
-    decompressor = None
-    for chunk in chunks:
-        while chunk:
-            if decompressor is None:
-                decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
-            yield decompressor.decompress(chunk)
-            chunk = decompressor.unused_data
-            if decompressor.eof:
-                decompressor = None
-    if decompressor is not None:
-        raise EOFError(
-            "Compressed file ended before the end-of-stream marker was reached"
-        )
-
-
-def __decompress(chunks: Iterator[bytes]) -> Iterator[bytes]:
-    """Decompresses the chunks if their first bytes are a gzip stream's."""
-    head = b""
-    for chunk in chunks:
-        head += chunk
-        if len(head) >= len(GZIP_MAGIC):
-            break
-    chunks = itertools.chain([head], chunks)
-    return __gunzip(chunks) if head.startswith(GZIP_MAGIC) else chunks
-
-
 def __body_chunks(
-    chunks: Iterator[bytes], encoding: str
+    chunks: Iterable[bytes], encoding: str
 ) -> Generator[str, None, None]:
-    """Decompresses an HTTP body if gzipped, then decodes it as iter_text."""
-    for text in codecs.iterdecode(
-        __decompress(chunks), encoding, errors="replace"
-    ):
+    """Decodes the chunks of an HTTP body as httpx's iter_text does."""
+    for text in codecs.iterdecode(chunks, encoding, errors="replace"):
         yield __remove_bom(text)
 
 
@@ -281,7 +248,8 @@ def __url_chunks(
             # The body is decoded from its Content-Encoding by httpx, but
             # some services (e.g. Eurostat) send a gzip body without one
             yield from __body_chunks(
-                response.iter_bytes(), response.encoding or "utf-8"
+                decompress_gzip(response.iter_bytes(), response.request),
+                response.encoding or "utf-8",
             )
     except Exception as e:
         raise Invalid(
