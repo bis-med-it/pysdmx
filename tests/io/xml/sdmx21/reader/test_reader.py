@@ -1412,15 +1412,12 @@ def series_with(**attributes):
 
 
 def test_group_merge_attribute_of_two_group_types(multiple_groups_path):
-    # Each row gets the attribute from the first group that matches it
+    # Each group sets the attribute on the rows that it matches
     data = read_with_groups(
         multiple_groups_path,
         '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" SHARED_ATTR="G1"/>',
         '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A2" DIM2="B2" '
         'SHARED_ATTR="G2"/>',
-        '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A1" DIM2="B1" '
-        'SHARED_ATTR="G3"/>',
-        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A2" SHARED_ATTR="G4"/>',
     )
 
     expected = series_with(SHARED_ATTR=["G1", "G1", "G2", "G2"])

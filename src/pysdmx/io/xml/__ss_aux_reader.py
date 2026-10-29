@@ -12,57 +12,43 @@ from pysdmx.io.xml.__tokens import EXCLUDED_ATTRIBUTES
 from pysdmx.model.dataset import ActionType
 
 Row = Dict[str, Optional[str]]
-Batch = Tuple[Tuple[str, ...], Dict[Tuple[Optional[str], ...], Row]]
+Batch = Dict[Tuple[Optional[str], ...], Row]
 
 
-def _batches(groups: List[Row], columns: List[str]) -> List[Batch]:
+def _batches(
+    groups: List[Row], columns: List[str]
+) -> Dict[Tuple[str, ...], Batch]:
     """Splits the groups into batches that can be merged at once.
 
     The key columns of a group are its columns that the series have, and
-    its other columns are its attributes. A batch has groups with the
+    its other columns are its attributes. A batch has the groups with the
     same key columns, as one row per key: the values of the key columns,
-    and each attribute from the first of these groups that has it. A
+    and each attribute from the first of these groups that has it. The
+    batches follow the order in which their key columns first appear. A
     group without key columns matches no row, so it is in no batch.
-
-    A row keeps the first value it gets for an attribute, so the batches
-    must set each attribute in the order of the groups: a group joins the
-    last batch with its key columns, unless a later batch sets one of its
-    attributes.
     """
-    batches: List[Batch] = []
-    # The index of the last batch with some key columns, or setting an
-    # attribute
-    with_keys: Dict[Tuple[str, ...], int] = {}
-    setting: Dict[str, int] = {}
+    batches: Dict[Tuple[str, ...], Batch] = {}
     for group in groups:
         keys = tuple(column for column in columns if column in group)
         if not keys:
             continue
-        attributes = [name for name in group if name not in keys]
-        index = with_keys.get(keys)
-        if index is None or any(
-            setting.get(name, index) > index for name in attributes
-        ):
-            index = with_keys[keys] = len(batches)
-            batches.append((keys, {}))
         values = tuple(group[key] for key in keys)
-        row = batches[index][1].setdefault(values, dict(zip(keys, values)))
-        for name in attributes:
-            row.setdefault(name, group[name])
-            setting[name] = index
+        row = batches.setdefault(keys, {}).setdefault(values, {})
+        for name, value in group.items():
+            row.setdefault(name, value)
     return batches
 
 
 def _merge_groups(df: pd.DataFrame, groups: List[Row]) -> pd.DataFrame:
     """Merges the attributes of the groups into the series.
 
-    A row gets each attribute from the first group that has it, among the
-    groups with the values of the row in their key columns. A group
-    without key columns matches no row. The attributes follow the columns
-    of the series, in the order they first appear in the groups.
+    The batches of groups are merged in their order, and a row keeps the
+    first value it gets for an attribute. A group without key columns
+    matches no row. The attributes follow the columns of the series, in
+    the order they first appear in the groups.
     """
     columns = df.columns.tolist()
-    for keys, rows in _batches(groups, columns):
+    for keys, rows in _batches(groups, columns).items():
         frame = Columns(None)
         for row in rows.values():
             frame.add(row)
