@@ -1,10 +1,13 @@
 """SDMX 2.1 XML Header reader module."""
 
+import contextlib
 import warnings
 from datetime import datetime
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from pysdmx.io.xml.__parse_xml import parse_xml
+import xmltodict
+
+from pysdmx.io.xml.__parse_xml import xml_options
 from pysdmx.io.xml.__tokens import (
     AGENCY_ID,
     DATASET_ACTION,
@@ -12,9 +15,6 @@ from pysdmx.io.xml.__tokens import (
     DFW,
     DIM_OBS,
     DSD,
-    GENERIC,
-    GENERIC_METADATA,
-    GENERIC_TS,
     HEADER,
     HEADER_ID,
     ID,
@@ -26,14 +26,13 @@ from pysdmx.io.xml.__tokens import (
     REF,
     SENDER,
     SOURCE,
-    STR_SPE,
-    STR_SPE_TS,
     STR_USAGE,
     STRUCTURE,
     TEST,
     URN,
     VERSION,
 )
+from pysdmx.io.xml.doc_validation import validate_doc
 from pysdmx.io.xml.utils import add_list
 from pysdmx.model import Organisation, Reference
 from pysdmx.model.dataset import ActionType
@@ -197,30 +196,55 @@ def __parse_header(header: Dict[str, Any]) -> Header:
     return Header(**dict_header)  # type: ignore[arg-type]
 
 
+def __read_header_element(input_str: str) -> Optional[Dict[str, Any]]:
+    """Parses the message Header, without parsing the rest of the message.
+
+    The Header is always the first child of the message root, so parsing
+    stops after that child.
+
+    Args:
+        input_str: The SDMX-ML message.
+
+    Returns:
+        The parsed Header, or None if the first child of the root is not a
+        Header or has no content.
+    """
+    header: List[Dict[str, Any]] = []
+
+    def first_child(path: List[Tuple[str, Any]], item: Any) -> bool:
+        if path[-1][0] == HEADER and isinstance(item, dict):
+            header.append(item)
+        return False  # Stops parsing after the first child of the root
+
+    with contextlib.suppress(xmltodict.ParsingInterrupted):
+        xmltodict.parse(
+            input_str,
+            item_depth=2,
+            item_callback=first_child,
+            **xml_options(input_str),
+        )
+    return header[0] if header else None
+
+
 def read(
     input_str: str,
     validate: bool = True,
 ) -> Optional[Header]:
     """Reads and retrieves the header of the SDMX message.
 
+    Only the Header is parsed, not the rest of the message.
+
     Args:
         input_str: The input string to be parsed.
-        validate: If True, the SDMX-ML data will be validated against the XSD.
+        validate: If True, the whole SDMX-ML message will be validated
+            against the XSD.
 
     Returns:
-        The header of the SDMX message.
+        The header of the SDMX message, or None if it has none.
     """
-    dict_info = parse_xml(input_str, validate)
-    possible_keys = [
-        STR_SPE,
-        STR_SPE_TS,
-        GENERIC,
-        GENERIC_TS,
-        STRUCTURE,
-        GENERIC_METADATA,
-    ]
-    selected_key = next((key for key in possible_keys if key in dict_info))
-    if HEADER not in dict_info[selected_key]:
+    if validate:
+        validate_doc(input_str)
+    header = __read_header_element(input_str)
+    if header is None:
         return None
-    header = dict_info[selected_key][HEADER]
     return __parse_header(header)

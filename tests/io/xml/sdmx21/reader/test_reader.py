@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.__tokens import OBS_DIM, OBS_VALUE_ID
+from pysdmx.io.xml.header import read as read_header
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
@@ -1031,6 +1033,90 @@ def test_header_xmlns(samples_folder):
     assert result.structure == {
         "Dataflow=OECD.SDD.STES:DSD_STES@DF_CLI(4.1)": "TIME_PERIOD"
     }
+
+
+IO_SAMPLES = Path(__file__).parents[3] / "samples"
+
+
+def split_on_header(sample):
+    """Splits a sample into the text before, of, and after its Header."""
+    text = (IO_SAMPLES / sample).read_text(encoding="utf-8")
+    match = re.fullmatch(
+        r"(.*?)(<(\w+:)?Header>.*?</\3?Header>)(.*)", text, re.DOTALL
+    )
+    before, header, _, after = match.groups()
+    return before, header, after
+
+
+def root_end(after):
+    return re.search(r"</[^>]+>\s*$", after).group(0)
+
+
+def test_read_header_after_leading_comment():
+    message = (IO_SAMPLES / "empty_data_message.xml").read_text("utf-8")
+    assert "?>\n<!--" in message
+
+    header = read_header(message, validate=True)
+
+    assert header.id == "ID"
+    assert header.sender.id == "ZZZ"
+    assert header.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_read_header_non_ascii():
+    sample = IO_SAMPLES / "data_non_ascii_header.xml"
+    name = "Comisión Económica y Social para Asia y el Pacífico"
+
+    header = read_header(sample.read_text("utf-8"), validate=True)
+
+    assert header.id == "IREF001716"
+    assert header.sender.name == name
+    assert header.structure == {
+        "Dataflow=ESCAP:THEME_Dataflow(2.10)": "AllDimensions"
+    }
+    assert read_sdmx(sample, validate=True).header.sender.name == name
+
+
+def test_read_header_ignores_malformed_body():
+    before, header, _ = split_on_header("data_prov_agree.xml")
+    message = f"{before}{header}<message:DataSet><ss:Obs>"
+
+    result = read_header(message, validate=False)
+
+    assert result.id == "test"
+    assert result.structure == {
+        "ProvisionAgrement=MD:TEST(1.0)": "AllDimensions"
+    }
+
+
+def test_read_header_validates_whole_message():
+    before, header, after = split_on_header("data.xml")
+    message = f"{before}{header}<message:Unknown/>{root_end(after)}"
+
+    with pytest.raises(Invalid, match="Unknown': This element is not"):
+        read_header(message, validate=True)
+
+
+def test_read_header_default_namespace():
+    before, header, after = split_on_header("dataset_with_nulls.xml")
+    message = f"{before}{header}{root_end(after)}"
+    message = message.replace("xmlns:mes=", "xmlns=").replace("mes:", "")
+    assert "<Header>" in message
+
+    result = read_header(message, validate=False)
+
+    assert result.id == "032d13d3-fb62-4ac5-b84e-36507c60cba1"
+    assert result.structure == {"Dataflow=Short:Urn(1.0)": "AllDimensions"}
+
+
+@pytest.mark.parametrize("header", ["<message:Header/>", ""])
+def test_read_header_without_content_is_none(header):
+    before, _, after = split_on_header("data_no_attached.xml")
+    message = f"{before}{header}{after}"
+
+    assert read_header(message, validate=False) is None
 
 
 def test_vtl_data_flow_mapping_reader(samples_folder):
