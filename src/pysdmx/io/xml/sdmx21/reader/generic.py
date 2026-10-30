@@ -1,193 +1,194 @@
 """SDMX 2.1 XML Generic Data reader module."""
 
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, cast
 
 import pandas as pd
+from lxml import etree
 
-from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__data_aux import (
-    __process_df,
-    get_data_objects,
-)
-from pysdmx.io.xml.__parse_xml import parse_xml
+from pysdmx.io.xml.__data_stream import Columns, Names, read_data
 from pysdmx.io.xml.__tokens import (
     ATTRIBUTES,
+    DIM_OBS,
     GENERIC,
     GENERIC_TS,
-    GROUP,
     GROUP_KEY,
-    ID,
-    OBS,
     OBS_DIM,
     OBS_KEY,
     OBS_VALUE_ID,
     OBS_VALUE_XML_TAG,
-    SERIES,
     SERIES_KEY,
-    STR_REF,
     VALUE,
 )
-from pysdmx.io.xml.utils import add_list
 from pysdmx.model.dataset import ActionType
 
-
-def __get_element_to_list(data: Dict[str, Any], mode: Any) -> Dict[str, Any]:
-    obs = {}
-    data[mode][VALUE] = add_list(data[mode][VALUE])
-    for k in data[mode][VALUE]:
-        obs[k[ID]] = k[VALUE.lower()]
-    return obs
+Row = Dict[str, Optional[str]]
+VALUE_ATTRIBUTE = VALUE.lower()
+OBS_CHILDREN = (OBS_DIM, OBS_KEY, OBS_VALUE_XML_TAG, ATTRIBUTES)
 
 
-def __reading_generic_groups(dataset: Dict[str, Any]) -> pd.DataFrame:
-    # Generic Groups
-    test_list = []
-    df = None
-    dataset[GROUP] = add_list(dataset[GROUP])
-    for group in dataset[GROUP]:
-        keys = {}
-        # Group Keys
-        group[GROUP_KEY][VALUE] = add_list(group[GROUP_KEY][VALUE])
-        for v in group[GROUP_KEY][VALUE]:
-            keys[v[ID]] = v[VALUE.lower()]
-        group[ATTRIBUTES][VALUE] = add_list(group[ATTRIBUTES][VALUE])
-        for v in group[ATTRIBUTES][VALUE]:
-            keys[v[ID]] = v[VALUE.lower()]
-
-        test_list.append(keys)
-        test_list, df = __process_df(test_list, df)
-    test_list, df = __process_df(test_list, df, is_end=True)
-    return df.fillna("")
+# The elements are typed Any: lxml returns str attribute values for a str
+# input, while its stubs type them as str or bytes
+def _children(element: etree._Element, names: Names) -> Dict[str, Any]:
+    return {names[child.tag]: child for child in element}
 
 
-def __reading_generic_series(dataset: Dict[str, Any]) -> pd.DataFrame:
-    # Generic Series
-    test_list = []
-    df = None
-    dataset[SERIES] = add_list(dataset[SERIES])
-    for series in dataset[SERIES]:
-        keys = {}
-        # Series Keys
-        series[SERIES_KEY][VALUE] = add_list(series[SERIES_KEY][VALUE])
-        for v in series[SERIES_KEY][VALUE]:
-            keys[v[ID]] = v[VALUE.lower()]
-        if ATTRIBUTES in series:
-            series[ATTRIBUTES][VALUE] = add_list(series[ATTRIBUTES][VALUE])
-            for v in series[ATTRIBUTES][VALUE]:
-                keys[v[ID]] = v[VALUE.lower()]
-        if OBS in series:
-            series[OBS] = add_list(series[OBS])
+def _obs_children(obs: etree._Element, names: Names) -> Dict[str, Any]:
+    """Returns the ObsDimension, ObsKey, ObsValue and Attributes of an Obs."""
+    children: Dict[str, Any] = dict.fromkeys(OBS_CHILDREN)
+    for child in obs:
+        name = names[child.tag]
+        if name in children:
+            children[name] = child
+    return children
 
-            for data in series[OBS]:
-                obs = {
-                    OBS_DIM: data[OBS_DIM][VALUE.lower()],
-                    OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()]
-                    if OBS_VALUE_XML_TAG in data
-                    else "",
-                }
-                if ATTRIBUTES in data:
-                    obs = {
-                        **obs,
-                        **__get_element_to_list(data, mode=ATTRIBUTES),
-                    }
-                test_list.append({**keys, **obs})
+
+def _values(element: Any, names: Names, row: Row) -> None:
+    """Adds the id and value of the Value children of an element."""
+    for child in element:
+        if names[child.tag] == VALUE:
+            attributes = child.attrib
+            row[attributes["id"]] = attributes[VALUE_ATTRIBUTE]
+
+
+class _GenericDataSet:
+    """Reads the elements of a Generic DataSet."""
+
+    def __init__(
+        self,
+        attributes: Dict[str, str],
+        structure: Dict[str, Any],
+        names: Names,
+    ) -> None:
+        self.__attributes = attributes
+        self.__structure = structure
+        self.__names = names
+        self.__series = Columns("")
+        self.__observations = Columns("")
+        self.__groups = Columns("")
+        self.__has_series = False
+        self.__has_groups = False
+        self.__keys: Optional[Row] = None
+        self.__series_has_obs = False
+
+    def series_start(self, series: etree._Element) -> None:
+        self.__has_series = True
+        self.__keys = None
+        self.__series_has_obs = False
+
+    def series_end(self, series: etree._Element) -> None:
+        if not self.__series_has_obs:
+            self.__series.add(self.__series_keys(series))
+
+    def obs(self, obs: etree._Element, in_series: bool) -> None:
+        names = self.__names
+        children = _obs_children(obs, names)
+        if in_series:
+            if self.__keys is None:
+                series = cast(etree._Element, obs.getparent())
+                self.__keys = self.__series_keys(series)
+            dimension = children[OBS_DIM]
+            if dimension is None:
+                raise KeyError(OBS_DIM)
+            row = dict(self.__keys)
+            row[OBS_DIM] = dimension.attrib[VALUE_ATTRIBUTE]
         else:
-            test_list.append(keys)
-        test_list, df = __process_df(test_list, df)
+            key = children[OBS_KEY]
+            if key is None:
+                raise KeyError(OBS_KEY)
+            row = {}
+            _values(key, names, row)
+        value = children[OBS_VALUE_XML_TAG]
+        row[OBS_VALUE_ID] = (
+            value.attrib[VALUE_ATTRIBUTE] if value is not None else ""
+        )
+        if children[ATTRIBUTES] is not None:
+            _values(children[ATTRIBUTES], names, row)
+        if in_series:
+            self.__series_has_obs = True
+            self.__series.add(row)
+        else:
+            self.__observations.add(row)
 
-    test_list, df = __process_df(test_list, df, is_end=True)
+    def group(self, group: etree._Element) -> None:
+        children = _children(group, self.__names)
+        row: Row = {}
+        _values(children[GROUP_KEY], self.__names, row)
+        _values(children[ATTRIBUTES], self.__names, row)
+        self.__has_groups = True
+        self.__groups.add(row)
 
-    return df.fillna("")
+    def finish(self, dataset: etree._Element) -> PandasDataset:
+        attributes: Row = {}
+        children = _children(dataset, self.__names)
+        if ATTRIBUTES in children:
+            _values(children[ATTRIBUTES], self.__names, attributes)
+        if self.__has_series:
+            df = self.__series.frame()
+            if self.__has_groups:
+                df_group = self.__groups.frame()
+                common_columns = list(
+                    set(df.columns).intersection(set(df_group.columns))
+                )
+                df = pd.merge(df, df_group, on=common_columns, how="left")
+            dim_at_obs = self.__structure[DIM_OBS]
+            # In case there are observations defined, we need to replace the
+            # OBS_DIM column with the dimension at observation
+            if OBS_DIM in df.columns:
+                df[dim_at_obs] = df[OBS_DIM]
+                del df[OBS_DIM]
+        else:
+            df = self.__observations.frame()
+        action = ActionType(self.__attributes.get("action", "Information"))
+        structure_type = self.__structure["structure_type"]
+        urn = f"{structure_type}={self.__structure['unique_id']}"
+        return PandasDataset(
+            structure=urn, attributes=attributes, data=df, action=action
+        )
+
+    def __series_keys(self, series: etree._Element) -> Row:
+        children = _children(series, self.__names)
+        keys: Row = {}
+        _values(children[SERIES_KEY], self.__names, keys)
+        if ATTRIBUTES in children:
+            _values(children[ATTRIBUTES], self.__names, keys)
+        return keys
 
 
-def __reading_generic_all(dataset: Dict[str, Any]) -> pd.DataFrame:
-    # Generic All Dimensions
-    test_list = []
-    if OBS not in dataset:
-        return pd.DataFrame()
-    df = None
-    dataset[OBS] = add_list(dataset[OBS])
-    for data in dataset[OBS]:
-        obs: Dict[str, Any] = {}
-        obs = {
-            **obs,
-            **__get_element_to_list(data, mode=OBS_KEY),
-            OBS_VALUE_ID: data[OBS_VALUE_XML_TAG][VALUE.lower()]
-            if OBS_VALUE_XML_TAG in data
-            else "",
-        }
-        if ATTRIBUTES in data:
-            obs = {**obs, **__get_element_to_list(data, mode=ATTRIBUTES)}
-        test_list.append({**obs})
-        test_list, df = __process_df(test_list, df)
+def read_stream(
+    chunks: Iterable[str], validate: bool = True
+) -> Tuple[Optional[Dict[str, Any]], List[PandasDataset]]:
+    """Reads an SDMX-ML 2.1 Generic data message given in text chunks.
 
-    test_list, df = __process_df(test_list, df, is_end=True)
+    The message is read in a single pass, which also validates it.
 
-    return df.fillna("")
+    Args:
+        chunks: The text of the message, in chunks.
+        validate: If True, the XML data will be validated against the XSD.
 
+    Returns:
+        The Header of the message, as xmltodict parses it, and the
+        datasets.
 
-def __get_at_att_gen(dataset: Dict[str, Any]) -> Dict[str, Any]:
-    """Gets all the elements if it is Generic data."""
-    attached_attributes: Dict[str, Any] = {}
-    if ATTRIBUTES not in dataset:
-        return attached_attributes
-    dataset[ATTRIBUTES][VALUE] = add_list(dataset[ATTRIBUTES][VALUE])
-    for k in dataset[ATTRIBUTES][VALUE]:
-        attached_attributes[k[ID]] = k[VALUE.lower()]
-    return attached_attributes
-
-
-def __parse_generic_data(
-    dataset: Dict[str, Any], structure_info: Dict[str, Any]
-) -> PandasDataset:
-    attached_attributes = __get_at_att_gen(dataset)
-
-    # Parsing data
-    if SERIES in dataset:
-        # Generic Series
-        df = __reading_generic_series(dataset)
-        if GROUP in dataset:
-            df_group = __reading_generic_groups(dataset)
-            common_columns = list(
-                set(df.columns).intersection(set(df_group.columns))
-            )
-            df = pd.merge(df, df_group, on=common_columns, how="left")
-        dim_at_obs = structure_info["dimensionAtObservation"]
-        # In case there are observations defined, we need to replace the
-        # OBS_DIM column with the dimension at observation
-        if OBS_DIM in df.columns:
-            df[dim_at_obs] = df[OBS_DIM]
-            del df[OBS_DIM]
-    else:
-        # Generic All Dimensions
-        df = __reading_generic_all(dataset)
-
-    action = dataset.get("action", "Information")
-    action = ActionType(action)
-
-    urn = f"{structure_info['structure_type']}={structure_info['unique_id']}"
-
-    return PandasDataset(
-        structure=urn, attributes=attached_attributes, data=df, action=action
+    Raises:
+        Invalid: If the message is not valid SDMX-ML 2.1 Generic data.
+    """
+    return read_data(
+        chunks,
+        validate,
+        (GENERIC, GENERIC_TS),
+        "This SDMX document is not SDMX-ML 2.1 Generic.",
+        _GenericDataSet,
     )
 
 
 def read(input_str: str, validate: bool = True) -> Sequence[PandasDataset]:
     """Reads an SDMX-ML 2.1 Generic data and returns a Sequence of Datasets.
 
+    The message is read in a single pass, which also validates it.
+
     Args:
         input_str: SDMX-ML data to read.
         validate: If True, the XML data will be validated against the XSD.
     """
-    dict_info = parse_xml(input_str, validate=validate)
-    msg_key = next((k for k in (GENERIC, GENERIC_TS) if k in dict_info), None)
-    if msg_key is None:
-        raise Invalid("This SDMX document is not SDMX-ML 2.1 Generic.")
-    dataset_info, str_info = get_data_objects(dict_info[msg_key])
-
-    datasets = []
-    for dataset in dataset_info:
-        ds = __parse_generic_data(dataset, str_info[dataset[STR_REF]])
-        datasets.append(ds)
-    return datasets
+    return read_stream([input_str], validate)[1]

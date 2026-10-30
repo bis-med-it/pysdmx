@@ -12,6 +12,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonLink,
     MaintainableType,
     NameableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import (
     Agency,
@@ -146,6 +148,7 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
             items=tuple(all_codes),
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_partial=self.isPartial,
             is_final=is_final(self.version),
             valid_from=ensure_tz_aware(self.validFrom),
@@ -174,6 +177,7 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in cl.annotations]
             ),
             isExternalReference=cl.is_external_reference,
+            links=_self_link(cl.structure_url),
             isPartial=cl.is_partial,
             validFrom=ensure_tz_aware(cl.valid_from),
             validTo=ensure_tz_aware(cl.valid_to),
@@ -196,6 +200,7 @@ class JsonValuelist(ItemSchemeType, frozen=True, omit_defaults=True):
             items=tuple([i.to_model() for i in self.valueItems]),
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_partial=self.isPartial,
             is_final=is_final(self.version),
             valid_from=ensure_tz_aware(self.validFrom),
@@ -225,6 +230,7 @@ class JsonValuelist(ItemSchemeType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in cl.annotations]
             ),
             isExternalReference=cl.is_external_reference,
+            links=_self_link(cl.structure_url),
             isPartial=cl.is_partial,
             validFrom=ensure_tz_aware(cl.valid_from),
             validTo=ensure_tz_aware(cl.valid_to),
@@ -404,6 +410,7 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_partial=self.isPartial,
             is_final=is_final(self.version),
             has_formal_levels=self.hasFormalLevels,
@@ -435,6 +442,7 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in h.annotations]
             ),
             isExternalReference=h.is_external_reference,
+            links=_self_link(h.structure_url),
             isPartial=h.is_partial,
             hasFormalLevels=h.has_formal_levels,
             level=JsonLevel.from_model(h.level) if h.level else None,
@@ -462,7 +470,6 @@ class JsonHierarchyAssociation(
     linkedHierarchy: Optional[str] = None
     linkedObject: Optional[str] = None
     contextObject: Optional[str] = None
-    links: Sequence[JsonLink] = ()
 
     def to_model(
         self,
@@ -493,6 +500,7 @@ class JsonHierarchyAssociation(
             version=self.version,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
@@ -559,7 +567,7 @@ class JsonHierarchyAssociation(
             linkedHierarchy=href,
             linkedObject=ha.component_ref,
             contextObject=ha.context_ref,
-            links=[lnk] if lnk else (),
+            links=_self_link(ha.structure_url) + ((lnk,) if lnk else ()),
         )
 
 

@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.xml.__tokens import OBS_DIM, OBS_VALUE_ID
+from pysdmx.io.xml.header import read as read_header
 from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
 from pysdmx.io.xml.sdmx21.reader.structure import read as read_structure
@@ -1033,6 +1035,90 @@ def test_header_xmlns(samples_folder):
     }
 
 
+IO_SAMPLES = Path(__file__).parents[3] / "samples"
+
+
+def split_on_header(sample):
+    """Splits a sample into the text before, of, and after its Header."""
+    text = (IO_SAMPLES / sample).read_text(encoding="utf-8")
+    match = re.fullmatch(
+        r"(.*?)(<(\w+:)?Header>.*?</\3?Header>)(.*)", text, re.DOTALL
+    )
+    before, header, _, after = match.groups()
+    return before, header, after
+
+
+def root_end(after):
+    return re.search(r"</[^>]+>\s*$", after).group(0)
+
+
+def test_read_header_after_leading_comment():
+    message = (IO_SAMPLES / "empty_data_message.xml").read_text("utf-8")
+    assert "?>\n<!--" in message
+
+    header = read_header(message, validate=True)
+
+    assert header.id == "ID"
+    assert header.sender.id == "ZZZ"
+    assert header.structure == {
+        "DataStructure=BIS:BIS_DER(1.0)": "AllDimensions"
+    }
+
+
+def test_read_header_non_ascii():
+    sample = IO_SAMPLES / "data_non_ascii_header.xml"
+    name = "Comisión Económica y Social para Asia y el Pacífico"
+
+    header = read_header(sample.read_text("utf-8"), validate=True)
+
+    assert header.id == "IREF001716"
+    assert header.sender.name == name
+    assert header.structure == {
+        "Dataflow=ESCAP:THEME_Dataflow(2.10)": "AllDimensions"
+    }
+    assert read_sdmx(sample, validate=True).header.sender.name == name
+
+
+def test_read_header_ignores_malformed_body():
+    before, header, _ = split_on_header("data_prov_agree.xml")
+    message = f"{before}{header}<message:DataSet><ss:Obs>"
+
+    result = read_header(message, validate=False)
+
+    assert result.id == "test"
+    assert result.structure == {
+        "ProvisionAgrement=MD:TEST(1.0)": "AllDimensions"
+    }
+
+
+def test_read_header_validates_whole_message():
+    before, header, after = split_on_header("data.xml")
+    message = f"{before}{header}<message:Unknown/>{root_end(after)}"
+
+    with pytest.raises(Invalid, match="Unknown': This element is not"):
+        read_header(message, validate=True)
+
+
+def test_read_header_default_namespace():
+    before, header, after = split_on_header("dataset_with_nulls.xml")
+    message = f"{before}{header}{root_end(after)}"
+    message = message.replace("xmlns:mes=", "xmlns=").replace("mes:", "")
+    assert "<Header>" in message
+
+    result = read_header(message, validate=False)
+
+    assert result.id == "032d13d3-fb62-4ac5-b84e-36507c60cba1"
+    assert result.structure == {"Dataflow=Short:Urn(1.0)": "AllDimensions"}
+
+
+@pytest.mark.parametrize("header", ["<message:Header/>", ""])
+def test_read_header_without_content_is_none(header):
+    before, _, after = split_on_header("data_no_attached.xml")
+    message = f"{before}{header}{after}"
+
+    assert read_header(message, validate=False) is None
+
+
 def test_vtl_data_flow_mapping_reader(samples_folder):
     data_path = samples_folder / "vtl_dataflow_mapping.xml"
     input_str, read_format = process_string_to_read(data_path)
@@ -1301,6 +1387,57 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
     pd.testing.assert_frame_equal(
         data, expected_data, check_like=True, check_dtype=False
     )
+
+
+def read_with_groups(path, *groups):
+    # Reads the sample of multiple_groups_path with these Group elements
+    text = path.read_text(encoding="utf-8")
+    start = text.index("<Group ")
+    end = text.index("<Series ")
+    message = text[:start] + "".join(groups) + text[end:]
+    return read_sdmx(message, validate=True).data[0].data
+
+
+def series_with(**attributes):
+    return pd.DataFrame(
+        {
+            "DIM1": ["A1", "A1", "A2", "A2"],
+            "DIM2": ["B1", "B1", "B2", "B2"],
+            "TIME_PERIOD": ["2010", "2011", "2010", "2011"],
+            "OBS_VALUE": ["1.0", "2.0", "3.0", "4.0"],
+            **attributes,
+        },
+        dtype=pd.ArrowDtype(pa.string()),
+    )
+
+
+def test_group_merge_attribute_of_two_group_types(multiple_groups_path):
+    # Each group sets the attribute on the rows that it matches
+    data = read_with_groups(
+        multiple_groups_path,
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" SHARED_ATTR="G1"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1_DIM2" DIM1="A2" DIM2="B2" '
+        'SHARED_ATTR="G2"/>',
+    )
+
+    expected = series_with(SHARED_ATTR=["G1", "G1", "G2", "G2"])
+    pd.testing.assert_frame_equal(data, expected)
+
+
+def test_group_merge_group_without_series_columns(multiple_groups_path):
+    # Such a group matches no row, as a group whose key no series has
+    data = read_with_groups(
+        multiple_groups_path,
+        '<Group xsi:type="ns1:GROUP_X" DIMX="X1" OTHER_ATTR="O1"/>',
+        '<Group xsi:type="ns1:GROUP_DIM1" DIM1="A1" GATTR="G1"/>',
+    )
+
+    expected = series_with(
+        DIMX=[None, None, None, None],
+        OTHER_ATTR=[None, None, None, None],
+        GATTR=["G1", "G1", None, None],
+    )
+    pd.testing.assert_frame_equal(data, expected)
 
 
 def test_constraint_with_cube_region(samples_folder):

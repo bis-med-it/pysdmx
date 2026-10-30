@@ -65,6 +65,19 @@ class JsonLink(msgspec.Struct, frozen=True, omit_defaults=True):
     hreflang: Optional[str] = None
 
 
+def _self_link_href(links: Sequence[JsonLink]) -> Optional[str]:
+    """Return the first non-empty href from a self link."""
+    for link in links:
+        if link.rel == "self" and link.href:
+            return link.href
+    return None
+
+
+def _self_link(url: Optional[str]) -> tuple[JsonLink, ...]:
+    """Return the SDMX-JSON self link for a structure URL."""
+    return (JsonLink(rel="self", href=url),) if url else ()
+
+
 class JsonAnnotation(msgspec.Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for annotations."""
 
@@ -143,6 +156,7 @@ class MaintainableType(
     validTo: Optional[datetime] = None
     description: Optional[str] = None
     annotations: Sequence[JsonAnnotation] = ()
+    links: Sequence[JsonLink] = ()
 
 
 class ItemSchemeType(MaintainableType, frozen=True, omit_defaults=True):

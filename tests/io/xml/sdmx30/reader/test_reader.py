@@ -164,6 +164,31 @@ def test_prov_agree_30_groups_series(samples_folder):
     assert num_columns == 5
 
 
+def test_data_groups_30():
+    data_path = (
+        Path(__file__).parents[1]
+        / "writer"
+        / "samples"
+        / "test_dataset_with_groups.xml"
+    )
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_0
+    data = read_sdmx(input_str, validate=True).data[0].data
+
+    # ATT3 is the attribute of the Groups
+    expected = {
+        "DIM2": ["4", "5", "6"],
+        "ATT1": ["A", "B", "C"],
+        "DIM1": ["1", "2", "3"],
+        "M1": ["10", "11", "12"],
+        "ATT2": ["7", "8", "9"],
+        "ATT3": ["H", "I", "J"],
+    }
+    assert data.to_dict("list") == expected
+    assert list(data.columns) == list(expected)
+    assert all(str(dtype) == "string[pyarrow]" for dtype in data.dtypes)
+
+
 def test_data_no_structure_specific(samples_folder):
     from pysdmx.io.xml.sdmx30.reader.structure_specific import (
         read as read_str_spe,
