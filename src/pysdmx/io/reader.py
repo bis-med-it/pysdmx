@@ -1,10 +1,12 @@
 """SDMX All formats reader module."""
 
+import contextlib
 from io import BytesIO
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Dict,
+    Iterator,
     Optional,
     Sequence,
     Union,
@@ -17,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
-from pysdmx.io.input_processor import process_string_to_read
+from pysdmx.io.input_processor import stream_sdmx
 from pysdmx.model import AvailabilityConstraint, Schema
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
@@ -36,6 +38,11 @@ def read_sdmx(  # noqa: C901
     """Reads any SDMX message and extracts its content.
 
     Check the :ref:`formats supported <io-reader-formats-supported>`
+
+    SDMX-ML and SDMX-CSV data messages are read in a single pass, while
+    the file is read or the URL downloaded, without holding the whole
+    message in memory. The validation of SDMX-ML data messages against
+    the XSD happens in the same pass.
 
     .. important::
         When reading a SDMX-JSON structure message, you can read it
@@ -70,10 +77,31 @@ def read_sdmx(  # noqa: C901
         NotImplemented:
             If the SDMX flavour is detected but not supported yet.
     """
-    input_str, read_format = process_string_to_read(sdmx_document, pem=pem)
+    chunks, read_format = stream_sdmx(sdmx_document, pem=pem)
+    with contextlib.closing(chunks):
+        # A data message without any DataSet is valid SDMX as well (it is
+        # how a service answers a query matching nothing), so it is
+        # returned as a Message with an empty data sequence.
+        # TODO: Add here the Schema download for Datasets, based on structure
+        # TODO: Ensure we have changed the signature of the data readers
+        if read_format in (
+            Format.DATA_SDMX_ML_2_1_GEN,
+            Format.DATA_SDMX_ML_2_1_GENTS,
+            Format.DATA_SDMX_ML_2_1_STR,
+            Format.DATA_SDMX_ML_2_1_STRTS,
+            Format.DATA_SDMX_ML_3_0,
+            Format.DATA_SDMX_ML_3_1,
+        ):
+            return __read_sdmx_ml_data(chunks, read_format, validate)
+        if read_format in (
+            Format.DATA_SDMX_CSV_1_0_0,
+            Format.DATA_SDMX_CSV_2_0_0,
+            Format.DATA_SDMX_CSV_2_1_0,
+        ):
+            return __read_sdmx_csv_data(chunks, read_format)
+        input_str = "".join(chunks)
 
     header = None
-    result_data: Sequence[Dataset] = []
     result_structures: Sequence[
         Union[MaintainableArtefact, AvailabilityConstraint]
     ] = []
@@ -136,58 +164,16 @@ def read_sdmx(  # noqa: C901
 
         # SDMX-ML 3.1 reference metadata (GenericMetadata)
         reports = read_refmeta_ml(input_str, validate=validate)
-    elif read_format in (
-        Format.DATA_SDMX_ML_2_1_GEN,
-        Format.DATA_SDMX_ML_2_1_GENTS,
-    ):
-        from pysdmx.io.xml.sdmx21.reader.generic import read as read_generic
-
-        # SDMX-ML 2.1 Generic / Generic Time Series Data
-        result_data = read_generic(input_str, validate=validate)
-    elif read_format in (
-        Format.DATA_SDMX_ML_2_1_STR,
-        Format.DATA_SDMX_ML_2_1_STRTS,
-    ):
-        from pysdmx.io.xml.sdmx21.reader.structure_specific import (
-            read as read_str_spe,
-        )
-
-        # SDMX-ML 2.1 Structure Specific Data
-        result_data = read_str_spe(input_str, validate=validate)
     elif read_format == Format.REGISTRY_SDMX_ML_2_1:
         from pysdmx.io.xml.sdmx21.reader.submission import read as read_sub
 
         # SDMX-ML 2.1 Submission
         result_submission = read_sub(input_str, validate=validate)
-    elif read_format == Format.ERROR_SDMX_ML_2_1:
+    else:
         from pysdmx.io.xml.sdmx21.reader.error import read as read_error
 
         # SDMX-ML 2.1 Error
         read_error(input_str, validate=validate)
-    elif read_format == Format.DATA_SDMX_ML_3_0:
-        from pysdmx.io.xml.sdmx30.reader.structure_specific import (
-            read as read_str_spe,
-        )
-
-        # SDMX-ML 3.0 Structure Specific Data
-        result_data = read_str_spe(input_str, validate=validate)
-    elif read_format == Format.DATA_SDMX_ML_3_1:
-        from pysdmx.io.xml.sdmx31.reader.structure_specific import (
-            read as read_str_spe,
-        )
-
-        # SDMX-ML 3.1 Structure Specific Data
-        result_data = read_str_spe(input_str, validate=validate)
-    elif read_format == Format.DATA_SDMX_CSV_1_0_0:
-        from pysdmx.io.csv.sdmx10.reader import read as read_csv_v1
-
-        # SDMX-CSV 1.0
-        result_data = read_csv_v1(input_str)
-    else:
-        # SDMX-CSV 2.1
-        from pysdmx.io.csv.sdmx21.reader import read as read_csv_v2
-
-        result_data = read_csv_v2(input_str)
 
     if read_format in (
         Format.STRUCTURE_SDMX_ML_2_1,
@@ -195,12 +181,6 @@ def read_sdmx(  # noqa: C901
         Format.STRUCTURE_SDMX_ML_3_1,
         Format.REFMETA_SDMX_ML_3_0,
         Format.REFMETA_SDMX_ML_3_1,
-        Format.DATA_SDMX_ML_2_1_GEN,
-        Format.DATA_SDMX_ML_2_1_GENTS,
-        Format.DATA_SDMX_ML_2_1_STR,
-        Format.DATA_SDMX_ML_2_1_STRTS,
-        Format.DATA_SDMX_ML_3_0,
-        Format.DATA_SDMX_ML_3_1,
     ):
         from pysdmx.io.xml.header import read as read_header
 
@@ -221,27 +201,60 @@ def read_sdmx(  # noqa: C901
         # TODO: Ensure we have changed the signature of the structure readers
         return Message(header=header, structures=tuple(result_structures))
 
-    if read_format in (
-        Format.DATA_SDMX_CSV_1_0_0,
-        Format.DATA_SDMX_CSV_2_0_0,
-        Format.DATA_SDMX_CSV_2_1_0,
-        Format.DATA_SDMX_ML_2_1_GEN,
-        Format.DATA_SDMX_ML_2_1_GENTS,
-        Format.DATA_SDMX_ML_2_1_STR,
-        Format.DATA_SDMX_ML_2_1_STRTS,
-        Format.DATA_SDMX_ML_3_0,
-        Format.DATA_SDMX_ML_3_1,
-    ):
-        # A data message without any DataSet is valid SDMX as well (it is
-        # how a service answers a query matching nothing), so it is
-        # returned as a Message with an empty data sequence.
-        # TODO: Add here the Schema download for Datasets, based on structure
-        # TODO: Ensure we have changed the signature of the data readers
-        return Message(header=header, data=result_data)
-    elif read_format == Format.REGISTRY_SDMX_ML_2_1:
+    if read_format == Format.REGISTRY_SDMX_ML_2_1:
         return Message(header=header, submission=tuple(result_submission))
     # SDMX-ML and SDMX-JSON reference metadata, with or without reports
     return Message(header=header, reports=tuple(reports))
+
+
+def __read_sdmx_ml_data(
+    chunks: Iterator[str], read_format: Format, validate: bool
+) -> Message:
+    """Reads an SDMX-ML data message in a single pass."""
+    if read_format in (
+        Format.DATA_SDMX_ML_2_1_GEN,
+        Format.DATA_SDMX_ML_2_1_GENTS,
+    ):
+        # SDMX-ML 2.1 Generic / Generic Time Series Data
+        from pysdmx.io.xml.sdmx21.reader.generic import read_stream
+    elif read_format in (
+        Format.DATA_SDMX_ML_2_1_STR,
+        Format.DATA_SDMX_ML_2_1_STRTS,
+    ):
+        # SDMX-ML 2.1 Structure Specific Data
+        from pysdmx.io.xml.sdmx21.reader.structure_specific import (
+            read_stream,
+        )
+    elif read_format == Format.DATA_SDMX_ML_3_0:
+        # SDMX-ML 3.0 Structure Specific Data
+        from pysdmx.io.xml.sdmx30.reader.structure_specific import (
+            read_stream,
+        )
+    else:
+        # SDMX-ML 3.1 Structure Specific Data
+        from pysdmx.io.xml.sdmx31.reader.structure_specific import (
+            read_stream,
+        )
+    from pysdmx.io.xml.header import parse_header
+
+    header, datasets = read_stream(chunks, validate=validate)
+    # The header is parsed after the data, so that the errors in the data
+    # come first, as when reading the whole message
+    return Message(header=parse_header(header), data=datasets)
+
+
+def __read_sdmx_csv_data(
+    chunks: Iterator[str], read_format: Format
+) -> Message:
+    """Reads an SDMX-CSV data message in a single pass."""
+    if read_format == Format.DATA_SDMX_CSV_1_0_0:
+        # SDMX-CSV 1.0
+        from pysdmx.io.csv.sdmx10.reader import read_stream
+    else:
+        # SDMX-CSV 2.0 and 2.1
+        from pysdmx.io.csv.sdmx21.reader import read_stream
+
+    return Message(header=None, data=read_stream(chunks))
 
 
 def __manage_dataset_level_attributes(dataset: Dataset) -> None:

@@ -48,6 +48,13 @@ A typical example to read data or metadata from a file, a string or a URL, using
 By default, the :meth:`pysdmx.io.read_sdmx` function will automatically detect the
 format of the file and use the appropriate reader.
 
+SDMX-ML and SDMX-CSV data messages are read in a single pass while they
+are read from the file or downloaded: the message is never held in memory
+as a whole, so the memory used depends on the size of the resulting
+DataFrames, not on the size of the message. The validation of SDMX-ML
+data messages against the XSD (``validate=True``) happens in the same
+pass.
+
 The output is always a Message object, which holds the Datasets at the `data` attribute.
 
 .. code-block:: python
