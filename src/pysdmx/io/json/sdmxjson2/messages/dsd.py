@@ -15,6 +15,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     JsonRepresentation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import (
     Agency,
@@ -490,7 +492,9 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
                 )
             if len(incl_cubes) == 1:
                 cons = {
-                    kv.id: [v.value for v in kv.values]
+                    kv.id: [
+                        v if isinstance(v, str) else v.value for v in kv.values
+                    ]
                     for kv in incl_cubes[0].keyValues
                 }
             else:
@@ -573,6 +577,7 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             is_final=is_final(self.version),
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
             components=c,
@@ -598,6 +603,7 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             name=dsd.name,
             version=dsd.version,
             isExternalReference=dsd.is_external_reference,
+            links=_self_link(dsd.structure_url),
             validFrom=ensure_tz_aware(dsd.valid_from),
             validTo=ensure_tz_aware(dsd.valid_to),
             description=dsd.description,

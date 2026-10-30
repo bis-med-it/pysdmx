@@ -27,7 +27,7 @@ from pysdmx import errors
 
 # SDMX-JSON schema files by message version then message type. The 2.0 and 2.1
 # schema files share the same file name (only the directory differs), so the
-# version must be selected before matching the type against ``meta.schema``.
+# version must be selected before matching the type against the schema URL.
 _SCHEMA_FILES: Mapping[str, Mapping[str, Path]] = {
     "2.0": {
         "structure": SCHEMA_PATH_JSON20_STRUCTURE,
@@ -43,11 +43,22 @@ _SCHEMA_FILES: Mapping[str, Mapping[str, Path]] = {
 
 
 def _schema_for(instance: Mapping[str, Any]) -> dict[str, Any]:
-    schema_url = instance.get("meta", {}).get("schema", "")
+    # ``meta.schema`` is optional: SDMX-JSON 2.1 messages may declare their
+    # schema in the top-level ``$schema`` instead.
+    schema_url = instance.get("meta", {}).get("schema") or instance.get(
+        "$schema", ""
+    )
     version = "2.1" if "2.1" in schema_url else "2.0"
     p = next(
-        p for p in _SCHEMA_FILES[version].values() if p.name in schema_url
+        (p for p in _SCHEMA_FILES[version].values() if p.name in schema_url),
+        None,
     )
+    if p is None:
+        raise errors.Invalid(
+            "Validation Error",
+            "The message does not declare a supported SDMX-JSON schema, "
+            "neither in meta.schema nor in $schema.",
+        )
     with p.open("r", encoding="utf-8") as f:
         schema = json.load(f)
     return schema

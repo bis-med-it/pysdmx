@@ -10,6 +10,8 @@ from pysdmx.errors import Invalid
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import (
     Agency,
@@ -114,7 +116,7 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for the list of allowed values per component."""
 
     id: str
-    values: Sequence[JsonValue] = ()
+    values: Sequence[Union[str, JsonValue]] = ()
     timeRange: Optional[JsonTimeRange] = None
     validFrom: Optional[datetime] = None
     validTo: Optional[datetime] = None
@@ -125,7 +127,12 @@ class JsonKeyValue(Struct, frozen=True, omit_defaults=True):
         """Converts a JsonKeyValue to a CubeKeyValue."""
         return CubeKeyValue(
             self.id,
-            tuple([v.to_model() for v in self.values]),
+            tuple(
+                [
+                    CubeValue(v) if isinstance(v, str) else v.to_model()
+                    for v in self.values
+                ]
+            ),
             self.timeRange.to_model() if self.timeRange else None,
             ensure_tz_aware(self.validFrom),
             ensure_tz_aware(self.validTo),
@@ -202,14 +209,37 @@ class JsonConstraintAttachment(Struct, frozen=True, omit_defaults=True):
 
 
 class JsonDataKeyValue(Struct, frozen=True, omit_defaults=True):
-    """SDMX-JSON payload for a data key value."""
+    """SDMX-JSON payload for a data key value.
+
+    SDMX-JSON 2.1 lists the values in ``values``, and keeps the single
+    ``value`` of SDMX-JSON 2.0 as a deprecated alternative.
+    """
 
     id: str
-    value: str
+    value: Optional[str] = None
+    values: Sequence[str] = ()
 
     def to_model(self) -> DataKeyValue:
-        """Converts a JsonDataKeyValue to a DataKeyValue."""
-        return DataKeyValue(self.id, self.value)
+        """Converts a JsonDataKeyValue to a DataKeyValue.
+
+        Raises:
+            NotImplemented: If several values are listed, as a
+                DataKeyValue holds a single value.
+            Invalid: If no value is given.
+        """
+        if len(self.values) > 1:
+            raise errors.NotImplemented(
+                "Unsupported data key value",
+                f"The data key value for {self.id} lists several values "
+                f"({', '.join(self.values)}), which is not supported yet.",
+            )
+        value = self.values[0] if self.values else self.value
+        if value is None:
+            raise errors.Invalid(
+                "Invalid data key value",
+                f"The data key value for {self.id} has no value.",
+            )
+        return DataKeyValue(self.id, value)
 
     @classmethod
     def from_model(self, kv: DataKeyValue) -> "JsonDataKeyValue":
@@ -387,6 +417,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
@@ -453,6 +484,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in cons.annotations]
             ),
             isExternalReference=cons.is_external_reference,
+            links=_self_link(cons.structure_url),
             validFrom=ensure_tz_aware(cons.valid_from),
             validTo=ensure_tz_aware(cons.valid_to),
             role="Allowed" if with_role else None,

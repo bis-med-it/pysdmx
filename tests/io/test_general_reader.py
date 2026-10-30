@@ -1,3 +1,4 @@
+import contextlib
 import json
 import re
 from pathlib import Path
@@ -247,6 +248,9 @@ def mock_http_client(monkeypatch, structures_path):
         status_code=200,
         text=xml_text,
         raise_for_status=lambda: None,
+        encoding="utf-8",
+        iter_bytes=lambda: iter([xml_text.encode("utf-8")]),
+        request=None,
     )
 
     class DummyClient:
@@ -254,8 +258,10 @@ def mock_http_client(monkeypatch, structures_path):
             last["kwargs"] = kwargs
 
         def __enter__(self):
-            self.get = lambda u, timeout=60: mock_response
             return self
+
+        def stream(self, method, u, timeout=60):
+            return contextlib.nullcontext(mock_response)
 
         def __exit__(self, *a):
             return False

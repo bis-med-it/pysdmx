@@ -14,6 +14,7 @@ PATH_RULES = {
     "/tests/io/xml/sdmx30/writer/test_data_writing.py": ("xml_data", True),
     "/tests/io/xml/sdmx31/writer/test_data_writing.py": ("xml_data", True),
     "/tests/io/xml/sdmx21/reader/test_reader.py": ("xml_data", False),
+    "/tests/io/xml/test_data_stream.py": ("xml_data", True),
     # data tests
     "/tests/io/csv/sdmx10/reader/": ("data", True),
     "/tests/io/csv/sdmx10/writer/": ("data", False),
@@ -21,11 +22,13 @@ PATH_RULES = {
     "/tests/io/csv/sdmx20/writer/": ("data", False),
     "/tests/io/csv/sdmx21/reader/": ("data", True),
     "/tests/io/csv/sdmx21/writer/": ("data", False),
+    "/tests/io/csv/test_csv_stream.py": ("data", True),
     "/tests/io/test_general_reader.py": ("data", False),
     "/tests/io/test_input_processor.py": ("data", True),
     # vtl tests
     "/tests/toolkit/vtl/": ("vtl", True),
     # noextra tests
+    "/tests/io/test_reader_without_extras.py": ("noextra", True),
     "/tests/model/": ("noextra", True),
     "/tests/api/fmr/": ("noextra", True),
     "/tests/api/gds/": ("noextra", True),

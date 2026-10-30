@@ -252,6 +252,34 @@ def test_data_dataflow_31(samples_folder):
     assert num_columns == 16
 
 
+def test_data_groups_31():
+    # The SDMX-ML 3.0 sample with Groups, as SDMX-ML 3.1
+    data_path = (
+        Path(__file__).parents[2]
+        / "sdmx30"
+        / "writer"
+        / "samples"
+        / "test_dataset_with_groups.xml"
+    )
+    text = data_path.read_text(encoding="utf-8").replace("v3_0", "v3_1")
+    input_str, read_format = process_string_to_read(text)
+    assert read_format == Format.DATA_SDMX_ML_3_1
+    data = read_sdmx(input_str, validate=True).data[0].data
+
+    # ATT3 is the attribute of the Groups
+    expected = {
+        "DIM2": ["4", "5", "6"],
+        "ATT1": ["A", "B", "C"],
+        "DIM1": ["1", "2", "3"],
+        "M1": ["10", "11", "12"],
+        "ATT2": ["7", "8", "9"],
+        "ATT3": ["H", "I", "J"],
+    }
+    assert data.to_dict("list") == expected
+    assert list(data.columns) == list(expected)
+    assert all(str(dtype) == "string[pyarrow]" for dtype in data.dtypes)
+
+
 @pytest.mark.xml
 def test_data_structure_definition_31(samples_folder):
     data_path = samples_folder / "ECB_EXR_metadata.xml"
