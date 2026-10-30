@@ -47,6 +47,7 @@ def codelist():
         agency="BIS",
         version="1.0",
         items=[code1, code2],
+        structure_url="https://example.test/codelist/BIS/CL_FREQ/1.0",
     )
 
 
@@ -92,6 +93,15 @@ def test_no_structures(header):
         errors.Invalid, match="structure messages must have structures"
     ):
         JsonStructureMessage.from_model(msg)
+
+
+def test_structure_url_round_trip(header, codelist):
+    output = write_v2_0([codelist], header=header)
+
+    message = read_sdmx(output, validate=True)
+    result = message.get_codelists()[0]
+
+    assert result.structure_url == codelist.structure_url
 
 
 @pytest.fixture

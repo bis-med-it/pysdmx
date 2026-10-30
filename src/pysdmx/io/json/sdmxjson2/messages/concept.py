@@ -12,6 +12,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonLink,
     JsonRepresentation,
     NameableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import Agency, Codelist, Concept, ConceptScheme, DataType
 from pysdmx.util import ensure_tz_aware, is_final
@@ -115,6 +117,7 @@ class JsonConceptScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             items=tuple(concepts),
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_partial=self.isPartial,
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
@@ -137,6 +140,7 @@ class JsonConceptScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=cs.name,
             version=cs.version,
             isExternalReference=cs.is_external_reference,
+            links=_self_link(cs.structure_url),
             validFrom=ensure_tz_aware(cs.valid_from),
             validTo=ensure_tz_aware(cs.valid_to),
             description=cs.description,

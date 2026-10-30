@@ -11,6 +11,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
     NameableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import (
@@ -48,6 +50,7 @@ class JsonCategorisation(
             name=self.name,
             description=self.description,
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
@@ -71,6 +74,7 @@ class JsonCategorisation(
             name=cat.name,
             version=cat.version,
             isExternalReference=cat.is_external_reference,
+            links=_self_link(cat.structure_url),
             validFrom=ensure_tz_aware(cat.valid_from),
             validTo=ensure_tz_aware(cat.valid_to),
             description=cat.description,
@@ -205,6 +209,7 @@ class JsonCategoryScheme(
                 [c.to_model(cat_flows, cat_other) for c in self.categories]
             ),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             is_partial=self.isPartial,
             valid_from=ensure_tz_aware(self.validFrom),
@@ -229,6 +234,7 @@ class JsonCategoryScheme(
             name=cs.name,
             version=cs.version,
             isExternalReference=cs.is_external_reference,
+            links=_self_link(cs.structure_url),
             validFrom=ensure_tz_aware(cs.valid_from),
             validTo=ensure_tz_aware(cs.valid_to),
             description=cs.description,
