@@ -8,6 +8,8 @@ from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import Agency, ProvisionAgreement
 from pysdmx.util import ensure_tz_aware, is_final
@@ -35,6 +37,7 @@ class JsonProvisionAgreement(
             provider=self.dataProvider,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
         )
 
@@ -55,6 +58,7 @@ class JsonProvisionAgreement(
             name=pa.name,
             version=pa.version,
             isExternalReference=pa.is_external_reference,
+            links=_self_link(pa.structure_url),
             validFrom=ensure_tz_aware(pa.valid_from),
             validTo=ensure_tz_aware(pa.valid_to),
             description=pa.description,

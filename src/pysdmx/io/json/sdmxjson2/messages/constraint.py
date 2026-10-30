@@ -10,6 +10,8 @@ from pysdmx.errors import Invalid
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import (
     Agency,
@@ -392,6 +394,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             valid_from=ensure_tz_aware(self.validFrom),
             valid_to=ensure_tz_aware(self.validTo),
@@ -458,6 +461,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in cons.annotations]
             ),
             isExternalReference=cons.is_external_reference,
+            links=_self_link(cons.structure_url),
             validFrom=ensure_tz_aware(cons.valid_from),
             validTo=ensure_tz_aware(cons.valid_to),
             role="Allowed" if with_role else None,
