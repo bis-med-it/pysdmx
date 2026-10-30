@@ -1,4 +1,5 @@
 import csv
+import gzip
 import json
 from io import BytesIO
 from pathlib import Path
@@ -11,7 +12,7 @@ from pysdmx.io import input_processor
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read, stream_sdmx
 from pysdmx.io.reader import read_sdmx
-from tests.io.byte_chunks import ByteChunks
+from tests.io.byte_chunks import ByteChunks, split
 
 SAMPLES = Path(__file__).parent / "samples"
 DATA_SAMPLE = Path(__file__).parent / "xml/sdmx21/reader/samples/str_ser.xml"
@@ -435,3 +436,55 @@ def test_stream_sdmx_csv_url_streams(respx_mock):
     assert stream.yielded < 3
     assert "".join(chunks) == body.decode("utf-8")
     assert stream.closed
+
+
+@pytest.mark.parametrize("kind", ["path", "bytes"])
+def test_stream_sdmx_gzip(kind, tmp_path):
+    text = DATA_SAMPLE.read_text(encoding="utf-8")
+    path = tmp_path / "message.xml.gz"
+    path.write_bytes(gzip.compress(("\ufeff" + text).encode("utf-8")))
+
+    chunks, read_format = stream_sdmx(_source(path, kind))
+
+    assert ("".join(chunks), read_format) == (
+        text,
+        Format.DATA_SDMX_ML_2_1_STR,
+    )
+
+
+def test_stream_sdmx_gzip_url_streams(respx_mock):
+    # Two gzip members, the magic number of the first one split in two
+    text = DATA_SAMPLE.read_text(encoding="utf-8")
+    middle = len(text) // 2
+    body = gzip.compress(text[:middle].encode("utf-8")) + gzip.compress(
+        text[middle:].encode("utf-8")
+    )
+    parts = [body[:1], *split(body[1:], 500)]
+    stream = ByteChunks(parts)
+    respx_mock.get(URL).mock(return_value=httpx.Response(200, stream=stream))
+
+    chunks, read_format = stream_sdmx(URL)
+
+    assert read_format == Format.DATA_SDMX_ML_2_1_STR
+    assert stream.yielded < len(parts)
+    assert "".join(chunks) == text
+    assert stream.closed
+
+
+def test_stream_sdmx_gzip_url_with_content_encoding(respx_mock):
+    # httpx decodes the Content-Encoding, then the gzip body it held is
+    # decompressed
+    text = CSV_SAMPLE.read_text(encoding="utf-8")
+    body = gzip.compress(gzip.compress(text.encode("utf-8")))
+    respx_mock.get(URL).mock(
+        return_value=httpx.Response(
+            200, content=body, headers={"Content-Encoding": "gzip"}
+        )
+    )
+
+    chunks, read_format = stream_sdmx(URL)
+
+    assert ("".join(chunks), read_format) == (
+        text,
+        Format.DATA_SDMX_CSV_1_0_0,
+    )

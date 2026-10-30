@@ -1,12 +1,24 @@
 """Processes the input that comes into read_sdmx function."""
 
+import codecs
 import contextlib
 import csv
+import gzip
 import os.path
 from io import BytesIO, StringIO, TextIOWrapper
 from os import PathLike
 from pathlib import Path
-from typing import Generator, Iterator, List, Optional, TextIO, Tuple, Union
+from typing import (
+    BinaryIO,
+    Generator,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    TextIO,
+    Tuple,
+    Union,
+)
 
 import msgspec
 from httpx import Client as httpx_Client
@@ -15,6 +27,7 @@ from httpx import HTTPStatusError, create_ssl_context
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
 from pysdmx.util import map_httpx_errors
+from pysdmx.util._net_utils import GZIP_MAGIC, decompress_gzip
 
 SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
 SCHEMA_ROOT_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
@@ -175,19 +188,33 @@ def __read_text(text: TextIO) -> Generator[str, None, None]:
         yield __remove_bom(chunk)
 
 
-def __file_chunks(path: Path) -> Generator[str, None, None]:
-    with open(path, "r", encoding="utf-8-sig", errors="replace") as f:
+def __binary_chunks(data: BinaryIO) -> Generator[str, None, None]:
+    """Decodes a binary stream, decompressing it as it reads if gzipped."""
+    start = data.tell()
+    magic = data.read(len(GZIP_MAGIC))
+    data.seek(start)
+    binary: Union[BinaryIO, gzip.GzipFile] = data
+    if magic == GZIP_MAGIC:
+        binary = gzip.GzipFile(fileobj=data)
+    with TextIOWrapper(binary, encoding="utf-8-sig", errors="replace") as f:
         yield from __read_text(f)
 
 
-def __bytes_chunks(data: BytesIO) -> Generator[str, None, None]:
-    yield from __read_text(
-        TextIOWrapper(data, encoding="utf-8", errors="replace")
-    )
+def __file_chunks(path: Path) -> Generator[str, None, None]:
+    with open(path, "rb") as f:
+        yield from __binary_chunks(f)
 
 
 def __string_chunks(text: str) -> Generator[str, None, None]:
     yield __remove_bom(text)
+
+
+def __body_chunks(
+    chunks: Iterable[bytes], encoding: str
+) -> Generator[str, None, None]:
+    """Decodes the chunks of an HTTP body as httpx's iter_text does."""
+    for text in codecs.iterdecode(chunks, encoding, errors="replace"):
+        yield __remove_bom(text)
 
 
 def __url_chunks(
@@ -218,8 +245,12 @@ def __url_chunks(
                     yield __remove_bom(response.text)
                     return
                 map_httpx_errors(e)
-            for chunk in response.iter_text():
-                yield __remove_bom(chunk)
+            # The body is decoded from its Content-Encoding by httpx, but
+            # some services (e.g. Eurostat) send a gzip body without one
+            yield from __body_chunks(
+                decompress_gzip(response.iter_bytes(), response.request),
+                response.encoding or "utf-8",
+            )
     except Exception as e:
         raise Invalid(
             "Validation Error",
@@ -238,7 +269,7 @@ def __text_chunks(
     if isinstance(sdmx_document, (Path, PathLike)):
         return __file_chunks(sdmx_document)
     if isinstance(sdmx_document, BytesIO):
-        return __bytes_chunks(sdmx_document)
+        return __binary_chunks(sdmx_document)
     if isinstance(sdmx_document, str):
         if sdmx_document.startswith("http"):
             return __url_chunks(sdmx_document, pem)

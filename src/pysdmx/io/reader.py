@@ -44,6 +44,10 @@ def read_sdmx(  # noqa: C901
     message in memory. The validation of SDMX-ML data messages against
     the XSD happens in the same pass.
 
+    A message compressed with gzip (e.g. a ``.gz`` file, or a response of
+    Eurostat's SDMX API) is detected from its first bytes and decompressed
+    while it is read.
+
     .. important::
         When reading a SDMX-JSON structure message, you can read it
         without installing the pysdmx[json] extra

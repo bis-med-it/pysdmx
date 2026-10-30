@@ -55,6 +55,10 @@ DataFrames, not on the size of the message. The validation of SDMX-ML
 data messages against the XSD (``validate=True``) happens in the same
 pass.
 
+A message compressed with gzip, such as a ``.gz`` file or a response of
+Eurostat's SDMX API, is detected from its first bytes and decompressed
+while it is read, so it is read in a single pass as well.
+
 The output is always a Message object, which holds the Datasets at the `data` attribute.
 
 .. code-block:: python
