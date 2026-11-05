@@ -11,6 +11,9 @@ from pysdmx.model import (
     CubeKeyValue,
     CubeRegion,
     CubeValue,
+    DataKey,
+    DataKeyValue,
+    KeySet,
 )
 from pysdmx.model import (
     DataConstraint as DC,
@@ -28,6 +31,14 @@ class FusionKeySet(Struct, frozen=True):
 
     dims: Sequence[str]
     rows: Sequence[Sequence[str]]
+
+    def to_model(self, is_included: bool) -> KeySet:
+        """Converts a Fusion KeySet to a KeySet."""
+        keys = []
+        for r in self.rows:
+            kv = [DataKeyValue(self.dims[idx], v) for idx, v in enumerate(r)]
+            keys.append(DataKey(kv))
+        return KeySet(keys, is_included)
 
 
 class FusionContentConstraint(Struct, frozen=True):
@@ -78,6 +89,8 @@ class FusionDataConstraint(Struct, frozen=True, rename={"agency": "agencyId"}):
     descriptions: Sequence[FusionString] = ()
     attachments: Sequence[str] = ()
     includeCube: Dict[str, FusionKeyValue] = {}
+    includeSeries: Optional[FusionKeySet] = None
+    excludeSeries: Optional[FusionKeySet] = None
 
     def to_model(self) -> DC:
         """Returns the data constraint domain model."""
@@ -94,6 +107,14 @@ class FusionDataConstraint(Struct, frozen=True, rename={"agency": "agencyId"}):
                 for component_id, key_value in self.includeCube.items()
             )
         )
+        inc_keyset = (
+            self.includeSeries.to_model(True) if self.includeSeries else None
+        )
+        exc_keyset = (
+            self.excludeSeries.to_model(False) if self.excludeSeries else None
+        )
+        keysets = [ks for ks in [inc_keyset, exc_keyset] if ks is not None]
+
         return DC(
             id=self.id,
             agency=self.agency,
@@ -104,6 +125,7 @@ class FusionDataConstraint(Struct, frozen=True, rename={"agency": "agencyId"}):
             else None,
             constraint_attachment=attachment,
             cube_regions=(cube_region,),
+            key_sets=tuple(keysets),
         )
 
 
