@@ -98,14 +98,12 @@ class FusionDataConstraint(Struct, frozen=True, rename={"agency": "agencyId"}):
             data_provider=None,
             dataflows=tuple(self.attachments) or None,
         )
-        cube_region = CubeRegion(
-            tuple(
-                CubeKeyValue(
-                    component_id,
-                    tuple(CubeValue(value) for value in key_value.values),
-                )
-                for component_id, key_value in self.includeCube.items()
+        ckv = tuple(
+            CubeKeyValue(
+                component_id,
+                tuple(CubeValue(value) for value in key_value.values),
             )
+            for component_id, key_value in self.includeCube.items()
         )
         inc_keyset = (
             self.includeSeries.to_model(True) if self.includeSeries else None
@@ -124,7 +122,7 @@ class FusionDataConstraint(Struct, frozen=True, rename={"agency": "agencyId"}):
             if self.descriptions
             else None,
             constraint_attachment=attachment,
-            cube_regions=(cube_region,),
+            cube_regions=(CubeRegion(ckv),) if ckv else (),
             key_sets=tuple(keysets),
         )
 
