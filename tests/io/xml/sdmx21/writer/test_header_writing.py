@@ -199,3 +199,15 @@ def test_write_header_prepared_keeps_its_timezone(header):
     result = write_header_aux(header, False, False, True)
 
     assert "<mes:Prepared>2021-01-01T00:00:00+02:00</mes:Prepared>" in result
+
+
+def test_write_header_escapes_text(header):
+    header.sender = Organisation(id="ZZZ", name="Banque d'Italie & Co")
+    header.receiver = [Organisation(id="AR2", name='The "<receiver>"')]
+    header.source = "It's a 'source'"
+
+    result = write_header_aux(header, False, False, True)
+
+    assert "<com:Name>Banque d'Italie &amp; Co</com:Name>" in result
+    assert '<com:Name>The "&lt;receiver&gt;"</com:Name>' in result
+    assert "<mes:Source>It's a 'source'</mes:Source>" in result

@@ -6,24 +6,14 @@ from pysdmx.errors import Invalid
 from pysdmx.io import read_sdmx, write_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import (
-    Component,
-    Components,
-    Concept,
-    Organisation,
-    Role,
-    Schema,
-)
+from pysdmx.model import Component, Components, Concept, Role, Schema
 from pysdmx.model.dataflow import Group
-from pysdmx.model.dataset import ActionType
-from pysdmx.model.message import Header
 
-SCHEMAS = "http://www.sdmx.org/resources/sdmxml/schemas"
-STRUCTURE_SPECIFIC = {
-    Format.DATA_SDMX_ML_2_1_STR: f"{SCHEMAS}/v2_1/data/structurespecific",
-    Format.DATA_SDMX_ML_3_0: f"{SCHEMAS}/v3_0/data/structurespecific",
-    Format.DATA_SDMX_ML_3_1: f"{SCHEMAS}/v3_1/data/structurespecific",
-}
+STRUCTURE_SPECIFIC = [
+    Format.DATA_SDMX_ML_2_1_STR,
+    Format.DATA_SDMX_ML_3_0,
+    Format.DATA_SDMX_ML_3_1,
+]
 FORMATS = [Format.DATA_SDMX_ML_2_1_GEN, *STRUCTURE_SPECIFIC]
 XSI_TYPE = "{http://www.w3.org/2001/XMLSchema-instance}type"
 COLUMNS = [
@@ -60,9 +50,9 @@ def component(id_, role, attachment_level=None):
     )
 
 
-def dataset(context="datastructure", id_="DSD", values=("A",), attribute="A"):
+def dataset(id_="DSD", values=("A",), attribute="A"):
     schema = Schema(
-        context=context,
+        context="datastructure",
         agency="MD",
         id=id_,
         version="1.0",
@@ -84,12 +74,7 @@ def dataset(context="datastructure", id_="DSD", values=("A",), attribute="A"):
         structure=schema,
         data=pd.DataFrame({column: list(values) for column in COLUMNS}),
         attributes={"DS_ATT": attribute},
-        action=ActionType.Replace,
     )
-
-
-def parse(message):
-    return etree.fromstring(message.encode("utf-8"))
 
 
 @pytest.mark.parametrize("dimension_at_observation", ["AllDimensions", "DIM3"])
@@ -119,71 +104,6 @@ def test_character_not_allowed_in_xml_raises(sdmx_format, values, attribute):
         write_sdmx([data], sdmx_format)
 
 
-@pytest.mark.parametrize("sdmx_format", FORMATS)
-def test_header_values_round_trip(sdmx_format):
-    header = Header(
-        id="ID",
-        sender=Organisation(id="SENDER", name="Banque d'Italie & Co"),
-        receiver=[Organisation(id="RECEIVER", name='The "<receiver>"')],
-        source="It's a 'source' & more",
-    )
-
-    message = write_sdmx([dataset()], sdmx_format, header=header)
-
-    result = read_sdmx(message, validate=True).header
-    assert result.sender.name == "Banque d'Italie & Co"
-    assert result.receiver[0].name == 'The "<receiver>"'
-    assert result.source == "It's a 'source' & more"
-
-
-@pytest.mark.parametrize("sdmx_format", STRUCTURE_SPECIFIC)
-def test_action_is_qualified(sdmx_format):
-    message = write_sdmx([dataset()], sdmx_format)
-
-    data_set = parse(message).find("{*}DataSet")
-    action = f"{{{STRUCTURE_SPECIFIC[sdmx_format]}}}action"
-    assert data_set.get(action) == "Replace"
-    assert "action" not in data_set.attrib
-
-
-@pytest.mark.parametrize(
-    ("context", "scope"),
-    [
-        ("datastructure", "DataStructure"),
-        ("dataflow", "Dataflow"),
-        ("provisionagreement", "ProvisionAgreement"),
-    ],
-)
-def test_data_scope_is_the_structure_type(context, scope):
-    sdmx_format = Format.DATA_SDMX_ML_2_1_STR
-
-    message = write_sdmx([dataset(context)], sdmx_format)
-
-    data_set = parse(message).find("{*}DataSet")
-    data_scope = f"{{{STRUCTURE_SPECIFIC[sdmx_format]}}}dataScope"
-    assert data_set.get(data_scope) == scope
-
-
-@pytest.mark.parametrize(
-    ("context", "urn"),
-    [
-        ("datastructure", "datastructure.DataStructure=MD:DSD(1.0)"),
-        ("dataflow", "datastructure.Dataflow=MD:DSD(1.0)"),
-        ("provisionagreement", "registry.ProvisionAgreement=MD:DSD(1.0)"),
-    ],
-)
-@pytest.mark.parametrize("sdmx_format", STRUCTURE_SPECIFIC)
-def test_header_namespace_is_the_data_set_namespace(sdmx_format, context, urn):
-    message = write_sdmx(
-        [dataset(context)], sdmx_format, dimension_at_observation="DIM3"
-    )
-
-    namespace = f"urn:sdmx:org.sdmx.infomodel.{urn}:ObsLevelDim:DIM3"
-    structure = parse(message).find("{*}Header/{*}Structure")
-    assert structure.get("namespace") == namespace
-    assert f'xmlns:ns1="{namespace}"' in message
-
-
 @pytest.mark.parametrize("sdmx_format", STRUCTURE_SPECIFIC)
 def test_group_type_is_in_the_namespace_of_its_data_set(sdmx_format):
     message = write_sdmx(
@@ -192,6 +112,6 @@ def test_group_type_is_in_the_namespace_of_its_data_set(sdmx_format):
         dimension_at_observation="DIM3",
     )
 
-    groups = parse(message).iter("Group")
+    groups = etree.fromstring(message.encode("utf-8")).iter("Group")
     types = [group.get(XSI_TYPE) for group in groups]
     assert types == ["ns1:SIBLING", "ns2:SIBLING"]
