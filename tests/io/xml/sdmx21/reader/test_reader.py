@@ -1440,6 +1440,33 @@ def test_group_merge_group_without_series_columns(multiple_groups_path):
     pd.testing.assert_frame_equal(data, expected)
 
 
+def test_group_merge_all_dimensions():
+    # A Group sets its attributes on the observations of its key
+    data_path = (
+        Path(__file__).parents[1] / "writer" / "samples" / "str_all.xml"
+    )
+    text = data_path.read_text(encoding="utf-8").replace(
+        "<Obs ",
+        '<Group xsi:type="ns1:Group" DIM2="5" ATT3="I" />\n\t\t<Obs ',
+        1,
+    )
+
+    data = read_sdmx(text, validate=True).data[0].data
+
+    expected = pd.DataFrame(
+        {
+            "DIM1": ["1", "2", "3"],
+            "DIM2": ["4", "5", "6"],
+            "ATT1": ["A", "B", "C"],
+            "ATT2": ["7", "8", "9"],
+            "M1": ["10", "11", "12"],
+            "ATT3": [None, "I", None],
+        },
+        dtype=pd.ArrowDtype(pa.string()),
+    )
+    pd.testing.assert_frame_equal(data, expected)
+
+
 def test_constraint_with_cube_region(samples_folder):
     data_path = samples_folder / "constraint_cube.xml"
     input_str, read_format = process_string_to_read(data_path)

@@ -205,6 +205,52 @@ def test_data_set_attributes_in_atts_30():
     assert result.attributes == {"ds_att1": "value1", "ds_att2": "10"}
 
 
+def test_data_atts_with_key_30():
+    # The attributes of an Atts with a key go to the rows of that key
+    data_path = (
+        Path(__file__).parents[1]
+        / "writer"
+        / "samples"
+        / "test_dataset_with_groups.xml"
+    )
+    text = data_path.read_text(encoding="utf-8")
+    text = text.replace(
+        "<Series ", '<Atts DIM2="5" ATT9="X" />\n\t\t<Series ', 1
+    )
+
+    data = read_sdmx(text, validate=True).data[0].data
+
+    assert data.to_dict("list") == {
+        "DIM2": ["4", "5", "6"],
+        "ATT1": ["A", "B", "C"],
+        "DIM1": ["1", "2", "3"],
+        "M1": ["10", "11", "12"],
+        "ATT2": ["7", "8", "9"],
+        "ATT3": ["H", "I", "J"],
+        "ATT9": [None, "X", None],
+    }
+
+
+def test_data_atts_with_key_all_dimensions_30():
+    # The attributes of an Atts with a key go to the observations of that key
+    data_path = (
+        Path(__file__).parents[1]
+        / "writer"
+        / "samples"
+        / "data_write_30_data_flow.xml"
+    )
+    text = data_path.read_text(encoding="utf-8")
+    text = text.replace("<Obs ", '<Atts DIM1="2" ATT9="X" />\n\t\t<Obs ', 1)
+
+    data = read_sdmx(text, validate=True).data[0].data
+
+    assert data.to_dict("list") == {
+        "DIM1": ["1", "2", "3"],
+        "M1": ["10", "11", "12"],
+        "ATT9": [None, "X", None],
+    }
+
+
 def test_data_no_structure_specific(samples_folder):
     from pysdmx.io.xml.sdmx30.reader.structure_specific import (
         read as read_str_spe,

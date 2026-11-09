@@ -20,7 +20,7 @@ def _batches(
 ) -> Dict[Tuple[str, ...], Batch]:
     """Splits the groups into batches that can be merged at once.
 
-    The key columns of a group are its columns that the series have, and
+    The key columns of a group are its columns that the data have, and
     its other columns are its attributes. A batch has the groups with the
     same key columns, as one row per key: the values of the key columns,
     and each attribute from the first of these groups that has it. The
@@ -40,12 +40,21 @@ def _batches(
 
 
 def _merge_groups(df: pd.DataFrame, groups: List[Row]) -> pd.DataFrame:
-    """Merges the attributes of the groups into the series.
+    """Merges the attributes of the groups into the rows of their key.
 
+    A group has the values of a Group, or of an Atts with a key: those of
+    its key columns, which the data have, and those of its attributes.
     The batches of groups are merged in their order, and a row keeps the
     first value it gets for an attribute. A group without key columns
-    matches no row. The attributes follow the columns of the series, in
-    the order they first appear in the groups.
+    matches no row. The attributes follow the columns of the data, in the
+    order they first appear in the groups.
+
+    Args:
+        df: The rows of the series, or the observations.
+        groups: The values of each group, in the order they were read.
+
+    Returns:
+        The rows, with the attributes of the groups.
     """
     columns = df.columns.tolist()
     for keys, rows in _batches(groups, columns).items():
@@ -64,9 +73,9 @@ def _merge_groups(df: pd.DataFrame, groups: List[Row]) -> pd.DataFrame:
         )
         for name in filled:
             df[name] = df[name].fillna(df.pop(f"{name}_drop"))
-    series = set(columns)
+    data = set(columns)
     attributes = dict.fromkeys(
-        name for group in groups for name in group if name not in series
+        name for group in groups for name in group if name not in data
     )
     # Attributes set only by groups without key columns
     nulls = {
@@ -125,15 +134,15 @@ class _StructureSpecificDataSet:
         if self.__has_series:
             # Structure Specific Series
             df = self.__series.frame()
-            if self.__groups:
-                df = _merge_groups(df, self.__groups)
         else:
             # Structure Specific All dimensions
             df = self.__observations.frame()
-        attributes = {
-            **self.__attributes,
-            **self.__data_set_atts(dataset, df.columns),
-        }
+        data_set_atts, atts = self.__atts(dataset, df.columns)
+        # The Atts with a key are merged after the Groups
+        groups = self.__groups + atts
+        if groups:
+            df = _merge_groups(df, groups)
+        attributes = {**self.__attributes, **data_set_atts}
         attached_attributes = {
             k: v for k, v in attributes.items() if k not in EXCLUDED_ATTRIBUTES
         }
@@ -147,22 +156,29 @@ class _StructureSpecificDataSet:
             action=action,
         )
 
-    def __data_set_atts(
+    def __atts(
         self, dataset: etree._Element, columns: Iterable[str]
-    ) -> Dict[str, str]:
-        """Returns the data set attributes given in Atts elements.
+    ) -> Tuple[Dict[str, str], List[Row]]:
+        """Returns the attributes given in Atts elements.
 
         In SDMX-ML 3.x, an Atts without a key gives data set attributes.
-        An Atts with a column of the data has a key, and is left out.
+        An Atts with a column of the data has a key, and its attributes go
+        to the rows of that key, as those of a Group.
+
+        Returns:
+            The data set attributes, and the values of the Atts with a key.
         """
         keys = set(columns)
         attributes: Dict[str, str] = {}
+        atts: List[Row] = []
         for child in dataset:
             if self.__names[child.tag] == ATTS:
                 values = self.__names.attributes(child)
                 if keys.isdisjoint(values):
                     attributes.update(values)
-        return attributes
+                else:
+                    atts.append(dict(values))
+        return attributes, atts
 
 
 def read_structure_specific(
