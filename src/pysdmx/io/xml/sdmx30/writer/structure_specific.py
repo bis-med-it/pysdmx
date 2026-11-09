@@ -6,15 +6,11 @@ from typing import Dict, Optional, Sequence, Union
 
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__tokens import (
-    DSD_LOW,
-    PROV_AGREEMENT,
-    REGISTRY_LOW,
-)
 from pysdmx.io.xml.__write_aux import (
     __write_header,
     create_namespaces,
     get_end_message,
+    structure_specific_namespace,
 )
 from pysdmx.io.xml.__write_data_aux import (
     check_content_dataset,
@@ -24,7 +20,6 @@ from pysdmx.io.xml.__write_structure_specific_aux import (
     __write_data_structure_specific,
 )
 from pysdmx.model.message import Header
-from pysdmx.util import parse_short_urn
 
 
 def write(
@@ -66,15 +61,8 @@ def write(
     header.structure = dim_mapping
     add_namespace_structure = True
     for i, (short_urn, dimension) in enumerate(header.structure.items()):
-        reference = parse_short_urn(short_urn)
-        pre_urn = (
-            REGISTRY_LOW if reference.sdmx_type == PROV_AGREEMENT else DSD_LOW
-        )
-        ss_namespaces += (
-            f'xmlns:ns{i + 1}="urn:sdmx:org.sdmx'
-            f".infomodel.{pre_urn}.{short_urn}"
-            f':ObsLevelDim:{dimension}" '
-        )
+        namespace = structure_specific_namespace(short_urn, dimension)
+        ss_namespaces += f'xmlns:ns{i + 1}="{namespace}" '
 
     # Generating the initial tag with namespaces
     outfile = create_namespaces(type_, ss_namespaces, prettyprint)

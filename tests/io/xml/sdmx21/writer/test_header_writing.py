@@ -174,7 +174,8 @@ def test_write_header_structure_usage_namespace(
 ):
     header = write_header_aux(header_structure_usage, True, True, True)
     exp = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
-    assert f'namespace="{exp}MD:TEST(1.0)"' in header
+    suffix = ":ObsLevelDim:AllDimensions"
+    assert f'namespace="{exp}MD:TEST(1.0){suffix}"' in header
 
 
 def test_write_header_provision_agreement_namespace(
@@ -182,7 +183,8 @@ def test_write_header_provision_agreement_namespace(
 ):
     header = write_header_aux(header_provision_agrement, True, True, True)
     exp = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
-    assert f'namespace="{exp}MD:TEST(1.0)"' in header
+    suffix = ":ObsLevelDim:AllDimensions"
+    assert f'namespace="{exp}MD:TEST(1.0){suffix}"' in header
 
 
 def test_write_header_prepared_without_timezone_is_assumed_utc(header):
