@@ -2,88 +2,18 @@
 
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-import pandas as pd
-import pyarrow as pa
 from lxml import etree
 
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__data_stream import Columns, Names, read_data
+from pysdmx.io.xml.__data_stream import (
+    Columns,
+    Names,
+    Row,
+    merge_groups,
+    read_data,
+)
 from pysdmx.io.xml.__tokens import ATTS, EXCLUDED_ATTRIBUTES
 from pysdmx.model.dataset import ActionType
-
-Row = Dict[str, Optional[str]]
-Batch = Dict[Tuple[Optional[str], ...], Row]
-
-
-def _batches(
-    groups: List[Row], columns: List[str]
-) -> Dict[Tuple[str, ...], Batch]:
-    """Splits the groups into batches that can be merged at once.
-
-    The key columns of a group are its columns that the data have, and
-    its other columns are its attributes. A batch has the groups with the
-    same key columns, as one row per key: the values of the key columns,
-    and each attribute from the first of these groups that has it. The
-    batches follow the order in which their key columns first appear. A
-    group without key columns matches no row, so it is in no batch.
-    """
-    batches: Dict[Tuple[str, ...], Batch] = {}
-    for group in groups:
-        keys = tuple(column for column in columns if column in group)
-        if not keys:
-            continue
-        values = tuple(group[key] for key in keys)
-        row = batches.setdefault(keys, {}).setdefault(values, {})
-        for name, value in group.items():
-            row.setdefault(name, value)
-    return batches
-
-
-def _merge_groups(df: pd.DataFrame, groups: List[Row]) -> pd.DataFrame:
-    """Merges the attributes of the groups into the rows of their key.
-
-    A group has the values of a Group, or of an Atts with a key: those of
-    its key columns, which the data have, and those of its attributes.
-    The batches of groups are merged in their order, and a row keeps the
-    first value it gets for an attribute. A group without key columns
-    matches no row. The attributes follow the columns of the data, in the
-    order they first appear in the groups.
-
-    Args:
-        df: The rows of the series, or the observations.
-        groups: The values of each group, in the order they were read.
-
-    Returns:
-        The rows, with the attributes of the groups.
-    """
-    columns = df.columns.tolist()
-    for keys, rows in _batches(groups, columns).items():
-        frame = Columns(None)
-        for row in rows.values():
-            frame.add(row)
-        batch = frame.frame()
-        # A row keeps the attributes that an earlier batch has set
-        filled = [
-            name
-            for name in batch.columns
-            if name in df.columns and name not in keys
-        ]
-        df = pd.merge(
-            df, batch, on=list(keys), how="left", suffixes=("", "_drop")
-        )
-        for name in filled:
-            df[name] = df[name].fillna(df.pop(f"{name}_drop"))
-    data = set(columns)
-    attributes = dict.fromkeys(
-        name for group in groups for name in group if name not in data
-    )
-    # Attributes set only by groups without key columns
-    nulls = {
-        name: pd.arrays.ArrowExtensionArray(pa.nulls(len(df), pa.string()))
-        for name in attributes
-        if name not in df.columns
-    }
-    return df.assign(**nulls)[columns + list(attributes)]
 
 
 class _StructureSpecificDataSet:
@@ -141,7 +71,7 @@ class _StructureSpecificDataSet:
         # The Atts with a key are merged after the Groups
         groups = self.__groups + atts
         if groups:
-            df = _merge_groups(df, groups)
+            df = merge_groups(df, groups)
         attributes = {**self.__attributes, **data_set_atts}
         attached_attributes = {
             k: v for k, v in attributes.items() if k not in EXCLUDED_ATTRIBUTES
