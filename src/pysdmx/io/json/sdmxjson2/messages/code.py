@@ -1,7 +1,6 @@
 """Collection of SDMX-JSON schemas for codes and codelists."""
 
 from datetime import datetime
-from datetime import timezone as tz
 from typing import Optional, Sequence, Tuple
 
 from msgspec import Struct
@@ -13,6 +12,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonLink,
     MaintainableType,
     NameableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import (
     Agency,
@@ -24,9 +25,14 @@ from pysdmx.model import (
     HierarchyAssociation,
     LevelType,
 )
-from pysdmx.util import find_by_urn, is_final, parse_item_urn
-
-_VAL_FMT = "%Y-%m-%dT%H:%M:%S%z"
+from pysdmx.util import (
+    _VAL_TS_FMT,
+    ensure_tz_aware,
+    find_by_urn,
+    is_final,
+    parse_item_urn,
+    parse_validity_ts,
+)
 
 
 class JsonCode(NameableType, frozen=True, omit_defaults=True):
@@ -34,18 +40,15 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
 
     parent: Optional[str] = None
 
-    def __handle_date(self, datestr: str) -> datetime:
-        return datetime.strptime(datestr, _VAL_FMT)  # noqa
-
     def __get_val(
         self, a: JsonAnnotation
     ) -> Tuple[Optional[datetime], Optional[datetime]]:
         vals = a.title.split("/")  # type: ignore[union-attr]
         if a.title.startswith("/"):  # type: ignore[union-attr]
-            return (None, self.__handle_date(vals[1]))
+            return (None, parse_validity_ts(vals[1]))
         else:
-            valid_from = self.__handle_date(vals[0])
-            valid_to = self.__handle_date(vals[1]) if vals[1] else None
+            valid_from = parse_validity_ts(vals[0])
+            valid_to = parse_validity_ts(vals[1]) if vals[1] else None
             return (valid_from, valid_to)
 
     def to_model(self) -> Code:
@@ -97,13 +100,13 @@ class JsonCode(NameableType, frozen=True, omit_defaults=True):
         annotations = [JsonAnnotation.from_model(a) for a in code.annotations]
         if code.valid_from and code.valid_to:
             vp = (
-                f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
-                f"{datetime.strftime(code.valid_to, _VAL_FMT)}"
+                f"{ensure_tz_aware(code.valid_from).strftime(_VAL_TS_FMT)}/"
+                f"{ensure_tz_aware(code.valid_to).strftime(_VAL_TS_FMT)}"
             )
         elif code.valid_from:
-            vp = f"{datetime.strftime(code.valid_from, _VAL_FMT)}/"
+            vp = f"{ensure_tz_aware(code.valid_from).strftime(_VAL_TS_FMT)}/"
         elif code.valid_to:
-            vp = f"/{datetime.strftime(code.valid_to, _VAL_FMT)}"
+            vp = f"/{ensure_tz_aware(code.valid_to).strftime(_VAL_TS_FMT)}"
         else:
             vp = ""
         if vp:
@@ -145,10 +148,11 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
             items=tuple(all_codes),
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_partial=self.isPartial,
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -173,9 +177,10 @@ class JsonCodelist(ItemSchemeType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in cl.annotations]
             ),
             isExternalReference=cl.is_external_reference,
+            links=_self_link(cl.structure_url),
             isPartial=cl.is_partial,
-            validFrom=cl.valid_from,
-            validTo=cl.valid_to,
+            validFrom=ensure_tz_aware(cl.valid_from),
+            validTo=ensure_tz_aware(cl.valid_to),
         )
 
 
@@ -192,13 +197,14 @@ class JsonValuelist(ItemSchemeType, frozen=True, omit_defaults=True):
             agency=self.agency,
             description=self.description,
             version=self.version,
-            items=[i.to_model() for i in self.valueItems],
-            annotations=[a.to_model() for a in self.annotations],
+            items=tuple([i.to_model() for i in self.valueItems]),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_partial=self.isPartial,
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             sdmx_type="valuelist",
         )
 
@@ -224,9 +230,10 @@ class JsonValuelist(ItemSchemeType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in cl.annotations]
             ),
             isExternalReference=cl.is_external_reference,
+            links=_self_link(cl.structure_url),
             isPartial=cl.is_partial,
-            validFrom=cl.valid_from,
-            validTo=cl.valid_to,
+            validFrom=ensure_tz_aware(cl.valid_from),
+            validTo=ensure_tz_aware(cl.valid_to),
         )
 
 
@@ -286,8 +293,8 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             name = None
             description = None
         codes = [c.to_model(codelists) for c in self.hierarchicalCodes]
-        vf = self.validFrom.replace(tzinfo=tz.utc) if self.validFrom else None
-        vt = self.validTo.replace(tzinfo=tz.utc) if self.validTo else None
+        vf = ensure_tz_aware(self.validFrom)
+        vt = ensure_tz_aware(self.validTo)
         if self.id != code.id:
             a = Annotation(id="hcode", type="pysdmx", text=self.id)
             annotations = [a]
@@ -333,8 +340,8 @@ class JsonHierarchicalCode(Struct, frozen=True, omit_defaults=True):
             id=hid,  # type: ignore[arg-type]
             code=code.urn,
             level=code.level,
-            validFrom=code.rel_valid_from,
-            validTo=code.rel_valid_to,
+            validFrom=ensure_tz_aware(code.rel_valid_from),
+            validTo=ensure_tz_aware(code.rel_valid_to),
             annotations=tuple(annotations) if annotations else None,
             hierarchicalCodes=tuple(
                 [JsonHierarchicalCode.from_model(c) for c in code.codes]
@@ -353,7 +360,7 @@ class JsonLevel(NameableType, frozen=True, omit_defaults=True):
             id=self.id,
             name=self.name,
             description=self.description,
-            annotations=tuple(a.to_model() for a in self.annotations),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             level=self.level.to_model() if self.level else None,
         )
 
@@ -372,8 +379,10 @@ class JsonLevel(NameableType, frozen=True, omit_defaults=True):
             name=level.name,
             description=level.description,
             annotations=tuple(
-                JsonAnnotation.from_model(annotation)
-                for annotation in level.annotations
+                [
+                    JsonAnnotation.from_model(annotation)
+                    for annotation in level.annotations
+                ]
             ),
             level=(
                 JsonLevel.from_model(level.level)
@@ -401,13 +410,14 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
             version=self.version,
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_partial=self.isPartial,
             is_final=is_final(self.version),
             has_formal_levels=self.hasFormalLevels,
             level=self.level.to_model() if self.level else None,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
-            codes=tuple(i.to_model(cls) for i in self.hierarchicalCodes),
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
+            codes=tuple([i.to_model(cls) for i in self.hierarchicalCodes]),
         )
 
     @classmethod
@@ -432,11 +442,12 @@ class JsonHierarchy(ItemSchemeType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in h.annotations]
             ),
             isExternalReference=h.is_external_reference,
+            links=_self_link(h.structure_url),
             isPartial=h.is_partial,
             hasFormalLevels=h.has_formal_levels,
             level=JsonLevel.from_model(h.level) if h.level else None,
-            validFrom=h.valid_from,
-            validTo=h.valid_to,
+            validFrom=ensure_tz_aware(h.valid_from),
+            validTo=ensure_tz_aware(h.valid_to),
         )
 
 
@@ -459,7 +470,6 @@ class JsonHierarchyAssociation(
     linkedHierarchy: Optional[str] = None
     linkedObject: Optional[str] = None
     contextObject: Optional[str] = None
-    links: Sequence[JsonLink] = ()
 
     def to_model(
         self,
@@ -488,11 +498,12 @@ class JsonHierarchyAssociation(
             context_ref=self.contextObject,
             description=self.description,
             version=self.version,
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             operator=lnk[0].urn if lnk else None,
         )
 
@@ -547,8 +558,8 @@ class JsonHierarchyAssociation(
             name=ha.name,
             version=ha.version,
             isExternalReference=ha.is_external_reference,
-            validFrom=ha.valid_from,
-            validTo=ha.valid_to,
+            validFrom=ensure_tz_aware(ha.valid_from),
+            validTo=ensure_tz_aware(ha.valid_to),
             description=ha.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in ha.annotations]
@@ -556,7 +567,7 @@ class JsonHierarchyAssociation(
             linkedHierarchy=href,
             linkedObject=ha.component_ref,
             contextObject=ha.context_ref,
-            links=[lnk] if lnk else (),
+            links=_self_link(ha.structure_url) + ((lnk,) if lnk else ()),
         )
 
 

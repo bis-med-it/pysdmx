@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -11,9 +11,11 @@ from pysdmx.io.reader import read_sdmx
 from pysdmx.io.reader import read_sdmx as reader
 from pysdmx.io.writer import write_sdmx
 from pysdmx.io.xml.sdmx30.reader.structure import read as read_structure
+from pysdmx.io.xml.sdmx30.writer.structure import write as write_structure
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
     Code,
@@ -23,6 +25,7 @@ from pysdmx.model import (
     Contact,
     CubeKeyValue,
     CubeRegion,
+    CubeTimeRange,
     CubeValue,
     CustomType,
     CustomTypeScheme,
@@ -38,6 +41,7 @@ from pysdmx.model import (
     Hierarchy,
     ItemReference,
     KeySet,
+    MetadataAttribute,
     Metadataflow,
     MetadataProvider,
     MetadataProviderScheme,
@@ -84,8 +88,8 @@ def test_hierarchy_30(samples_folder):
     assert len(code_a.codes) == 1
     assert code_a.codes[0].id == "A1"
     code_b = hierarchy.codes[1]
-    assert code_b.rel_valid_from == datetime(2021, 1, 1)
-    assert code_b.rel_valid_to == datetime(2021, 12, 31)
+    assert code_b.rel_valid_from == datetime(2021, 1, 1, tzinfo=timezone.utc)
+    assert code_b.rel_valid_to == datetime(2021, 12, 31, tzinfo=timezone.utc)
 
 
 @pytest.mark.xml
@@ -158,6 +162,31 @@ def test_prov_agree_30_groups_series(samples_folder):
     num_columns = data.shape[1]
     assert num_rows == 3
     assert num_columns == 5
+
+
+def test_data_groups_30():
+    data_path = (
+        Path(__file__).parents[1]
+        / "writer"
+        / "samples"
+        / "test_dataset_with_groups.xml"
+    )
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_0
+    data = read_sdmx(input_str, validate=True).data[0].data
+
+    # ATT3 is the attribute of the Groups
+    expected = {
+        "DIM2": ["4", "5", "6"],
+        "ATT1": ["A", "B", "C"],
+        "DIM1": ["1", "2", "3"],
+        "M1": ["10", "11", "12"],
+        "ATT2": ["7", "8", "9"],
+        "ATT3": ["H", "I", "J"],
+    }
+    assert data.to_dict("list") == expected
+    assert list(data.columns) == list(expected)
+    assert all(str(dtype) == "string[pyarrow]" for dtype in data.dtypes)
 
 
 def test_data_no_structure_specific(samples_folder):
@@ -259,7 +288,7 @@ def test_org_schemes_read(samples_folder):
         "=MD:DATA_PROVIDERS(1.0).DP"
     )
     assert provider.contacts[0].name == "CONTACT"
-    assert provider.contacts[0].emails == ["dp.test@md.org"]
+    assert provider.contacts[0].emails == ("dp.test@md.org",)
 
     dcs = by_type[DataConsumerScheme]
     assert isinstance(dcs.items[0], DataConsumer)
@@ -281,9 +310,9 @@ def test_provider_scheme_enrichment_read(samples_folder):
     assert len(schemes) == 1
     provider = schemes[0].items[0]
     assert provider.id == "MD"
-    assert provider.dataflows == [
-        DataflowRef(id="TEST", agency="MD", version="1.0")
-    ]
+    assert provider.dataflows == (
+        DataflowRef(id="TEST", agency="MD", version="1.0"),
+    )
 
 
 @pytest.mark.xml
@@ -312,10 +341,10 @@ def test_metadata_provider_scheme_enrichment_read(samples_folder):
     schemes = [s for s in result if isinstance(s, MetadataProviderScheme)]
     assert len(schemes) == 1
     providers = {p.id: p for p in schemes[0].items}
-    assert providers["MP1"].dataflows == [
-        DataflowRef(id="MDF_TEST", agency="MD", version="1.0")
-    ]
-    assert providers["MP2"].dataflows == []
+    assert providers["MP1"].dataflows == (
+        DataflowRef(id="MDF_TEST", agency="MD", version="1.0"),
+    )
+    assert providers["MP2"].dataflows == ()
 
 
 @pytest.mark.xml
@@ -940,7 +969,7 @@ def test_datastructure_group(samples_folder):
     assert isinstance(dsd, DataStructureDefinition)
     group = dsd.groups
     assert group[0].id == "Sibling"
-    assert group[0].dimensions == [
+    assert group[0].dimensions == (
         "L_MEASURE",
         "L_REP_CTY",
         "CBS_BANK_TYPE",
@@ -951,7 +980,7 @@ def test_datastructure_group(samples_folder):
         "CURR_TYPE_BOOK",
         "L_CP_SECTOR",
         "L_CP_COUNTRY",
-    ]
+    )
     attribute_1 = dsd.components.attributes[4]
     assert attribute_1.attachment_level == ",".join(group[0].dimensions)
     attribute_2 = dsd.components.attributes[8]
@@ -1025,10 +1054,10 @@ def test_constraint_with_cube_region(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     region = constraint.cube_regions[0]
@@ -1057,10 +1086,10 @@ def test_constraint_with_keyset(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.dataflows == [
+    assert att.dataflows == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "Dataflow=TEST_AGENCY:TEST_DF(1.0)"
-    ]
+        "Dataflow=TEST_AGENCY:TEST_DF(1.0)",
+    )
     # Key Set
     assert len(constraint.key_sets) == 1
     ks = constraint.key_sets[0]
@@ -1097,10 +1126,10 @@ def test_constraint_with_data_structure(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.data_structures == [
+    assert att.data_structures == (
         "urn:sdmx:org.sdmx.infomodel.datastructure."
-        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)"
-    ]
+        "DataStructure=TEST_AGENCY:TEST_DSD(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     assert isinstance(constraint.cube_regions[0], CubeRegion)
@@ -1152,10 +1181,10 @@ def test_constraint_with_provision_agreement(samples_folder):
     # Attachment
     att = constraint.constraint_attachment
     assert isinstance(att, ConstraintAttachment)
-    assert att.provision_agreements == [
+    assert att.provision_agreements == (
         "urn:sdmx:org.sdmx.infomodel.registry."
-        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)"
-    ]
+        "ProvisionAgreement=TEST_AGENCY:TEST_PA(1.0)",
+    )
     # Cube Region
     assert len(constraint.cube_regions) == 1
     assert isinstance(constraint.cube_regions[0], CubeRegion)
@@ -1187,19 +1216,39 @@ def test_constraint_without_attachment(samples_folder):
     ] == ["Q"]
 
 
-def test_constraint_with_actual_role_read_as_plain(samples_folder):
+def test_constraint_with_actual_role(samples_folder):
     data_path = samples_folder / "constraint_actual.xml"
     input_str, _ = process_string_to_read(data_path)
-    result = read_sdmx(input_str).get_data_constraints()
-    assert result is not None
+    result = read_sdmx(input_str, validate=True).structures
     assert len(result) == 1
-    constraint = result[0]
-    assert isinstance(constraint, DataConstraint)
-    assert constraint.id == "TEST_CONSTRAINT_ACTUAL"
-    assert constraint.cube_regions[0].key_values[0].id == "FREQ"
-    assert [
-        v.value for v in constraint.cube_regions[0].key_values[0].values
-    ] == ["M"]
+    assert isinstance(result[0], AvailabilityConstraint)
+
+
+def test_constraint_role_absent_30_defaults_allowed(samples_folder):
+    # role is required by the SDMX 3.0 schema, so this document is
+    # intentionally not schema-valid; it exercises the defensive
+    # fallback to the reader's default (ALLOWED) when role is missing.
+    data_path = samples_folder / "constraint_role_absent.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=False).get_data_constraints()
+    assert len(result) == 1
+    assert isinstance(result[0], DataConstraint)
+
+
+def test_constraint_with_time_range_30(samples_folder):
+    from datetime import datetime
+
+    data_path = samples_folder / "constraint_time_range.xml"
+    input_str, _ = process_string_to_read(data_path)
+    result = read_sdmx(input_str, validate=True).get_data_constraints()
+    assert isinstance(result[0], DataConstraint)
+    region = result[0].cube_regions[0]
+    freq = region.key_values[0]
+    time = region.key_values[1]
+    assert freq.valid_from == datetime(2020, 1, 1, tzinfo=timezone.utc)
+    assert freq.valid_to == datetime(2024, 1, 1, tzinfo=timezone.utc)
+    assert isinstance(time.time_range, CubeTimeRange)
+    assert time.time_range.start_period.period == "1989-01-01T00:00:00"
 
 
 @pytest.fixture
@@ -1351,11 +1400,33 @@ def test_generic_metadata_30(samples_folder):
     # Recursion + dotted lookup + single vs. multiple values
     assert len(report) == 4
     assert report["CONTACT.NAME"].value == "John Doe"
-    assert report["CONTACT.EMAIL"].value == [
+    assert report["CONTACT.EMAIL"].value == (
         "john@example.org",
         "doe@example.org",
-    ]
+    )
     assert report["NOTE"].value == "A single note"
+
+
+@pytest.mark.xml
+def test_generic_metadata_30_attributes_are_tuples(samples_folder):
+    # Nested attributes and repeated values were read as lists, so the
+    # report was unhashable and unequal to a tuple-built one (issue #680).
+    data_path = samples_folder / "generic_metadata.xml"
+    report = read_sdmx(data_path, validate=True).get_reports()[0]
+
+    assert report.attributes == (
+        MetadataAttribute(
+            "CONTACT",
+            attributes=(
+                MetadataAttribute("NAME", "John Doe"),
+                MetadataAttribute(
+                    "EMAIL", ("john@example.org", "doe@example.org")
+                ),
+            ),
+        ),
+        MetadataAttribute("NOTE", "A single note"),
+    )
+    hash(report)  # must not raise TypeError (unhashable list field)
 
 
 @pytest.mark.xml
@@ -1438,6 +1509,12 @@ def test_generic_metadata_empty_set():
     )
     assert read_refmeta(doc, validate=True) == []
 
+    # ...and read_sdmx returns it as a Message without reports.
+    msg = read_sdmx(doc, validate=True)
+    assert msg.header is not None
+    assert msg.reports == ()
+    assert msg.get_reports() == ()
+
 
 @pytest.mark.xml
 def test_category_scheme_30(samples_folder):
@@ -1506,3 +1583,97 @@ def test_categorisation_30(samples_folder):
         "urn:sdmx:org.sdmx.infomodel.categoryscheme."
         "Category=BIS:CS1(1.0.0).OTHER"
     )
+
+
+def test_component_enum_ref_kept_without_codelist_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+
+    dsd = read_structure(input_str, validate=True)[0]
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+    assert freq.enumeration is None
+
+
+def test_component_enum_ref_with_codelist_in_message_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_with_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    structures = read_structure(input_str, validate=True)
+    dsd = next(s for s in structures if isinstance(s, DataStructureDefinition))
+    freq = next(c for c in dsd.components if c.id == "FREQ")
+
+    assert isinstance(freq.enumeration, Codelist)
+    assert freq.enumeration.short_urn == "Codelist=ZZZ:CL_FREQ(1.0)"
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_component_enum_ref_round_trip_30(samples_folder):
+    data_path = samples_folder / "dsd_enum_ref_no_codelist.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    dsd = read_structure(input_str, validate=True)
+    written = write_structure(dsd, prettyprint=True)
+
+    re_read = read_structure(written, validate=True)[0]
+    freq = next(c for c in re_read.components if c.id == "FREQ")
+    assert freq.enum_ref == (
+        "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=ZZZ:CL_FREQ(1.0)"
+    )
+
+
+def test_read_empty_structure_containers_30(samples_folder):
+    data_path = samples_folder / "structures_empty_containers.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_0
+
+    assert len(read_structure(input_str, validate=False)) == 0
+
+    # An empty catalogue is a valid structure message, so read_sdmx
+    # returns an empty Message instead of raising.
+    msg = read_sdmx(input_str, validate=False)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_no_structure_containers_30(samples_folder):
+    data_path = samples_folder / "structures_no_containers.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_structure_message_30(samples_folder):
+    data_path = samples_folder / "structures_header_only.xml"
+    input_str, _ = process_string_to_read(data_path)
+
+    assert len(read_structure(input_str, validate=True)) == 0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.structures == ()
+    assert msg.get_dataflows() == []
+
+
+def test_read_header_only_data_message_30(samples_folder):
+    # A StructureSpecificData message without any DataSet is valid SDMX,
+    # so read_sdmx returns an empty Message instead of raising.
+    data_path = samples_folder / "data_header_only.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.DATA_SDMX_ML_3_0
+
+    msg = read_sdmx(input_str, validate=True)
+    assert msg.header is not None
+    assert msg.data == []

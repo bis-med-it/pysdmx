@@ -4,6 +4,7 @@ from datetime import timezone as tz
 import pytest
 
 from pysdmx import errors
+from pysdmx.io.json.sdmxjson2.messages.core import JsonLink
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import (
     Agency,
@@ -31,7 +32,8 @@ def dataflow():
         description="FREQ cl",
         version="1.42",
         annotations=[Annotation(type="test")],
-        is_external_reference=False,
+        is_external_reference=True,
+        structure_url="https://example.test/dataflow/BIS/CL_FREQ/1.42",
         valid_from=datetime.now(tz.utc),
         valid_to=datetime.now(tz.utc),
         structure=_CBS,
@@ -100,10 +102,34 @@ def test_dataflow(dataflow: Dataflow):
     assert sjson.description == dataflow.description
     assert sjson.version == dataflow.version
     assert len(sjson.annotations) == 1
-    assert sjson.isExternalReference is False
+    assert sjson.isExternalReference is True
+    assert sjson.links[0].rel == "self"
+    assert sjson.links[0].href == dataflow.structure_url
     assert sjson.validFrom == dataflow.valid_from
     assert sjson.validTo == dataflow.valid_to
     assert sjson.structure == _CBS
+    assert sjson.to_model().is_external_reference is True
+
+
+def test_dataflow_uses_first_self_link_with_href():
+    sjson = JsonDataflow(
+        agency="BIS",
+        id="CL_FREQ",
+        name="Frequency",
+        structure=_CBS,
+        isExternalReference=True,
+        links=(
+            JsonLink(rel="self"),
+            JsonLink(rel="alternate", href="https://example.test/alternate"),
+            JsonLink(rel="self", href="https://example.test/dataflow"),
+            JsonLink(rel="self", href="https://example.test/ignored"),
+        ),
+    )
+
+    model = sjson.to_model()
+
+    assert model.structure_url == "https://example.test/dataflow"
+    assert JsonDataflow.from_model(model).isExternalReference is True
 
 
 def test_dataflow_org(dataflow_org: Dataflow):

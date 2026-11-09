@@ -1,32 +1,32 @@
 """SDMX 1.0 CSV reader module."""
 
-from io import StringIO
-from typing import Sequence
-
-import pandas as pd
+from typing import Iterable, List, Sequence
 
 from pysdmx.errors import Invalid
-from pysdmx.io.csv.__csv_aux_reader import __generate_dataset_from_sdmx_csv
+from pysdmx.io.csv.__csv_aux_reader import (
+    __generate_dataset_from_sdmx_csv,
+    read_csv_chunks,
+)
 from pysdmx.io.pd import PandasDataset
 from pysdmx.toolkit.pd._data_utils import drop_labels
 
 
-def read(input_str: str) -> Sequence[PandasDataset]:
-    """Reads csv data and returns a sequence of Datasets.
+def read_stream(chunks: Iterable[str]) -> List[PandasDataset]:
+    """Reads SDMX-CSV 1.0 data given in text chunks.
+
+    pandas reads the text as it needs it, without holding it whole.
 
     Args:
-        input_str: str.
+        chunks: The text of the message, in chunks.
 
     Returns:
-        A Sequence of Pandas Datasets.
+        A list of Pandas Datasets.
 
     Raises:
         Invalid: If it is an invalid CSV file.
     """
     # Get Dataframe from CSV file
-    df_csv = pd.read_csv(
-        StringIO(input_str), keep_default_na=False, na_values=[]
-    )
+    df_csv = read_csv_chunks(chunks)
     # Drop empty columns
     df_csv = df_csv.dropna(axis=1, how="all")
 
@@ -61,3 +61,18 @@ def read(input_str: str) -> Sequence[PandasDataset]:
 
     # Return the payload generated
     return payload
+
+
+def read(input_str: str) -> Sequence[PandasDataset]:
+    """Reads csv data and returns a sequence of Datasets.
+
+    Args:
+        input_str: str.
+
+    Returns:
+        A Sequence of Pandas Datasets.
+
+    Raises:
+        Invalid: If it is an invalid CSV file.
+    """
+    return read_stream([input_str])

@@ -18,11 +18,13 @@ def ha():
         version="1.42",
         annotations=[Annotation(type="test")],
         is_external_reference=False,
+        structure_url="https://example.test/hierarchy-association/UUID",
         valid_from=datetime.now(tz.utc),
         valid_to=datetime.now(tz.utc),
         hierarchy="hierarchy_urn",
         component_ref="component_urn",
         context_ref="dataflow_urn",
+        operator="urn:sdmx:org.sdmx.infomodel.transformation.UserDefinedOperator=BIS:OP(1.0)",
     )
 
 
@@ -123,6 +125,14 @@ def test_ha(ha: HierarchyAssociation):
     assert sjson.linkedHierarchy == ha.hierarchy
     assert sjson.contextObject == ha.context_ref
     assert sjson.linkedObject == ha.component_ref
+    assert [(link.rel, link.href, link.urn) for link in sjson.links] == [
+        ("self", ha.structure_url, None),
+        ("UserDefinedOperator", None, ha.operator),
+    ]
+
+    output = sjson.to_model((), ())
+    assert output.structure_url == ha.structure_url
+    assert output.operator == ha.operator
 
 
 def test_ha_org(ha_org: HierarchyAssociation):

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Artefact containers present but empty. Not schema-valid: the XSD
+     requires at least one child, so these must be read with
+     validate=False. Eurostat's SDMX 3.0 endpoint answers with this
+     shape when a bulk catalogue is empty (issue #685). -->
+<mes:Structure xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2026-01-01T00:00:00Z</mes:Prepared>
+        <mes:Sender id="ESTAT"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:Dataflows/>
+        <str:Codelists/>
+        <str:ConceptSchemes/>
+        <str:OrganisationSchemes/>
+    </mes:Structures>
+</mes:Structure>

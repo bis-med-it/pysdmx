@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A StructureSpecificData message with a header but no DataSet. DataSet is
+     optional in the schema, so this is how a service answers a data query
+     that matches nothing. -->
+<message:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                               xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+                               xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/structurespecific"
+                               xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+    <message:Header>
+        <message:ID>test</message:ID>
+        <message:Test>true</message:Test>
+        <message:Prepared>2026-01-01T00:00:00Z</message:Prepared>
+        <message:Sender id="ZZZ"/>
+        <message:Structure structureID="BIS_DER"
+                           namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=BIS:BIS_DER(1.0)"
+                           dimensionAtObservation="AllDimensions">
+            <common:Structure>
+                <Ref agencyID="BIS" id="BIS_DER" version="1.0" class="DataStructure"/>
+            </common:Structure>
+        </message:Structure>
+    </message:Header>
+</message:StructureSpecificData>

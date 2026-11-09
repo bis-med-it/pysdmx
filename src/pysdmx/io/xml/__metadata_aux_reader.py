@@ -48,7 +48,7 @@ def __format_attribute(att_elem: Dict[str, Any]) -> MetadataAttribute:
     if VALUE in att_elem:
         raw = att_elem[VALUE]
         value = (
-            [_extract_text(v) for v in raw]
+            tuple([_extract_text(v) for v in raw])
             if isinstance(raw, list)
             else _extract_text(raw)
         )
@@ -80,7 +80,7 @@ def __format_report(metadata_set: Dict[str, Any]) -> MetadataReport:
     )
     mpa = _extract_text(metadata_set[MPA]) if MPA in metadata_set else None
     targets = (
-        tuple(_extract_text(t) for t in add_list(metadata_set[TARGET]))
+        tuple([_extract_text(t) for t in add_list(metadata_set[TARGET])])
         if TARGET in metadata_set
         else ()
     )

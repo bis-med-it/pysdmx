@@ -24,7 +24,11 @@ from pysdmx.api.qb.schema import SchemaFormat, SchemaQuery
 from pysdmx.api.qb.structure import StructureFormat, StructureQuery
 from pysdmx.api.qb.util import ApiVersion
 from pysdmx.io.format import GDS_FORMAT
-from pysdmx.util._net_utils import map_httpx_errors
+from pysdmx.util._net_utils import (
+    adecompress_gzip,
+    decompress_gzip,
+    map_httpx_errors,
+)
 
 
 class _CoreRestService:
@@ -194,7 +198,7 @@ class RestService(_CoreRestService):
                 h["Accept"] = format
                 r = client.get(url, headers=h, timeout=self._timeout)
                 r.raise_for_status()
-                return r.content
+                return b"".join(decompress_gzip([r.content], r.request))
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -216,8 +220,9 @@ class RestService(_CoreRestService):
                     if cs.is_error:
                         cs.read()
                         cs.raise_for_status()
-                    for chunk in cs.iter_bytes(chunk_size):
-                        yield chunk
+                    yield from decompress_gzip(
+                        cs.iter_bytes(chunk_size), cs.request
+                    )
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -346,7 +351,7 @@ class AsyncRestService(_CoreRestService):
                 h["Accept"] = format
                 r = await client.get(url, headers=h, timeout=self._timeout)
                 r.raise_for_status()
-                return r.content
+                return b"".join(decompress_gzip([r.content], r.request))
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -368,8 +373,8 @@ class AsyncRestService(_CoreRestService):
                     if cs.is_error:
                         await cs.aread()
                         cs.raise_for_status()
-                    async for chunk in cs.aiter_bytes(
-                        chunk_size
+                    async for chunk in adecompress_gzip(
+                        cs.aiter_bytes(chunk_size), cs.request
                     ):  # pragma: no cover
                         yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:

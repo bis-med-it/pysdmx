@@ -1,0 +1,44 @@
+[
+    {
+        "meta": {
+            "txId": "9068",
+            "txTs": 1792079277085
+        },
+        "data": {
+            "del": [],
+            "ins": [
+                "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CMS_REPORT_HASH_REGISTRY(1.0)"
+            ],
+            "upd": [
+                "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)",
+                "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_UNIT(1.0)"
+            ]
+        }
+    },
+    {
+        "meta": {
+            "txId": "9067",
+            "txTs": 1792079276450
+        },
+        "data": {
+            "del": [],
+            "ins": [],
+            "upd": [
+                "urn:sdmx:org.sdmx.infomodel.metadatastructure.MetadataSet=BIS:BIS_DA_CBS(1.0)"
+            ]
+        }
+    },
+    {
+        "meta": {
+            "txId": "9067",
+            "txTs": 1792079276442
+        },
+        "data": {
+            "del": [
+                "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS.TEST:TEST(1.0)"
+            ],
+            "ins": [],
+            "upd": []
+        }
+    }
+]

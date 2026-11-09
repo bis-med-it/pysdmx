@@ -12,9 +12,11 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonLink,
     JsonRepresentation,
     NameableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import Agency, Codelist, Concept, ConceptScheme, DataType
-from pysdmx.util import is_final
+from pysdmx.util import ensure_tz_aware, is_final
 
 
 class IsoConceptReference(msgspec.Struct, frozen=True, omit_defaults=True):
@@ -112,12 +114,13 @@ class JsonConceptScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             description=self.description,
             version=self.version,
             is_final=is_final(self.version),
-            items=concepts,
-            annotations=[a.to_model() for a in self.annotations],
+            items=tuple(concepts),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_partial=self.isPartial,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -137,8 +140,9 @@ class JsonConceptScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             name=cs.name,
             version=cs.version,
             isExternalReference=cs.is_external_reference,
-            validFrom=cs.valid_from,
-            validTo=cs.valid_to,
+            links=_self_link(cs.structure_url),
+            validFrom=ensure_tz_aware(cs.valid_from),
+            validTo=ensure_tz_aware(cs.valid_to),
             description=cs.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in cs.annotations]

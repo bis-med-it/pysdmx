@@ -17,6 +17,7 @@ from pysdmx.io.xml.__write_aux import (
     __escape_xml,
     add_indent,
     create_namespaces,
+    format_datetime,
     get_end_message,
 )
 from pysdmx.model.__base import Agency
@@ -181,9 +182,7 @@ def __write_metadata_header(
     child3 = "\t\t\t" if prettyprint else ""
 
     header = header if header is not None else Header()
-    prepared = header.prepared.isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    prepared = format_datetime(header.prepared)
     sender = header.sender.id
 
     ref = parse_urn(structure_urn)

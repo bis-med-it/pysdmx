@@ -63,6 +63,7 @@ API Reference
 
    model/code
    model/concept
+   model/constraint
    model/dataflow
    model/dataset
    model/category

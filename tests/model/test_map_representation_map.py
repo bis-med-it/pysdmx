@@ -169,7 +169,7 @@ def test_empty_maps_allow_missing_source_and_target(id, name, agency):
 
     assert sm.source is None
     assert sm.target is None
-    assert sm.maps == []
+    assert sm.maps == ()
 
 
 def test_missing_source(id, name, agency, target, mappings):
@@ -184,3 +184,12 @@ def test_missing_target(id, name, agency, source, mappings):
         RepresentationMap(
             id=id, name=name, agency=agency, source=source, maps=mappings
         )
+
+
+def test_default_maps_is_tuple_and_hashable(id, name, agency):
+    # Sequence fields default to () so that instances built without them
+    # stay hashable and compare equal to tuple-built ones (issue #680).
+    rm = RepresentationMap(id=id, name=name, agency=agency)
+
+    hash(rm)  # must not raise TypeError (unhashable list field)
+    assert rm == RepresentationMap(id=id, name=name, agency=agency, maps=())

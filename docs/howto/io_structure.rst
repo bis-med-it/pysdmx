@@ -18,6 +18,14 @@ In this tutorial, we learn how to read SDMX Structures messages using the
     For SDMX-JSON structural validation you need to install the `pysdmx[json]` extra.
     ``validate=True`` is the default behaviour on read_sdmx and get_datasets.
 
+    SDMX-JSON validation strictly checks RFC 3339 ``date-time`` values,
+    which require timezone information. As SDMX itself allows datetimes
+    without timezone information, such datetimes are reported with a
+    ``UserWarning`` instead of an error, and the message is read anyway.
+    When reading such datetimes, ``pysdmx`` assumes they are expressed in
+    UTC and returns timezone-aware datetimes. Datetimes that already carry
+    timezone information are kept as they are.
+
 
     Check the :ref:`installation guide <installation>` for more information.
 

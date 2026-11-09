@@ -2,7 +2,7 @@
     "meta": {
         "id": "IREF909102",
         "test": false,
-        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
         "prepared": "2023-07-31T08:08:32Z",
         "contentLanguages": [
             "en"
@@ -92,7 +92,7 @@
                     {
                         "rel": "self",
                         "type": "agencyscheme",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.base.AgencyScheme=SDMX:AGENCIES(1.0)"
                     }
                 ],
@@ -111,7 +111,7 @@
                             {
                                 "rel": "self",
                                 "type": "agency",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.base.Agency=SDMX:AGENCIES(1.0).BIS"
                             }
                         ],
@@ -140,7 +140,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.ValueList=BIS:CL_AVAILABILITY(1.0)"
                     }
                 ],
@@ -159,7 +159,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_AVAILABILITY(1.0).A"
                             }
                         ],
@@ -178,7 +178,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_BIS_IF_REF_AREA(1.0)"
                     }
                 ],
@@ -197,7 +197,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_BIS_IF_REF_AREA(1.0).1C"
                             }
                         ],
@@ -214,7 +214,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CBS_BASIS(1.0)"
                     }
                 ],
@@ -233,7 +233,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CBS_BASIS(1.0).F"
                             }
                         ],
@@ -250,7 +250,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_COLLECTION(1.0)"
                     }
                 ],
@@ -269,7 +269,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_COLLECTION(1.0).E"
                             }
                         ],
@@ -286,7 +286,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CONF_STATUS(1.0)"
                     }
                 ],
@@ -305,7 +305,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CONF_STATUS(1.0).F"
                             }
                         ],
@@ -322,7 +322,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_CURRENCY_3POS(1.0)"
                     }
                 ],
@@ -341,7 +341,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_CURRENCY_3POS(1.0).FC1"
                             }
                         ],
@@ -358,7 +358,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_DECIMALS(1.0)"
                     }
                 ],
@@ -377,7 +377,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_DECIMALS(1.0).6"
                             }
                         ],
@@ -394,7 +394,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_FREQ(1.0)"
                     }
                 ],
@@ -413,7 +413,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_FREQ(1.0).Q"
                             }
                         ],
@@ -430,7 +430,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ISSUE_MAT(1.0)"
                     }
                 ],
@@ -449,7 +449,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ISSUE_MAT(1.0).A"
                             }
                         ],
@@ -466,7 +466,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_INSTR(1.0)"
                     }
                 ],
@@ -485,7 +485,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_INSTR(1.0).A"
                             }
                         ],
@@ -502,7 +502,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_POSITION(1.0)"
                     }
                 ],
@@ -521,7 +521,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_POSITION(1.0).B"
                             }
                         ],
@@ -538,7 +538,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_L_SECTOR(1.0)"
                     }
                 ],
@@ -557,7 +557,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_L_SECTOR(1.0).A"
                             }
                         ],
@@ -574,7 +574,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_OBS_STATUS(1.0)"
                     }
                 ],
@@ -593,7 +593,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_OBS_STATUS(1.0).A"
                             }
                         ],
@@ -610,7 +610,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_ORG_VISIBILITY(1.0)"
                     }
                 ],
@@ -629,7 +629,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_ORG_VISIBILITY(1.0).A"
                             }
                         ],
@@ -646,7 +646,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_STOCK_FLOW(1.0)"
                     }
                 ],
@@ -665,7 +665,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_STOCK_FLOW(1.0).S"
                             }
                         ],
@@ -682,7 +682,7 @@
                     {
                         "rel": "self",
                         "type": "codelist",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Codelist=BIS:CL_UNIT_MULT(1.0)"
                     }
                 ],
@@ -701,7 +701,7 @@
                             {
                                 "rel": "self",
                                 "type": "code",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.codelist.Code=BIS:CL_UNIT_MULT(1.0).6"
                             }
                         ],
@@ -720,7 +720,7 @@
                     {
                         "rel": "self",
                         "type": "conceptscheme",
-                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                        "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                         "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.ConceptScheme=BIS:STANDALONE_CONCEPT_SCHEME(1.0)"
                     }
                 ],
@@ -739,7 +739,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_FORMAT"
                             }
                         ],
@@ -762,7 +762,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).AVAILABILITY"
                             }
                         ],
@@ -777,7 +777,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BANK_TYPE"
                             }
                         ],
@@ -792,7 +792,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CBS_BASIS"
                             }
                         ],
@@ -807,7 +807,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).COLLECTION"
                             }
                         ],
@@ -822,7 +822,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).CURR_TYPE_BOOK"
                             }
                         ],
@@ -837,7 +837,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).DECIMALS"
                             }
                         ],
@@ -860,7 +860,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).FREQ"
                             }
                         ],
@@ -875,7 +875,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_COUNTRY"
                             }
                         ],
@@ -890,7 +890,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_CP_SECTOR"
                             }
                         ],
@@ -905,7 +905,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_INSTR"
                             }
                         ],
@@ -920,7 +920,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_MEASURE"
                             }
                         ],
@@ -935,7 +935,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_POSITION"
                             }
                         ],
@@ -950,7 +950,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).L_REP_CTY"
                             }
                         ],
@@ -965,7 +965,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_CONF"
                             }
                         ],
@@ -980,7 +980,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_PRE_BREAK"
                             }
                         ],
@@ -995,7 +995,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_STATUS"
                             }
                         ],
@@ -1010,7 +1010,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).OBS_VALUE"
                             }
                         ],
@@ -1029,7 +1029,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).ORG_VISIBILITY"
                             }
                         ],
@@ -1044,7 +1044,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).REM_MATURITY"
                             }
                         ],
@@ -1059,7 +1059,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TIME_PERIOD"
                             }
                         ],
@@ -1078,7 +1078,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).TITLE_GRP"
                             }
                         ],
@@ -1093,7 +1093,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MEASURE"
                             }
                         ],
@@ -1112,7 +1112,7 @@
                             {
                                 "rel": "self",
                                 "type": "concept",
-                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/1.0/sdmx-json-structure-schema.json",
+                                "uri": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
                                 "urn": "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=BIS:STANDALONE_CONCEPT_SCHEME(1.0).UNIT_MULT"
                             }
                         ],

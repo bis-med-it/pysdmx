@@ -69,6 +69,8 @@ Deserializing the response
 The response of the web service will be returned as a sequence of bytes.
 By default, the returned responses will be in the SDMX-JSON format, but
 this can be configured when instantiating the ``RestService``.
+A response compressed with gzip without a ``Content-Encoding`` header, as
+Eurostat's SDMX API sends them, is decompressed as well.
 
 You can then process the response using your preferred library for the
 requested format, such as, for example, Python ``json`` module, for SDMX-JSON

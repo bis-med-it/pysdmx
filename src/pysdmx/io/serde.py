@@ -32,6 +32,7 @@ class Deserializers:
     concepts: Deserializer
     dataflow_info: Deserializer
     dataflows: Deserializer
+    data_constraint: Deserializer
     providers: Deserializer
     provision_agreement: Deserializer
     schema: Deserializer

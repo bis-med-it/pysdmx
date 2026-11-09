@@ -8,6 +8,9 @@ from msgspec import Struct
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
+    _self_link,
+    _self_link_href,
+    tuple_contacts,
 )
 from pysdmx.io.json.sdmxjson2.messages.mpa import (
     JsonMetadataProvisionAgreement,
@@ -21,7 +24,7 @@ from pysdmx.model import (
     MetadataProvider,
     MetadataProviderScheme,
 )
-from pysdmx.util import is_final, parse_item_urn, parse_urn
+from pysdmx.util import ensure_tz_aware, is_final, parse_item_urn, parse_urn
 
 
 class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
@@ -48,8 +51,8 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=p.contacts,
-                    dataflows=list(paprs[f"{self.agency}:{p.id}"]),
+                    contacts=tuple_contacts(p.contacts),
+                    dataflows=tuple(paprs[f"{self.agency}:{p.id}"]),
                     annotations=tuple(
                         [a.to_model() for a in self.annotations]
                     ),
@@ -62,7 +65,7 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=p.contacts,
+                    contacts=tuple_contacts(p.contacts),
                     annotations=tuple(
                         [a.to_model() for a in self.annotations]
                     ),
@@ -72,13 +75,14 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         return DataProviderScheme(
             agency=self.agency,
             description=self.description,
-            items=provs,
+            items=tuple(provs),
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             is_partial=self.isPartial,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -97,9 +101,10 @@ class JsonDataProviderScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in dps.annotations]
             ),
             isExternalReference=dps.is_external_reference,
+            links=_self_link(dps.structure_url),
             isPartial=dps.is_partial,
-            validFrom=dps.valid_from,
-            validTo=dps.valid_to,
+            validFrom=ensure_tz_aware(dps.valid_from),
+            validTo=ensure_tz_aware(dps.valid_to),
         )
 
 
@@ -153,8 +158,8 @@ class JsonMetadataProviderScheme(
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=p.contacts,
-                    dataflows=list(paprs[f"{self.agency}:{p.id}"]),
+                    contacts=tuple_contacts(p.contacts),
+                    dataflows=tuple(paprs[f"{self.agency}:{p.id}"]),
                     annotations=tuple(
                         [a.to_model() for a in self.annotations]
                     ),
@@ -167,7 +172,7 @@ class JsonMetadataProviderScheme(
                     id=p.id,
                     name=p.name,
                     description=p.description,
-                    contacts=p.contacts,
+                    contacts=tuple_contacts(p.contacts),
                     annotations=tuple(
                         [a.to_model() for a in self.annotations]
                     ),
@@ -177,13 +182,14 @@ class JsonMetadataProviderScheme(
         return MetadataProviderScheme(
             agency=self.agency,
             description=self.description,
-            items=provs,
+            items=tuple(provs),
             annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             is_partial=self.isPartial,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -204,9 +210,10 @@ class JsonMetadataProviderScheme(
                 [JsonAnnotation.from_model(a) for a in dps.annotations]
             ),
             isExternalReference=dps.is_external_reference,
+            links=_self_link(dps.structure_url),
             isPartial=dps.is_partial,
-            validFrom=dps.valid_from,
-            validTo=dps.valid_to,
+            validFrom=ensure_tz_aware(dps.valid_from),
+            validTo=ensure_tz_aware(dps.valid_to),
         )
 
 

@@ -7,7 +7,7 @@ import msgspec
 
 from pysdmx.errors import NotFound
 from pysdmx.model import ArrayBoundaries, Codelist, Facets
-from pysdmx.util import find_by_urn
+from pysdmx.util import ensure_tz_aware, find_by_urn
 
 
 class FusionString(msgspec.Struct, frozen=True):
@@ -111,8 +111,8 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
                 end_value=end,
                 decimals=self.textFormat.decimals,
                 pattern=self.textFormat.pattern,
-                start_time=self.textFormat.startTime,
-                end_time=self.textFormat.endTime,
+                start_time=ensure_tz_aware(self.textFormat.startTime),
+                end_time=ensure_tz_aware(self.textFormat.endTime),
                 is_multilingual=self.textFormat.isMultilingual,
             )
         else:
@@ -131,7 +131,7 @@ class FusionRepresentation(msgspec.Struct, frozen=True):
                 codes = [
                     c.to_model() for c in a.items if not valid or c.id in valid
                 ]
-                return msgspec.structs.replace(cl, items=codes)
+                return msgspec.structs.replace(cl, items=tuple(codes))
             except NotFound:
                 # This is OK. In case of schema queries, if a component
                 # has both a local and a core representations, only the

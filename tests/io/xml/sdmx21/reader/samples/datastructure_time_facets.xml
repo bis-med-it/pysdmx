@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+    <mes:Header>
+        <mes:ID>test</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2026-05-21T10:00:00</mes:Prepared>
+        <mes:Sender id="Unknown"/>
+        <mes:Receiver id="Not_supplied"/>
+    </mes:Header>
+    <mes:Structures>
+        <str:DataStructures>
+            <str:DataStructure id="DS_TF" agencyID="MD" version="1.0" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DS_TF(1.0)">
+                <com:Name xml:lang="en">DS with time facets</com:Name>
+                <str:DataStructureComponents>
+                    <str:DimensionList id="DimensionDescriptor" urn="urn:sdmx:org.sdmx.infomodel.datastructure.DimensionDescriptor=MD:DS_TF(1.0).DimensionDescriptor">
+                        <str:Dimension id="REFERENTIE_DATUM" position="1" urn="urn:sdmx:org.sdmx.infomodel.datastructure.Dimension=MD:DS_TF(1.0).REFERENTIE_DATUM">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="STANDALONE_CONCEPT_SCHEME" maintainableParentVersion="1.0" agencyID="MD" id="ReferentieDatum" class="Concept" package="conceptscheme"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="DateTime" isSequence="true" startTime="2000-01-01T00:00:00" endTime="2020-12-31T23:59:59Z"/>
+                            </str:LocalRepresentation>
+                        </str:Dimension>
+                        <str:TimeDimension id="TIME_PERIOD" position="2" urn="urn:sdmx:org.sdmx.infomodel.datastructure.TimeDimension=MD:DS_TF(1.0).TIME_PERIOD">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="STANDALONE_CONCEPT_SCHEME" maintainableParentVersion="1.0" agencyID="MD" id="TIME_PERIOD" class="Concept" package="conceptscheme"/>
+                            </str:ConceptIdentity>
+                            <str:LocalRepresentation>
+                                <str:TextFormat textType="ObservationalTimePeriod" startTime="2000-Q1"/>
+                            </str:LocalRepresentation>
+                        </str:TimeDimension>
+                    </str:DimensionList>
+                    <str:MeasureList id="MeasureDescriptor" urn="urn:sdmx:org.sdmx.infomodel.datastructure.MeasureDescriptor=MD:DS_TF(1.0).MeasureDescriptor">
+                        <str:PrimaryMeasure id="OBS_VALUE" urn="urn:sdmx:org.sdmx.infomodel.datastructure.PrimaryMeasure=MD:DS_TF(1.0).OBS_VALUE">
+                            <str:ConceptIdentity>
+                                <Ref maintainableParentID="STANDALONE_CONCEPT_SCHEME" maintainableParentVersion="1.0" agencyID="MD" id="OBS_VALUE" class="Concept" package="conceptscheme"/>
+                            </str:ConceptIdentity>
+                        </str:PrimaryMeasure>
+                    </str:MeasureList>
+                </str:DataStructureComponents>
+            </str:DataStructure>
+        </str:DataStructures>
+    </mes:Structures>
+</mes:Structure>

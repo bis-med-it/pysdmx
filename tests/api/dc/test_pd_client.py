@@ -230,7 +230,9 @@ def test_data_query_no_schema(
 
     data = client.data(dfref, apply_schema=False)
 
-    assert data["DER_CURR_LEG1"].dtype == "object"
+    # Plain string dtype of the installed pandas version (object in
+    # pandas 2, str in pandas 3)
+    assert data["DER_CURR_LEG1"].dtype == pd.Series(dtype=str).dtype
 
 
 def test_data_query_with_schema(

@@ -8,9 +8,11 @@ from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import Agency, Metadataflow, MetadataStructure
-from pysdmx.util import is_final
+from pysdmx.util import ensure_tz_aware, is_final
 
 
 class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
@@ -29,11 +31,12 @@ class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
             version=self.version,
             structure=self.structure,
             targets=tuple(self.targets),
-            annotations=tuple(a.to_model() for a in self.annotations),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
         )
 
     @classmethod
@@ -60,8 +63,9 @@ class JsonMetadataflow(MaintainableType, frozen=True, omit_defaults=True):
             name=df.name,
             version=df.version,
             isExternalReference=df.is_external_reference,
-            validFrom=df.valid_from,
-            validTo=df.valid_to,
+            links=_self_link(df.structure_url),
+            validFrom=ensure_tz_aware(df.valid_from),
+            validTo=ensure_tz_aware(df.valid_to),
             description=df.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in df.annotations]

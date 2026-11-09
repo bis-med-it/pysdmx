@@ -11,6 +11,7 @@ deserializers = Deserializers(
     concepts=msg.JsonConceptSchemeMessage,  # type: ignore[arg-type]
     dataflow_info=msg.JsonDataflowMessage,  # type: ignore[arg-type]
     dataflows=msg.JsonDataflowsMessage,  # type: ignore[arg-type]
+    data_constraint=msg.JsonDataConstraintMessage,  # type: ignore[arg-type]
     providers=msg.JsonProviderMessage,  # type: ignore[arg-type]
     provision_agreement=msg.JsonPAMessage,  # type: ignore[arg-type]
     schema=msg.JsonSchemaMessage,  # type: ignore[arg-type]

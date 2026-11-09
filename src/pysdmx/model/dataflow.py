@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Iterable, Literal, Optional, Sequence, Union
 
-from msgspec import Struct
+from msgspec import Struct, field
 
 from pysdmx.errors import Invalid
 from pysdmx.model.__base import (
@@ -535,7 +535,9 @@ class Schema(Struct, frozen=True, omit_defaults=True, repr_omit_defaults=True):
     components: Components
     version: str = "1.0"
     artefacts: Sequence[str] = ()
-    generated: datetime = datetime.now(timezone.utc)
+    generated: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     name: Optional[str] = None
     groups: Optional[Sequence[Group]] = None
     keys: Optional[Sequence[str]] = None

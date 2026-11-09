@@ -1,0 +1,17 @@
+{
+    "meta": {
+        "id": "IREF000002",
+        "test": true,
+        "schema": "https://json.sdmx.org/2.0.0/sdmx-json-metadata-schema.json",
+        "prepared": "2026-01-01T00:00:00Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "ZZZ"
+        }
+    },
+    "data": {
+        "metadataSets": []
+    }
+}

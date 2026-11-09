@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -183,3 +183,17 @@ def test_write_header_provision_agreement_namespace(
     header = write_header_aux(header_provision_agrement, True, True, True)
     exp = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
     assert f'namespace="{exp}MD:TEST(1.0)"' in header
+
+
+def test_write_header_prepared_without_timezone_is_assumed_utc(header):
+    result = write_header_aux(header, False, False, True)
+
+    assert "<mes:Prepared>2021-01-01T00:00:00Z</mes:Prepared>" in result
+
+
+def test_write_header_prepared_keeps_its_timezone(header):
+    header.prepared = datetime(2021, 1, 1, tzinfo=timezone(timedelta(hours=2)))
+
+    result = write_header_aux(header, False, False, True)
+
+    assert "<mes:Prepared>2021-01-01T00:00:00+02:00</mes:Prepared>" in result

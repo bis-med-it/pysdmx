@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 import tests.api.fmr.schema_checks as checks
@@ -150,6 +152,25 @@ def test_returns_inclusive_keyset(
     """get_schema() should return a schema, with inclusive keyset."""
     checks.check_keyset_schema(
         respx_mock, fmr, query, no_hca_query, keyset_body, no_hca_body
+    )
+
+
+def test_returns_inclusive_keyset_from_values(
+    respx_mock, fmr, query, no_hca_query, keyset_body, no_hca_body
+):
+    """get_schema() should read keys listing their value in values."""
+    data = json.loads(keyset_body)
+    for key in data["data"]["dataConstraints"][0]["dataKeySets"][0]["keys"]:
+        for kv in key["keyValues"]:
+            kv["values"] = [kv.pop("value")]
+
+    checks.check_keyset_schema(
+        respx_mock,
+        fmr,
+        query,
+        no_hca_query,
+        json.dumps(data).encode(),
+        no_hca_body,
     )
 
 

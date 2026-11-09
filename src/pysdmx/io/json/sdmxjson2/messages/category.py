@@ -11,6 +11,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     MaintainableType,
     NameableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
 from pysdmx.model import (
@@ -23,7 +25,7 @@ from pysdmx.model import (
     ItemReference,
     Reference,
 )
-from pysdmx.util import find_by_urn, is_final, parse_urn
+from pysdmx.util import ensure_tz_aware, find_by_urn, is_final, parse_urn
 
 
 class JsonCategorisation(
@@ -48,10 +50,11 @@ class JsonCategorisation(
             name=self.name,
             description=self.description,
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
-            annotations=tuple(a.to_model() for a in self.annotations),
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -71,8 +74,9 @@ class JsonCategorisation(
             name=cat.name,
             version=cat.version,
             isExternalReference=cat.is_external_reference,
-            validFrom=cat.valid_from,
-            validTo=cat.valid_to,
+            links=_self_link(cat.structure_url),
+            validFrom=ensure_tz_aware(cat.valid_from),
+            validTo=ensure_tz_aware(cat.valid_to),
             description=cat.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in cat.annotations]
@@ -92,17 +96,19 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
     ) -> Sequence[DataflowRef]:
         if cni in cf:
             return tuple(
-                DataflowRef(
-                    (
-                        df.agency.id
-                        if isinstance(df.agency, Agency)
-                        else df.agency
-                    ),
-                    df.id,
-                    df.version,
-                    df.name,
-                )
-                for df in cf[cni]
+                [
+                    DataflowRef(
+                        (
+                            df.agency.id
+                            if isinstance(df.agency, Agency)
+                            else df.agency
+                        ),
+                        df.id,
+                        df.version,
+                        df.name,
+                    )
+                    for df in cf[cni]
+                ]
             )
         else:
             return ()
@@ -122,9 +128,12 @@ class JsonCategory(NameableType, frozen=True, omit_defaults=True):
             name=self.name,
             description=self.description,
             categories=tuple(
-                c.to_model(cat_flows, cat_other, cni) for c in self.categories
+                [
+                    c.to_model(cat_flows, cat_other, cni)
+                    for c in self.categories
+                ]
             ),
-            annotations=tuple(a.to_model() for a in self.annotations),
+            annotations=tuple([a.to_model() for a in self.annotations]),
             dataflows=dataflows,
             other_references=others,
         )
@@ -197,14 +206,15 @@ class JsonCategoryScheme(
             description=self.description,
             version=self.version,
             items=tuple(
-                c.to_model(cat_flows, cat_other) for c in self.categories
+                [c.to_model(cat_flows, cat_other) for c in self.categories]
             ),
             is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
             is_final=is_final(self.version),
             is_partial=self.isPartial,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
-            annotations=tuple(a.to_model() for a in self.annotations),
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
+            annotations=tuple([a.to_model() for a in self.annotations]),
         )
 
     @classmethod
@@ -224,8 +234,9 @@ class JsonCategoryScheme(
             name=cs.name,
             version=cs.version,
             isExternalReference=cs.is_external_reference,
-            validFrom=cs.valid_from,
-            validTo=cs.valid_to,
+            links=_self_link(cs.structure_url),
+            validFrom=ensure_tz_aware(cs.valid_from),
+            validTo=ensure_tz_aware(cs.valid_to),
             description=cs.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in cs.annotations]

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Every artefact container omitted. This is schema-valid and is the
+     correct way for a service to report an empty catalogue, since each
+     container is minOccurs="0" (issue #685). -->
+<mes:Structure xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure">
+    <mes:Header>
+        <mes:ID>ID</mes:ID>
+        <mes:Test>true</mes:Test>
+        <mes:Prepared>2026-01-01T00:00:00Z</mes:Prepared>
+        <mes:Sender id="ESTAT"/>
+    </mes:Header>
+    <mes:Structures/>
+</mes:Structure>

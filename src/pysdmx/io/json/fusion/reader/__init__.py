@@ -11,6 +11,7 @@ deserializers = Deserializers(
     concepts=msg.FusionConceptSchemeMessage,  # type: ignore[arg-type]
     dataflow_info=msg.FusionDataflowMessage,  # type: ignore[arg-type]
     dataflows=msg.FusionDataflowsMessage,  # type: ignore[arg-type]
+    data_constraint=msg.FusionDataConstraintMessage,  # type: ignore[arg-type]
     providers=msg.FusionProviderMessage,  # type: ignore[arg-type]
     provision_agreement=msg.FusionPAMessage,  # type: ignore[arg-type]
     schema=msg.FusionSchemaMessage,  # type: ignore[arg-type]

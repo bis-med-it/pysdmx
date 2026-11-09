@@ -3,14 +3,14 @@
 	<mes:Header>
 		<mes:ID>ID</mes:ID>
 		<mes:Test>false</mes:Test>
-		<mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+		<mes:Prepared>2021-01-01T00:00:00Z</mes:Prepared>
 		<mes:Sender id="ZZZ"/>
 		<mes:Receiver id="Not_Supplied"/>
 		<mes:Source>PySDMX</mes:Source>
 	</mes:Header>
 	<mes:Structures>
 		<str:Constraints>
-			<str:ContentConstraint id="TEST_CONSTRAINT_PA" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY">
+			<str:ContentConstraint id="TEST_CONSTRAINT_PA" version="1.0" isExternalReference="false" isFinal="false" agencyID="TEST_AGENCY" type="Allowed">
 				<com:Name xml:lang="en">Test Constraint with Provision Agreement</com:Name>
 				<com:Description xml:lang="en">A test constraint attached to a provision agreement</com:Description>
 				<str:ConstraintAttachment>

@@ -15,6 +15,8 @@ from pysdmx.io.json.sdmxjson2.messages.core import (
     JsonAnnotation,
     JsonRepresentation,
     MaintainableType,
+    _self_link,
+    _self_link_href,
 )
 from pysdmx.model import (
     Agency,
@@ -31,7 +33,7 @@ from pysdmx.model import (
     Role,
 )
 from pysdmx.model.dataflow import Group
-from pysdmx.util import is_final, parse_item_urn
+from pysdmx.util import ensure_tz_aware, is_final, parse_item_urn
 
 
 def _find_concept(
@@ -490,7 +492,9 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
                 )
             if len(incl_cubes) == 1:
                 cons = {
-                    kv.id: [v.value for v in kv.values]
+                    kv.id: [
+                        v if isinstance(v, str) else v.value for v in kv.values
+                    ]
                     for kv in incl_cubes[0].keyValues
                 }
             else:
@@ -522,9 +526,10 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
                 )
             )
         mapped_grps = [
-            Group(g.id, dimensions=g.groupDimensions) for g in self.groups
+            Group(g.id, dimensions=tuple(g.groupDimensions))
+            for g in self.groups
         ]
-        return (Components(comps), mapped_grps)
+        return (Components(comps), tuple(mapped_grps))
 
     @classmethod
     def from_model(
@@ -570,10 +575,11 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             description=self.description,
             version=self.version,
             is_final=is_final(self.version),
-            annotations=[a.to_model() for a in self.annotations],
+            annotations=tuple([a.to_model() for a in self.annotations]),
             is_external_reference=self.isExternalReference,
-            valid_from=self.validFrom,
-            valid_to=self.validTo,
+            structure_url=_self_link_href(self.links),
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
             components=c,
             evolving_structure=self.evolvingStructure,
             groups=grps,
@@ -597,8 +603,9 @@ class JsonDataStructure(MaintainableType, frozen=True, omit_defaults=True):
             name=dsd.name,
             version=dsd.version,
             isExternalReference=dsd.is_external_reference,
-            validFrom=dsd.valid_from,
-            validTo=dsd.valid_to,
+            links=_self_link(dsd.structure_url),
+            validFrom=ensure_tz_aware(dsd.valid_from),
+            validTo=ensure_tz_aware(dsd.valid_to),
             description=dsd.description,
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in dsd.annotations]
