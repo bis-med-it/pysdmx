@@ -120,20 +120,30 @@ def __write_data_single_dataset(
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
+    child2 = "\t\t" if prettyprint else ""
 
-    attached_attributes_str = ""
-    for k, v in dataset.attributes.items():
-        attached_attributes_str += f'{k}="{__escape_xml_attribute(str(v))}" '
-    datascope = ""
-    if not references_30:
+    attributes = "".join(
+        f'{k}="{__escape_xml_attribute(str(v))}" '
+        for k, v in dataset.attributes.items()
+    )
+    if references_30:
+        # SDMX-ML 3.x gives the data set attributes in an Atts element
+        # without a key, as the DataSet has no attributes from the DSD
+        data_set_attributes = ""
+        datascope = ""
+        atts = f"{child2}<Atts {attributes}/>{nl}" if attributes else ""
+    else:
+        data_set_attributes = attributes
         datascope = f'ss:dataScope="{reference.sdmx_type}" '
+        atts = ""
     # Datasets
     outfile += (
-        f"{nl}{child1}<{ABBR_MSG}:DataSet {attached_attributes_str}"
+        f"{nl}{child1}<{ABBR_MSG}:DataSet {data_set_attributes}"
         f'ss:structureRef="{reference.id}" '
         f'xsi:type="ns{count}:DataSetType" '
         f"{datascope}"
         f'ss:action="{dataset.action.value}">{nl}'
+        f"{atts}"
     )
     data = ""
     if dim == ALL_DIM:
