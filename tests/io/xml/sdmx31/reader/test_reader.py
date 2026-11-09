@@ -269,9 +269,9 @@ def test_data_groups_31():
     # ATT3 is the attribute of the Groups
     expected = {
         "DIM2": ["4", "5", "6"],
-        "ATT1": ["A", "B", "C"],
         "DIM1": ["1", "2", "3"],
         "M1": ["10", "11", "12"],
+        "ATT1": ["A", "B", "C"],
         "ATT2": ["7", "8", "9"],
         "ATT3": ["H", "I", "J"],
     }

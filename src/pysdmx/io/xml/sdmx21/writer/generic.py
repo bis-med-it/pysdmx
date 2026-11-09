@@ -23,12 +23,14 @@ from pysdmx.io.xml.__write_data_aux import (
     _single_non_empty_or_raise,
     check_content_dataset,
     check_dimension_at_observation,
+    get_data_set_attributes,
+    group_rows,
     stringify_dataset,
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
 from pysdmx.model.message import Header
-from pysdmx.toolkit.pd._data_utils import get_codes
+from pysdmx.toolkit.pd._data_utils import get_codes, get_group_codes
 from pysdmx.util import parse_short_urn
 
 
@@ -40,6 +42,7 @@ def __value(id: str, value: str) -> str:
 
 def __generate_obs_structure(
     dataset: PandasDataset,
+    group_codes: List[Dict[str, Any]],
 ) -> Tuple[List[str], str, List[str]]:
     """Generate the structure of the observations.
 
@@ -47,8 +50,13 @@ def __generate_obs_structure(
     the codes for Key, second element is the code for the value, and the third
     element is a list of the codes for the attributes.
 
+    The attributes of the groups go to their Groups, and those of the
+    data set to the data set: the others are written in the
+    observations.
+
     Args:
         dataset: PandasDataset. The dataset to generate the structure from.
+        group_codes: The groups of the dataset, with their attributes.
 
     Returns:
         The structure of the observations
@@ -62,16 +70,15 @@ def __generate_obs_structure(
         obs_structure[0].append(dim.id)
 
     cols = dataset.data.columns
+    grouped = {att for group in group_codes for att in group["attributes"]}
 
     for att in dataset.structure.components.attributes:
-        if att.attachment_level == "O" and att.id in cols:
-            obs_structure[2].append(att.id)
-        elif (
-            att.attachment_level is not None
-            and att.attachment_level != "D"
+        if (
+            att.attachment_level not in (None, "D")
             and att.id in cols
+            and att.id not in grouped
         ):
-            obs_structure[0].append(att.id)
+            obs_structure[2].append(att.id)
 
     return obs_structure
 
@@ -170,7 +177,7 @@ def __write_data_single_dataset(
     data = ""
     # Write attached attributes
     attached_attributes_str = []
-    for k, v in dataset.attributes.items():
+    for k, v in get_data_set_attributes(dataset).items():
         attached_attributes_str.append(__value(k, v))
 
     if len(attached_attributes_str) > 0:
@@ -180,7 +187,16 @@ def __write_data_single_dataset(
         data += f"{child2}</{ABBR_GEN}:Attributes>{nl}"
 
     if dim == ALL_DIM:
-        obs_structure = __generate_obs_structure(dataset)
+        group_codes = get_group_codes(
+            dataset.structure,  # type: ignore[arg-type]
+            dataset.data,
+        )
+        data += __group_processing(
+            data=dataset.data,
+            group_codes=group_codes,
+            prettyprint=prettyprint,
+        )
+        obs_structure = __generate_obs_structure(dataset, group_codes)
         data += __memory_optimization_writing(
             data=dataset.data,
             obs_structure=obs_structure,
@@ -276,57 +292,25 @@ def __group_processing(
     group_codes: List[Dict[str, Any]],
     prettyprint: bool = True,
 ) -> str:
-    def __format_group_str(
-        data_info: Dict[Any, Any],
-        group_id: str,
-        dimensions: List[str],
-        attribute: str,
-    ) -> str:
-        """Formats a generic SDMX group using __value()."""
-        child2 = "\t\t" if prettyprint else ""
-        nl = "\n" if prettyprint else ""
-
-        out_element = f'{child2}<{ABBR_GEN}:Group type="{group_id}">{nl}'
-
-        # GroupKey block
-        out_element += f"{child2}\t<{ABBR_GEN}:GroupKey>{nl}"
-        for dim in dimensions:
-            out_element += f"{child2}\t\t{__value(dim, data_info[dim])}{nl}"
-        out_element += f"{child2}\t</{ABBR_GEN}:GroupKey>{nl}"
-
-        # Attributes block
-        out_element += f"{child2}\t<{ABBR_GEN}:Attributes>{nl}"
-        out_element += (
-            f"{child2}\t\t{__value(attribute, data_info[attribute])}{nl}"
-        )
-        out_element += f"{child2}\t</{ABBR_GEN}:Attributes>{nl}"
-
-        out_element += f"{child2}</{ABBR_GEN}:Group>{nl}"
-        return out_element
-
+    """Writes one Group per key of each group type, with its attributes."""
+    child2 = "\t\t" if prettyprint else ""
+    child3 = "\t\t\t" if prettyprint else ""
+    child4 = "\t\t\t\t" if prettyprint else ""
+    nl = "\n" if prettyprint else ""
     out_list: List[str] = []
-
     for group in group_codes:
-        group_id = group["group_id"]
-        dimensions = group["dimensions"]
-        attribute = group["attribute"]
-        group_keys = dimensions + [attribute]
-
-        grouped_data = (
-            data[group_keys]
-            .drop_duplicates()
-            .reset_index(drop=True)
-            .to_dict(orient="records")
-        )
-
-        out_list.extend(
-            [
-                __format_group_str(record, group_id, dimensions, attribute)
-                for record in grouped_data
-                if not _should_skip_xml_value(record.get(attribute))
-            ]
-        )
-
+        for key, attributes in group_rows(data, group):
+            out = f'{child2}<{ABBR_GEN}:Group type="{group["group_id"]}">{nl}'
+            out += f"{child3}<{ABBR_GEN}:GroupKey>{nl}"
+            for k, v in key.items():
+                out += f"{child4}{__value(k, v)}{nl}"
+            out += f"{child3}</{ABBR_GEN}:GroupKey>{nl}"
+            out += f"{child3}<{ABBR_GEN}:Attributes>{nl}"
+            for k, v in attributes.items():
+                out += f"{child4}{__value(k, v)}{nl}"
+            out += f"{child3}</{ABBR_GEN}:Attributes>{nl}"
+            out += f"{child2}</{ABBR_GEN}:Group>{nl}"
+            out_list.append(out)
     return "".join(out_list)
 
 

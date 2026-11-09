@@ -1,13 +1,24 @@
+from datetime import datetime, timezone
+from pathlib import Path
+
 import pandas as pd
 import pytest
 from lxml import etree
 
 from pysdmx.errors import Invalid
-from pysdmx.io import read_sdmx, write_sdmx
+from pysdmx.io import get_datasets, read_sdmx, write_sdmx
 from pysdmx.io.format import Format
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Component, Components, Concept, Role, Schema
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    Organisation,
+    Role,
+    Schema,
+)
 from pysdmx.model.dataflow import Group
+from pysdmx.model.message import Header
 
 STRUCTURE_SPECIFIC = [
     Format.DATA_SDMX_ML_2_1_STR,
@@ -16,6 +27,18 @@ STRUCTURE_SPECIFIC = [
 ]
 FORMATS = [Format.DATA_SDMX_ML_2_1_GEN, *STRUCTURE_SPECIFIC]
 XSI_TYPE = "{http://www.w3.org/2001/XMLSchema-instance}type"
+ATTACHMENT = Path(__file__).parent / "samples" / "attachment"
+# The attachment samples that the writers give
+WRITTEN = [
+    (Format.DATA_SDMX_ML_2_1_STR, "TIME_PERIOD", "str_21_series.xml"),
+    (Format.DATA_SDMX_ML_2_1_STR, "AllDimensions", "str_21_all.xml"),
+    (Format.DATA_SDMX_ML_2_1_GEN, "TIME_PERIOD", "gen_21_series.xml"),
+    (Format.DATA_SDMX_ML_2_1_GEN, "AllDimensions", "gen_21_all.xml"),
+    (Format.DATA_SDMX_ML_3_0, "TIME_PERIOD", "str_30_series.xml"),
+    (Format.DATA_SDMX_ML_3_0, "AllDimensions", "str_30_all.xml"),
+    (Format.DATA_SDMX_ML_3_1, "TIME_PERIOD", "str_31_series.xml"),
+    (Format.DATA_SDMX_ML_3_1, "AllDimensions", "str_31_all.xml"),
+]
 COLUMNS = [
     "DIM1",
     "DIM2",
@@ -115,3 +138,54 @@ def test_group_type_is_in_the_namespace_of_its_data_set(sdmx_format):
     groups = etree.fromstring(message.encode("utf-8")).iter("Group")
     types = [group.get(XSI_TYPE) for group in groups]
     assert types == ["ns1:SIBLING", "ns2:SIBLING"]
+
+
+def attachment_dataset():
+    # The data of the attachment samples, with the structure of their DSD
+    return get_datasets(
+        ATTACHMENT / "str_21_series.xml", ATTACHMENT / "dsd.xml"
+    )[0]
+
+
+def write_attachment(dataset, sdmx_format, dimension_at_observation):
+    header = Header(
+        id="ID",
+        prepared=datetime(2026, 11, 9, tzinfo=timezone.utc),
+        sender=Organisation(id="ZZZ"),
+    )
+    return write_sdmx(
+        [dataset],
+        sdmx_format,
+        header=header,
+        dimension_at_observation=dimension_at_observation,
+    )
+
+
+@pytest.mark.parametrize(
+    ("sdmx_format", "dimension_at_observation", "filename"), WRITTEN
+)
+def test_attributes_written_at_their_attachment(
+    sdmx_format, dimension_at_observation, filename
+):
+    result = write_attachment(
+        attachment_dataset(), sdmx_format, dimension_at_observation
+    )
+
+    assert result == (ATTACHMENT / filename).read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    ("sdmx_format", "dimension_at_observation", "filename"), WRITTEN
+)
+def test_data_set_attributes_in_columns_written_for_the_data_set(
+    sdmx_format, dimension_at_observation, filename
+):
+    # As SDMX-CSV gives them
+    dataset = attachment_dataset()
+    for name, value in dataset.attributes.items():
+        dataset.data[name] = value
+    dataset.attributes = {}
+
+    result = write_attachment(dataset, sdmx_format, dimension_at_observation)
+
+    assert result == (ATTACHMENT / filename).read_text(encoding="utf-8")

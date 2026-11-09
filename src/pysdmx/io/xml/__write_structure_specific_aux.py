@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 import pandas as pd
 
 from pysdmx.errors import Invalid
+from pysdmx.io._pd_utils import validate_schema_exists
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
@@ -16,11 +17,13 @@ from pysdmx.io.xml.__write_aux import (
 from pysdmx.io.xml.__write_data_aux import (
     _should_skip_xml_value,
     _single_non_empty_or_raise,
+    get_data_set_attributes,
+    group_rows,
     stringify_dataset,
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
-from pysdmx.toolkit.pd._data_utils import get_codes
+from pysdmx.toolkit.pd._data_utils import get_codes, get_group_codes
 from pysdmx.util import parse_short_urn
 
 
@@ -124,7 +127,7 @@ def __write_data_single_dataset(
 
     attributes = "".join(
         f'{k}="{__escape_xml_attribute(str(v))}" '
-        for k, v in dataset.attributes.items()
+        for k, v in get_data_set_attributes(dataset).items()
     )
     if references_30:
         # SDMX-ML 3.x gives the data set attributes in an Atts element
@@ -148,7 +151,7 @@ def __write_data_single_dataset(
     data = ""
     if dim == ALL_DIM:
         __validate_all_dimensions_data(dataset)
-        data += __memory_optimization_writing(dataset.data, prettyprint)
+        data += __all_dimensions_processing(dataset, prettyprint, count)
     else:
         writing_validation(dataset)
         series_codes, obs_codes, group_codes = get_codes(
@@ -185,47 +188,49 @@ def __write_data_single_dataset(
     return outfile
 
 
+def __all_dimensions_processing(
+    dataset: PandasDataset, prettyprint: bool, count: int
+) -> str:
+    """Writes the Groups and the observations of AllDimensions data.
+
+    The attributes of a group go to its Groups, and the data set
+    attributes to the data set, as an Obs only has the attributes of
+    an observation or of any dimension.
+    """
+    schema = validate_schema_exists(dataset)
+    group_codes = get_group_codes(schema, dataset.data)
+    excluded = {att for group in group_codes for att in group["attributes"]}
+    excluded.update(
+        att.id
+        for att in schema.components.attributes
+        if att.attachment_level == "D"
+    )
+    columns = [c for c in dataset.data.columns if c not in excluded]
+    return __group_processing(
+        dataset.data, group_codes, prettyprint, count
+    ) + __memory_optimization_writing(dataset.data[columns], prettyprint)
+
+
 def __group_processing(
     data: pd.DataFrame,
-    group_codes: list[Dict[str, Any]],
+    group_codes: List[Dict[str, Any]],
     prettyprint: bool = True,
     count: int = 1,
 ) -> str:
-    def __format_group_str(data_info: Dict[Any, Any], group_id: str) -> str:
-        """Formats the series as key=value pairs."""
-        child2 = "\t\t" if prettyprint else ""
-        nl = "\n" if prettyprint else ""
-
-        out_element = f'{child2}<Group xsi:type="ns{count}:{group_id}" '
-        for k, v in data_info.items():
-            out_element += f'{k}="{__escape_xml_attribute(v)}" '
-        out_element += f"/>{nl}"
-
-        return out_element
-
+    """Writes one Group per key of each group type, with its attributes."""
+    child2 = "\t\t" if prettyprint else ""
+    nl = "\n" if prettyprint else ""
     out_list: List[str] = []
-
     for group in group_codes:
-        attribute = group["attribute"]
-        dimensions = group["dimensions"]
-        # Aggregate by group dimensions only; take the unique non-empty
-        # attribute value per group so that rows where the attribute was
-        # left empty do not collide with rows carrying the real value.
-        # Conflicting non-empty values raise ``Invalid``.
-        aggregated = data.groupby(by=dimensions, dropna=False, as_index=False)[
-            attribute
-        ].agg(
-            lambda s, _att=attribute: _single_non_empty_or_raise(
-                s, _att, "group"
+        for key, attributes in group_rows(data, group):
+            values = "".join(
+                f'{k}="{__escape_xml_attribute(v)}" '
+                for k, v in {**key, **attributes}.items()
             )
-        )
-
-        out_list.extend(
-            __format_group_str(record, group["group_id"])
-            for record in aggregated.to_dict(orient="records")
-            if not _should_skip_xml_value(record.get(attribute))
-        )
-
+            out_list.append(
+                f'{child2}<Group xsi:type="ns{count}:{group["group_id"]}" '
+                f"{values}/>{nl}"
+            )
     return "".join(out_list)
 
 

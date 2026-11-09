@@ -16,14 +16,14 @@
 		<Group xsi:type="ns1:Group" DIM2="4" ATT3="H" />
 		<Group xsi:type="ns1:Group" DIM2="5" ATT3="I" />
 		<Group xsi:type="ns1:Group" DIM2="6" ATT3="J" />
-		<Series DIM2="4" ATT1="A" >
-			<Obs DIM1="1" M1="10" ATT2="7" />
+		<Series DIM2="4" >
+			<Obs DIM1="1" M1="10" ATT1="A" ATT2="7" />
 		</Series>
-		<Series DIM2="5" ATT1="B" >
-			<Obs DIM1="2" M1="11" ATT2="8" />
+		<Series DIM2="5" >
+			<Obs DIM1="2" M1="11" ATT1="B" ATT2="8" />
 		</Series>
-		<Series DIM2="6" ATT1="C" >
-			<Obs DIM1="3" M1="12" ATT2="9" />
+		<Series DIM2="6" >
+			<Obs DIM1="3" M1="12" ATT1="C" ATT2="9" />
 		</Series>
 	</mes:DataSet>
 </mes:StructureSpecificData>

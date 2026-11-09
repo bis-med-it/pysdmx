@@ -137,12 +137,51 @@ def drop_labels(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def get_group_codes(
+    structure: Schema, data: pd.DataFrame
+) -> List[Dict[str, Any]]:
+    """Returns the groups of the data, with their attributes.
+
+    An attribute attached to the dimensions of a group is written in the
+    Groups of its type. Each group has its id, its dimensions and the
+    attributes of the data attached to it.
+    """
+    group_codes: Dict[str, Dict[str, Any]] = {}
+    for att in structure.components.attributes:
+        level = att.attachment_level
+        if level is None or level == "D" or att.id not in data.columns:
+            continue
+        group = next(
+            (
+                group
+                for group in structure.groups or []
+                if set(group.dimensions) == set(level.split(","))
+            ),
+            None,
+        )
+        if group is not None:
+            codes = group_codes.setdefault(
+                group.id,
+                {
+                    "group_id": group.id,
+                    "dimensions": list(group.dimensions),
+                    "attributes": [],
+                },
+            )
+            codes["attributes"].append(att.id)
+    return list(group_codes.values())
+
+
 def get_codes(
     dimension_code: str, structure: Schema, data: pd.DataFrame
 ) -> Tuple[List[str], List[str], List[Dict[str, Any]]]:
-    """This function divides the components in Series and Obs."""
-    groups = structure.groups
-    group_codes = []
+    """This function divides the components in Series, Obs and Groups.
+
+    An attribute attached to the observation, or to the dimension at the
+    observation level, is written in the observations.
+    """
+    group_codes = get_group_codes(structure, data)
+    grouped = {att for group in group_codes for att in group["attributes"]}
     obs_codes = [dimension_code, structure.components.measures[0].id]
 
     # Getting the series and obs codes
@@ -152,36 +191,17 @@ def get_codes(
 
     # Adding the attributes based on the attachment level
     for att in structure.components.attributes:
-        matching_group = next(
-            (
-                group
-                for group in groups or []
-                if set(group.dimensions)
-                == set(att.attachment_level.split(","))  # type: ignore[union-attr]
-            ),
-            None,
-        )
-
+        level = att.attachment_level
         if (
-            att.attachment_level != "D"
-            and att.id in data.columns
-            and groups is not None
-            and matching_group
+            level is None
+            or level == "D"
+            or att.id not in data.columns
+            or att.id in grouped
         ):
-            group_codes.append(
-                {
-                    "group_id": matching_group.id,
-                    "attribute": att.id,
-                    "dimensions": matching_group.dimensions,
-                }
-            )
-        elif att.attachment_level == "O" and att.id in data.columns:
+            continue
+        if level == "O" or dimension_code in level.split(","):
             obs_codes.append(att.id)
-        elif (
-            att.attachment_level is not None
-            and att.attachment_level != "D"
-            and att.id in data.columns
-        ):
+        else:
             series_codes.append(att.id)
 
     return series_codes, obs_codes, group_codes
