@@ -27,6 +27,7 @@ from tests.io.byte_chunks import ByteChunks, split
 SAMPLES_21 = Path(__file__).parent / "sdmx21" / "reader" / "samples"
 SAMPLES_30 = Path(__file__).parent / "sdmx30" / "reader" / "samples"
 SAMPLES_31 = Path(__file__).parent / "sdmx31" / "reader" / "samples"
+ATTACHMENT = Path(__file__).parent / "samples" / "attachment"
 URL = "https://sdmx.example.org/data"
 FIRST_OBS_21 = (
     '<Obs TIME_PERIOD="2002" OBS_VALUE="" OBS_STATUS="M" OBS_CONF="F"/>'
@@ -417,6 +418,32 @@ def test_ss_child_elements_ignored():
     assert_same_datasets(
         read_str_spe_30(component, validate=False), read_str_spe_30(text_30)
     )
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "str_21_all.xml",
+        "gen_21_series.xml",
+        "gen_21_all.xml",
+        "gen_21_series_group_per_attribute.xml",
+        "str_30_series.xml",
+        "str_30_all.xml",
+        "str_30_series_atts.xml",
+        "str_30_all_atts.xml",
+        "str_31_series.xml",
+        "str_31_all.xml",
+    ],
+)
+def test_attributes_of_each_attachment(filename):
+    # The samples give the same data, each attribute where its message
+    # puts it: Group, Atts with or without a key, Series or Obs
+    expected = read_sdmx(ATTACHMENT / "str_21_series.xml").data[0]
+
+    result = read_sdmx(ATTACHMENT / filename).data[0]
+
+    assert result.attributes == expected.attributes
+    pd.testing.assert_frame_equal(result.data, expected.data, check_like=True)
 
 
 @pytest.mark.parametrize(

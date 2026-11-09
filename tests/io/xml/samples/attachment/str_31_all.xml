@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/data/structurespecific" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common" xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DSD(1.0):ObsLevelDim:AllDimensions" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message https://registry.sdmx.org/schemas/v3_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2026-11-09T00:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="DSD" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DSD(1.0):ObsLevelDim:AllDimensions" dimensionAtObservation="AllDimensions">
+			<com:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:DSD(1.0)</com:Structure>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet ss:structureRef="DSD" xsi:type="ns1:DataSetType" ss:action="Information">
+		<Atts COMMENT_DSET="Sample" />
+		<Group xsi:type="ns1:SIBLING" REF_AREA="DE" TITLE="Germany" UNIT_MULT="3" />
+		<Group xsi:type="ns1:SIBLING" REF_AREA="FR" TITLE="France" UNIT_MULT="6" />
+		<Obs FREQ="A" REF_AREA="DE" COMMENT_TS="Revised" TIME_PERIOD="2024" OBS_VALUE="1.5" CONF_STATUS="F" OBS_STATUS="A" />
+		<Obs FREQ="A" REF_AREA="DE" COMMENT_TS="Revised" TIME_PERIOD="2025" OBS_VALUE="2.5" CONF_STATUS="C" OBS_STATUS="P" />
+		<Obs FREQ="A" REF_AREA="FR" COMMENT_TS="Provisional" TIME_PERIOD="2024" OBS_VALUE="3.5" CONF_STATUS="F" OBS_STATUS="A" />
+		<Obs FREQ="A" REF_AREA="FR" COMMENT_TS="Provisional" TIME_PERIOD="2025" OBS_VALUE="4.5" CONF_STATUS="F" OBS_STATUS="A" />
+	</mes:DataSet>
+</mes:StructureSpecificData>
