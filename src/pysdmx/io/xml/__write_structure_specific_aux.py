@@ -1,7 +1,7 @@
 # mypy: disable-error-code="union-attr"
 """Module for writing SDMX-ML 3.0 Structure Specific auxiliary functions."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterable, List
 
 import pandas as pd
 
@@ -23,6 +23,7 @@ from pysdmx.io.xml.__write_data_aux import (
     writing_validation,
 )
 from pysdmx.io.xml.config import CHUNKSIZE
+from pysdmx.model import Schema
 from pysdmx.toolkit.pd._data_utils import get_codes, get_group_codes
 from pysdmx.util import parse_short_urn
 
@@ -151,7 +152,9 @@ def __write_data_single_dataset(
     data = ""
     if dim == ALL_DIM:
         __validate_all_dimensions_data(dataset)
-        data += __all_dimensions_processing(dataset, prettyprint, count)
+        data += __all_dimensions_processing(
+            dataset, prettyprint, count, references_30
+        )
     else:
         writing_validation(dataset)
         series_codes, obs_codes, group_codes = get_codes(
@@ -164,6 +167,13 @@ def __write_data_single_dataset(
         obs_att_codes = [x for x in obs_codes if x in att_codes]
         series_codes = [x for x in series_codes if x not in series_att_codes]
         obs_codes = [x for x in obs_codes if x not in obs_att_codes]
+        if references_30:
+            # An Obs of SDMX-ML 3.x has the attributes of the observation
+            # only: those of the dimension at observation go to Atts
+            schema = validate_schema_exists(dataset)
+            keyed = __dimension_attributes(schema, obs_att_codes)
+            obs_att_codes = [x for x in obs_att_codes if x not in keyed]
+            data += __atts_processing(dataset.data, schema, keyed, prettyprint)
         if group_codes:
             data += __group_processing(
                 data=dataset.data,
@@ -188,14 +198,63 @@ def __write_data_single_dataset(
     return outfile
 
 
+def __dimension_attributes(
+    schema: Schema, attributes: Iterable[str]
+) -> List[str]:
+    """Returns the attributes attached to dimensions only, in schema order."""
+    dimensions = {dimension.id for dimension in schema.components.dimensions}
+    names = set(attributes)
+    return [
+        att.id
+        for att in schema.components.attributes
+        if att.id in names
+        and att.attachment_level is not None
+        and set(att.attachment_level.split(",")) <= dimensions
+    ]
+
+
+def __atts_processing(
+    data: pd.DataFrame,
+    schema: Schema,
+    attributes: List[str],
+    prettyprint: bool,
+) -> str:
+    """Writes the attributes in Atts with the values of their dimensions.
+
+    An Atts of SDMX-ML 3.x gives the values of attributes for a key, the
+    values of some dimensions: the attributes attached to the same
+    dimensions share their Atts.
+    """
+    child2 = "\t\t" if prettyprint else ""
+    nl = "\n" if prettyprint else ""
+    codes: Dict[str, Dict[str, Any]] = {}
+    for att in schema.components.attributes:
+        if att.id in attributes:
+            level = str(att.attachment_level)
+            codes.setdefault(
+                level, {"dimensions": level.split(","), "attributes": []}
+            )["attributes"].append(att.id)
+    out_list: List[str] = []
+    for code in codes.values():
+        for key, values in group_rows(data, code):
+            content = "".join(
+                f'{k}="{__escape_xml_attribute(v)}" '
+                for k, v in {**key, **values}.items()
+            )
+            out_list.append(f"{child2}<Atts {content}/>{nl}")
+    return "".join(out_list)
+
+
 def __all_dimensions_processing(
-    dataset: PandasDataset, prettyprint: bool, count: int
+    dataset: PandasDataset, prettyprint: bool, count: int, references_30: bool
 ) -> str:
     """Writes the Groups and the observations of AllDimensions data.
 
     The attributes of a group go to its Groups, and the data set
     attributes to the data set, as an Obs only has the attributes of
-    an observation or of any dimension.
+    an observation or of any dimension. In SDMX-ML 3.x, an Obs only has
+    the attributes of the observation, and those of the dimensions go to
+    Atts with the values of their dimensions.
     """
     schema = validate_schema_exists(dataset)
     group_codes = get_group_codes(schema, dataset.data)
@@ -205,10 +264,20 @@ def __all_dimensions_processing(
         for att in schema.components.attributes
         if att.attachment_level == "D"
     )
+    atts = ""
+    if references_30:
+        keyed = __dimension_attributes(
+            schema,
+            (c for c in dataset.data.columns if c not in excluded),
+        )
+        excluded.update(keyed)
+        atts = __atts_processing(dataset.data, schema, keyed, prettyprint)
     columns = [c for c in dataset.data.columns if c not in excluded]
-    return __group_processing(
-        dataset.data, group_codes, prettyprint, count
-    ) + __memory_optimization_writing(dataset.data[columns], prettyprint)
+    return (
+        atts
+        + __group_processing(dataset.data, group_codes, prettyprint, count)
+        + __memory_optimization_writing(dataset.data[columns], prettyprint)
+    )
 
 
 def __group_processing(

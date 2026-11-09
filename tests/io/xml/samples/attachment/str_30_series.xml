@@ -11,15 +11,19 @@
 	</mes:Header>
 	<mes:DataSet ss:structureRef="DSD" xsi:type="ns1:DataSetType" ss:action="Information">
 		<Atts COMMENT_DSET="Sample" />
+		<Atts REF_AREA="DE" TIME_PERIOD="2024" CONF_STATUS="F" />
+		<Atts REF_AREA="DE" TIME_PERIOD="2025" CONF_STATUS="C" />
+		<Atts REF_AREA="FR" TIME_PERIOD="2024" CONF_STATUS="F" />
+		<Atts REF_AREA="FR" TIME_PERIOD="2025" CONF_STATUS="F" />
 		<Group xsi:type="ns1:SIBLING" REF_AREA="DE" TITLE="Germany" UNIT_MULT="3" />
 		<Group xsi:type="ns1:SIBLING" REF_AREA="FR" TITLE="France" UNIT_MULT="6" />
 		<Series FREQ="A" REF_AREA="DE" COMMENT_TS="Revised" >
-			<Obs TIME_PERIOD="2024" OBS_VALUE="1.5" CONF_STATUS="F" OBS_STATUS="A" />
-			<Obs TIME_PERIOD="2025" OBS_VALUE="2.5" CONF_STATUS="C" OBS_STATUS="P" />
+			<Obs TIME_PERIOD="2024" OBS_VALUE="1.5" OBS_STATUS="A" />
+			<Obs TIME_PERIOD="2025" OBS_VALUE="2.5" OBS_STATUS="P" />
 		</Series>
 		<Series FREQ="A" REF_AREA="FR" COMMENT_TS="Provisional" >
-			<Obs TIME_PERIOD="2024" OBS_VALUE="3.5" CONF_STATUS="F" OBS_STATUS="A" />
-			<Obs TIME_PERIOD="2025" OBS_VALUE="4.5" CONF_STATUS="F" OBS_STATUS="A" />
+			<Obs TIME_PERIOD="2024" OBS_VALUE="3.5" OBS_STATUS="A" />
+			<Obs TIME_PERIOD="2025" OBS_VALUE="4.5" OBS_STATUS="A" />
 		</Series>
 	</mes:DataSet>
 </mes:StructureSpecificData>

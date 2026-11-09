@@ -266,14 +266,14 @@ def test_data_groups_31():
     assert read_format == Format.DATA_SDMX_ML_3_1
     data = read_sdmx(input_str, validate=True).data[0].data
 
-    # ATT3 is the attribute of the Groups
+    # ATT3 is the attribute of the Groups, and ATT1 that of the Atts
     expected = {
         "DIM2": ["4", "5", "6"],
         "DIM1": ["1", "2", "3"],
         "M1": ["10", "11", "12"],
-        "ATT1": ["A", "B", "C"],
         "ATT2": ["7", "8", "9"],
         "ATT3": ["H", "I", "J"],
+        "ATT1": ["A", "B", "C"],
     }
     assert data.to_dict("list") == expected
     assert list(data.columns) == list(expected)

@@ -430,8 +430,6 @@ def test_ss_child_elements_ignored():
         "str_30_series.xml",
         "str_30_series_group_type.xml",
         "str_30_all.xml",
-        "str_30_series_atts.xml",
-        "str_30_all_atts.xml",
         "str_31_series.xml",
         "str_31_all.xml",
     ],
