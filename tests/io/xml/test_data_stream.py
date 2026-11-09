@@ -428,6 +428,7 @@ def test_ss_child_elements_ignored():
         "gen_21_all.xml",
         "gen_21_series_group_per_attribute.xml",
         "str_30_series.xml",
+        "str_30_series_group_type.xml",
         "str_30_all.xml",
         "str_30_series_atts.xml",
         "str_30_all_atts.xml",

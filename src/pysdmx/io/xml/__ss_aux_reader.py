@@ -52,11 +52,12 @@ class _StructureSpecificDataSet:
             self.__observations.add(dict(self.__names.attributes(obs)))
 
     def group(self, group: etree._Element) -> None:
+        # The type and xsi:type of a Group give its group, not attributes
         self.__groups.append(
             {
                 name: value
                 for name, value in self.__names.attributes(group).items()
-                if ":type" not in name
+                if name != "type" and ":type" not in name
             }
         )
 
