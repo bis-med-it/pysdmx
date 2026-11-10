@@ -255,3 +255,26 @@ def test_execution_has_one_extraction_per_dataset_mapping(query):
             transformation_scheme=TS_URN,
             extractions=[query, other],
         )
+
+
+def test_stub_needs_no_transformation_scheme_or_extraction():
+    stub = VtlExecution(id="EXEC", agency="AG", is_external_reference=True)
+
+    assert stub.transformation_scheme is None
+    assert stub.transformation_scheme_urn is None
+    assert stub.extractions == ()
+
+
+def test_transformation_scheme_of_stub_is_checked():
+    with pytest.raises(Invalid, match="Transformation Scheme"):
+        VtlExecution(
+            id="EXEC",
+            agency="AG",
+            is_external_reference=True,
+            transformation_scheme=f"{BASE}transformation.RulesetScheme=A:R(1.0)",
+        )
+
+
+def test_execution_needs_a_transformation_scheme_unless_stub(query):
+    with pytest.raises(Invalid, match="Transformation Scheme"):
+        VtlExecution(id="EXEC", agency="AG", extractions=[query])
