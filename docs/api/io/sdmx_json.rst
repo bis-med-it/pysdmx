@@ -15,6 +15,15 @@ SDMX-JSON 2.0.0 and SDMX-JSON 2.1.0 standard.
 
 `SDMX-JSON 2.1.0 Metadata Message <https://github.com/sdmx-twg/sdmx-json/blob/v2.1.0/metadata-message/docs/1-sdmx-json-field-guide.md>`_
 
+.. note::
+
+    SDMX-JSON 2.2 is a draft. Only its structure messages are supported, as
+    those of SDMX-JSON 2.1 plus the VTL artefacts of SDMX 3.2 (the VTL dataset
+    and codelist mappings and the VTL executions), and they are validated
+    against the draft schema of the
+    `SDMX-JSON pull request #198 <https://github.com/sdmx-twg/sdmx-json/pull/198>`_,
+    which is bundled with pysdmx.
+
 Reading
 -------
 
@@ -23,7 +32,7 @@ specific readers for SDMX-JSON are also available:
 
 .. _sdmx_json_20_reader_structure:
 
-- STRUCTURE_SDMX_JSON_2_0_0 and STRUCTURE_SDMX_JSON_2_1_0 -> pysdmx.io.json.sdmxjson2.reader.structure
+- STRUCTURE_SDMX_JSON_2_0_0, STRUCTURE_SDMX_JSON_2_1_0 and STRUCTURE_SDMX_JSON_2_2_0 -> pysdmx.io.json.sdmxjson2.reader.structure
 
 .. autofunction:: pysdmx.io.json.sdmxjson2.reader.structure.read
 
@@ -57,6 +66,12 @@ specific writers for SDMX-JSON are also available:
 - STRUCTURE_SDMX_JSON_2_1_0 -> pysdmx.io.json.sdmxjson2.writer.v2_1.structure
 
 .. autofunction:: pysdmx.io.json.sdmxjson2.writer.v2_1.structure.write
+
+.. _sdmx_json_22_writer_structure:
+
+- STRUCTURE_SDMX_JSON_2_2_0 -> pysdmx.io.json.sdmxjson2.writer.v2_2.structure
+
+.. autofunction:: pysdmx.io.json.sdmxjson2.writer.v2_2.structure.write
 
 .. _sdmx_json_21_writer_refmeta:
 
