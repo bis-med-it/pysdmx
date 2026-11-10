@@ -9,4 +9,4 @@ VTL artefacts
     - :ref:`vtl-toolkit-api`.
 
 .. automodule:: pysdmx.model.vtl
-    :members: CustomType, CustomTypeScheme, FromVtlMapping, NamePersonalisation, NamePersonalisationScheme, Ruleset, RulesetScheme, ToVtlMapping, Transformation, TransformationScheme, UserDefinedOperator, UserDefinedOperatorScheme, VtlCodelistMapping, VtlConceptMapping, VtlDataflowMapping, VtlMapping, VtlMappingScheme
+    :members: CustomType, CustomTypeScheme, FromVtlMapping, NamePersonalisation, NamePersonalisationScheme, QueryExtraction, QueryParameter, Ruleset, RulesetScheme, ToVtlMapping, Transformation, TransformationScheme, UrlExtraction, UserDefinedOperator, UserDefinedOperatorScheme, VtlCodelistMapping, VtlConceptMapping, VtlDataExtraction, VtlDataflowMapping, VtlDatasetMapping, VtlExecution, VtlMapping, VtlMappingScheme
