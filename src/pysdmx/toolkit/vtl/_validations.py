@@ -1,5 +1,7 @@
 """Private module for VTL validation functions."""
 
+from typing import Any, List, Optional, Sequence, Type, TypeVar, cast
+
 from vtlengine.API import create_ast
 from vtlengine.AST import DPRuleset as ASTDPRuleset
 from vtlengine.AST import HRuleset as ASTHRuleset
@@ -8,16 +10,70 @@ from vtlengine.AST import ViralPropagationDef as ASTViralPropagation
 
 from pysdmx.errors import Invalid
 from pysdmx.model import Reference
+from pysdmx.model.dataflow import Dataflow, ProvisionAgreement
 from pysdmx.model.vtl import (
+    _VTL_ALIAS,
     Ruleset,
     RulesetScheme,
     Transformation,
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    VtlCodelistMapping,
+    VtlDatasetMapping,
+    VtlExecution,
+    VtlMappingScheme,
     VtlScheme,
+    _short_urn,
 )
 from pysdmx.toolkit.vtl.script_generation import _with_semicolon
+
+T = TypeVar("T")
+
+
+def _short(artefact: Any) -> Optional[str]:
+    """Returns the short URN of an artefact, a reference or a URN."""
+    short_urn = _short_urn(artefact)
+    if short_urn is None and isinstance(artefact, str):
+        return artefact
+    return short_urn
+
+
+def _find(ref: Any, structures: Sequence[Any], type_: Type[T]) -> Optional[T]:
+    """Returns a referenced artefact, if given or among the structures."""
+    if isinstance(ref, type_):
+        return ref
+    short_urn = _short(ref)
+    return next(
+        (
+            s
+            for s in structures
+            if isinstance(s, type_) and _short(s) == short_urn
+        ),
+        None,
+    )
+
+
+def _data_structure(artefact: Any, structures: Sequence[Any]) -> Optional[str]:
+    """Returns the short URN of the data structure of an artefact, if known.
+
+    The artefact is a data structure, or a dataflow or provision agreement
+    using it.
+    """
+    short_urn = _short(artefact) or ""
+    if short_urn.startswith("DataStructure="):
+        return short_urn
+    if short_urn.startswith("ProvisionAgreement="):
+        agreement = _find(artefact, structures, ProvisionAgreement)
+        return (
+            _data_structure(agreement.dataflow, structures)
+            if agreement
+            else None
+        )
+    dataflow = _find(artefact, structures, Dataflow)
+    return (
+        _data_structure(dataflow.structure, structures) if dataflow else None
+    )
 
 
 def _ruleset_validation(ruleset: Ruleset) -> None:
@@ -133,8 +189,100 @@ def _transformation_validations(transformation: Transformation) -> None:
         raise Invalid("A single Assignment is valid in a Transformation")
 
 
+def _vtl_mapping_scheme_validations(scheme: VtlMappingScheme) -> None:
+    """Additional validation checks for VTL mapping schemes."""
+    for mapping in scheme.items:
+        if not mapping.vtl_alias:
+            raise Invalid(
+                f"The VTL mapping {mapping.id} must have a VTL alias"
+            )
+        if not isinstance(mapping, VtlCodelistMapping):
+            continue
+        if not _VTL_ALIAS.fullmatch(mapping.vtl_alias):
+            raise Invalid(
+                f"The VTL alias of the mapping {mapping.id} must have "
+                "between 1 and 128 characters, without white spaces or "
+                "single quotes"
+            )
+        if not (_short(mapping.codelist) or "").startswith("Codelist="):
+            raise Invalid(
+                f"The VTL mapping {mapping.id} must reference a codelist"
+            )
+
+
+def _viral_propagations_validation(schemes: Sequence[RulesetScheme]) -> None:
+    """Checks that a variable or value domain has one viral propagation."""
+    targets = set()
+    for scheme in schemes:
+        for ruleset in scheme.items:
+            if ruleset.ruleset_type != "viral":
+                continue
+            definition = cast(
+                ASTViralPropagation,
+                create_ast(
+                    _with_semicolon(ruleset.ruleset_definition)
+                ).children[0],
+            )
+            target = f"{definition.signature_type} {definition.target}"
+            if target in targets:
+                raise Invalid(
+                    "A TransformationScheme must have a single viral "
+                    f"propagation for the {target}"
+                )
+            targets.add(target)
+
+
+def _outputs_validation(
+    scheme: TransformationScheme, mappings: VtlMappingScheme
+) -> None:
+    """Checks that the outputs are results of persistent transformations."""
+    persistent = {
+        t.result.strip().strip("'") for t in scheme.items if t.is_persistent
+    }
+    for mapping in mappings.items:
+        if (
+            isinstance(mapping, VtlDatasetMapping)
+            and not mapping.is_input
+            and mapping.vtl_alias not in persistent
+        ):
+            raise Invalid(
+                f"The output {mapping.vtl_alias} of the VTL mapping scheme "
+                f"{mappings.id} must be the result of a persistent "
+                "Transformation"
+            )
+
+
+def _referenced_schemes(
+    scheme: TransformationScheme,
+    references: Sequence[Any],
+    structures: Sequence[Any],
+    type_: Type[T],
+) -> List[T]:
+    """Returns the schemes of a transformation scheme that are available.
+
+    The references to the other ones must be of the right class.
+    """
+    found = []
+    for reference in references:
+        referenced = _find(reference, structures, type_)
+        if referenced is not None:
+            version = referenced.vtl_version  # type: ignore[attr-defined]
+            if version is not None and version != scheme.vtl_version:
+                raise Invalid(
+                    f"{type_.__name__} must have the VTL version of the "
+                    "TransformationScheme that references it"
+                )
+            found.append(referenced)
+        elif type_ is RulesetScheme:
+            _ruleset_scheme_reference_validations(reference)
+        else:
+            _udo_scheme_reference_validations(reference)
+    return found
+
+
 def _transformation_scheme_validations(
     transformation_scheme: TransformationScheme,
+    structures: Sequence[Any] = (),
 ) -> None:
     """Additional validation checks for transformation schemes."""
     _vtl_version_validation(transformation_scheme)
@@ -143,19 +291,88 @@ def _transformation_scheme_validations(
             "TransformationScheme must contain at least one Transformation"
         )
 
-    for ruleset_scheme in transformation_scheme.ruleset_schemes:
-        if isinstance(ruleset_scheme, RulesetScheme):
-            _ruleset_scheme_validations(ruleset_scheme)
-        if isinstance(ruleset_scheme, Reference):
-            _ruleset_scheme_reference_validations(ruleset_scheme)
-    for udo_scheme in transformation_scheme.user_defined_operator_schemes:
-        if isinstance(udo_scheme, UserDefinedOperatorScheme):
-            _user_defined_operator_scheme_validations(udo_scheme)
-        if isinstance(udo_scheme, Reference):
-            _udo_scheme_reference_validations(udo_scheme)
+    ruleset_schemes = _referenced_schemes(
+        transformation_scheme,
+        transformation_scheme.ruleset_schemes,
+        structures,
+        RulesetScheme,
+    )
+    for ruleset_scheme in ruleset_schemes:
+        _ruleset_scheme_validations(ruleset_scheme)
+    _viral_propagations_validation(ruleset_schemes)
+    for udo_scheme in _referenced_schemes(
+        transformation_scheme,
+        transformation_scheme.user_defined_operator_schemes,
+        structures,
+        UserDefinedOperatorScheme,
+    ):
+        _user_defined_operator_scheme_validations(udo_scheme)
     for transformation in transformation_scheme.items:
         if not isinstance(transformation, Transformation):
             raise Invalid(
                 "TransformationScheme must contain Transformation items"
             )
         _transformation_validations(transformation)
+
+    reference = transformation_scheme.vtl_mapping_scheme
+    mappings = _find(reference, structures, VtlMappingScheme)
+    if mappings is not None:
+        _vtl_mapping_scheme_validations(mappings)
+        _outputs_validation(transformation_scheme, mappings)
+    elif (
+        isinstance(reference, Reference)
+        and reference.sdmx_type != "VtlMappingScheme"
+    ):
+        raise Invalid(
+            "The VTL mapping scheme of a TransformationScheme must be a "
+            f"VTL Mapping Scheme, got {reference.sdmx_type}"
+        )
+
+
+def _vtl_execution_validations(
+    execution: VtlExecution, structures: Sequence[Any] = ()
+) -> None:
+    """Additional validation checks for VTL executions.
+
+    They need the transformation scheme of the execution and its VTL
+    mapping scheme, given in the execution or among the structures.
+    """
+    scheme = _find(
+        execution.transformation_scheme, structures, TransformationScheme
+    )
+    mappings = (
+        _find(scheme.vtl_mapping_scheme, structures, VtlMappingScheme)
+        if scheme
+        else None
+    )
+    if mappings is None:
+        return
+    prefix = f"VtlDatasetMapping={mappings.short_urn.split('=', 1)[1]}."
+    datasets = {
+        m.id: m for m in mappings.items if isinstance(m, VtlDatasetMapping)
+    }
+    for extraction in execution.extractions:
+        urn = str(_short_urn(extraction.dataset_mapping))
+        mapping = (
+            datasets.get(urn[len(prefix) :])
+            if urn.startswith(prefix)
+            else None
+        )
+        if mapping is None:
+            raise Invalid(
+                f"The data extraction of {urn} does not apply to a VTL "
+                "Data Set of the executed program"
+            )
+        if not mapping.is_input:
+            raise Invalid(
+                f"The data extraction of {urn} is not valid, as the data "
+                "extractions apply only to the inputs"
+            )
+        context = getattr(extraction, "context", None)
+        expected = _data_structure(mapping.sdmx_artefact, structures)
+        actual = _data_structure(context, structures)
+        if expected and actual and expected != actual:
+            raise Invalid(
+                f"The data of the context of the data extraction of {urn} "
+                "do not have the data structure of the VTL Data Set"
+            )
