@@ -17,12 +17,13 @@ from pysdmx.model.vtl import (
     UserDefinedOperatorScheme,
     VtlScheme,
 )
+from pysdmx.toolkit.vtl.script_generation import _with_semicolon
 
 
 def _ruleset_validation(ruleset: Ruleset) -> None:
     """Additional validation checks for rulesets."""
     try:
-        ast = create_ast(ruleset.ruleset_definition)
+        ast = create_ast(_with_semicolon(ruleset.ruleset_definition))
     except Exception as e:
         raise Invalid(f"Invalid ruleset definition: {str(e)}") from e
     if len(ast.children) > 1:
@@ -80,7 +81,7 @@ def _ruleset_scheme_reference_validations(ruleset_scheme: Reference) -> None:
 def _user_defined_operator_validation(udo: UserDefinedOperator) -> None:
     """Additional validation checks for user defined operators."""
     try:
-        ast = create_ast(udo.operator_definition)
+        ast = create_ast(_with_semicolon(udo.operator_definition))
     except Exception as e:
         raise Invalid(f"Invalid operator definition: {str(e)}") from e
     if len(ast.children) > 1:
