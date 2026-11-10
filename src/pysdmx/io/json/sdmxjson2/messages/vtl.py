@@ -1177,7 +1177,7 @@ class JsonUrlExtraction(Struct, frozen=True, omit_defaults=True):
 class JsonVtlExecution(MaintainableType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for VTL executions (SDMX-JSON 2.2)."""
 
-    transformationScheme: str = ""
+    transformationScheme: Optional[str] = None
     queryExtractions: Sequence[JsonQueryExtraction] = ()
     urlExtractions: Sequence[JsonUrlExtraction] = ()
 
@@ -1223,7 +1223,7 @@ class JsonVtlExecution(MaintainableType, frozen=True, omit_defaults=True):
             annotations=tuple(
                 [JsonAnnotation.from_model(a) for a in execution.annotations]
             ),
-            transformationScheme=str(execution.transformation_scheme_urn),
+            transformationScheme=execution.transformation_scheme_urn,
             queryExtractions=tuple(
                 [
                     JsonQueryExtraction.from_model(e)

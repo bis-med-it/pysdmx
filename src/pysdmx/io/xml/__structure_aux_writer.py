@@ -2890,9 +2890,11 @@ def __write_vtl_execution(execution: VtlExecution, indent: str) -> str:
     attributes = data["Attributes"].replace("'", '"')
     outfile = f"{indent}<{ABBR_STR}:{VTL_EXECUTION}{attributes}>"
     outfile += __export_intern_data(data)
-    outfile += element(
-        TRANS_SCHEME, execution.transformation_scheme_urn, child
-    )
+    # A stub has neither a transformation scheme nor data extractions
+    if execution.transformation_scheme is not None:
+        outfile += element(
+            TRANS_SCHEME, execution.transformation_scheme_urn, child
+        )
     for extraction in execution.extractions:
         mapping = element(
             "DatasetMapping", extraction.dataset_mapping_urn, inner

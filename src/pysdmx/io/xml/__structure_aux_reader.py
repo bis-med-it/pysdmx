@@ -1907,9 +1907,11 @@ class StructureParser(Struct):
         self, element: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Formats the references and data extractions of a VtlExecution."""
-        element["transformation_scheme"] = self.__resolve_reference(
-            element.pop(TRANS_SCHEME)
-        )
+        # A stub has neither a transformation scheme nor data extractions
+        if TRANS_SCHEME in element:
+            element["transformation_scheme"] = self.__resolve_reference(
+                element.pop(TRANS_SCHEME)
+            )
         extractions: List[Union[QueryExtraction, UrlExtraction]] = []
         for query in add_list(element.pop(QUERY_EXTRACTION, [])):
             context = query.get("Context")

@@ -237,3 +237,17 @@ def test_vtl_version_is_mandatory():
 
     with pytest.raises(Invalid, match="must have a VTL version"):
         write([scheme])
+
+
+def test_stub_of_an_execution(header):
+    stub = VtlExecution(
+        id="EXEC", agency="AG", name="Stub", is_external_reference=True
+    )
+
+    written = write([stub], header=header)
+
+    assert "TransformationScheme" not in written
+    read_stub = read_sdmx(written, validate=False).get_vtl_executions()[0]
+    assert read_stub.is_external_reference is True
+    assert read_stub.transformation_scheme is None
+    assert read_stub.extractions == ()
