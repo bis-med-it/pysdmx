@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message"
+               xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure"
+               xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common">
+  <mes:Header>
+    <mes:ID>VTL_MAPPING_NO_METHOD</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2025-05-26T11:58:47Z</mes:Prepared>
+    <mes:Sender id="SDMX"/>
+    <mes:Receiver id="not_supplied"/>
+  </mes:Header>
+  <mes:Structures>
+    <str:VtlMappingSchemes>
+      <str:VtlMappingScheme agencyID="SDMX" id="VTLMS4" version="1.0">
+        <com:Name xml:lang="en">VTL Mapping Scheme #4</com:Name>
+        <str:VtlMapping alias="DF4" id="VTLM1">
+          <com:Name xml:lang="en">VTL Mapping #1</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:DF4(1.0)</str:Dataflow>
+          <str:ToVtlMapping/>
+          <str:FromVtlMapping/>
+        </str:VtlMapping>
+      </str:VtlMappingScheme>
+    </str:VtlMappingSchemes>
+  </mes:Structures>
+</mes:Structure>
