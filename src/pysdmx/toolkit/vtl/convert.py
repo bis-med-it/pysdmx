@@ -19,10 +19,19 @@ from vtlengine.DataTypes import (
 )
 from vtlengine.Model import Dataset as VTLengineDataset
 from vtlengine.Model import Role as VTLRole
+from vtlengine.Model import ValueDomain
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Component, Components, Concept, DataType, Reference
+from pysdmx.model import (
+    Code,
+    Codelist,
+    Component,
+    Components,
+    Concept,
+    DataType,
+    Reference,
+)
 from pysdmx.model.dataflow import Role, Schema
 
 # VTL to SDMX type mapping
@@ -332,3 +341,66 @@ def _validate_vtl_dataset_against_schema(
                 f"Component '{comp_id}' has role {expected_sdmx_role} "
                 f"in VTL but {component.role} in Schema",
             )
+
+
+def convert_codelist_to_vtl(
+    codelist: Codelist, vtl_value_domain_name: str
+) -> ValueDomain:
+    """Convert a codelist to a vtlengine Value Domain.
+
+    The values of the Value Domain are the ids of the codes, as strings.
+
+    Args:
+        codelist: The codelist (or value list) to convert.
+        vtl_value_domain_name: The name for the vtlengine Value Domain,
+            e.g. the alias of the VTL mapping of the codelist.
+
+    Returns:
+        A vtlengine Value Domain of type String with the ids of the codes.
+    """
+    return ValueDomain(
+        name=vtl_value_domain_name,
+        type=String,
+        setlist=[code.id for code in codelist.codes],
+    )
+
+
+def convert_value_domain_to_sdmx(
+    value_domain: ValueDomain, reference: Reference
+) -> Codelist:
+    """Convert a vtlengine Value Domain to a codelist.
+
+    The codelist has a code for each value of the Value Domain, whose id
+    and name are the value, and the name of the Value Domain.
+
+    Args:
+        value_domain: The vtlengine Value Domain to convert.
+        reference: The reference to the codelist to create (Codelist), or
+            to the value list (ValueList) if the values are not valid ids
+            of codes.
+
+    Returns:
+        The codelist, or value list, with the values of the Value Domain.
+
+    Raises:
+        Invalid: If the reference is not to a Codelist or ValueList.
+    """
+    if reference.sdmx_type not in ("Codelist", "ValueList"):
+        raise Invalid(
+            "Validation Error",
+            "Reference sdmx_type must be Codelist or ValueList, "
+            f"but got '{reference.sdmx_type}'",
+        )
+    return Codelist(
+        id=reference.id,
+        agency=reference.agency,
+        version=reference.version,
+        name=value_domain.name,
+        items=[
+            Code(id=str(value), name=str(value))
+            for value in value_domain.setlist
+        ],
+        sdmx_type=(
+            "valuelist" if reference.sdmx_type == "ValueList" else "codelist"
+        ),
+    )
