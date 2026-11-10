@@ -142,6 +142,7 @@ def test_dataset_mapping_as_reference():
     query = QueryExtraction(dataset_mapping=ref, entry_point="https://x.org")
 
     assert query.dataset_mapping == ref
+    assert query.dataset_mapping_urn == DS_A
 
 
 @pytest.mark.parametrize(
@@ -174,6 +175,7 @@ def test_parameter_names_are_unique_in_an_extraction():
 
 def test_url_extraction(url):
     assert url.dataset_mapping == DS_B
+    assert url.dataset_mapping_urn == DS_B
     assert url.url_template == (
         "https://example.org/data/{flow}?from={startPeriod}"
     )
@@ -207,6 +209,7 @@ def test_execution(scheme, query, url):
     assert execution.agency == "AG"
     assert execution.version == "1.0"
     assert execution.transformation_scheme == scheme
+    assert execution.transformation_scheme_urn == TS_URN
     assert execution.extractions == [query, url]
     assert execution.short_urn == "VtlExecution=AG:EXEC(1.0)"
 

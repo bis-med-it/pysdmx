@@ -35,6 +35,7 @@ _PACKAGES = {
     "ProvisionAgreement": "registry",
     "TransformationScheme": "transformation",
     "ValueList": "codelist",
+    "VtlDatasetMapping": "transformation",
 }
 _VTL_ALIAS = re.compile(r"[^\s']{1,128}")
 _PARAMETER_NAME = re.compile(r"\S+")
@@ -626,6 +627,11 @@ class VtlDataExtraction(Struct, frozen=True, omit_defaults=True, kw_only=True):
                 )
             names.add(parameter.name)
 
+    @property
+    def dataset_mapping_urn(self) -> Optional[str]:
+        """The URN of the VtlDatasetMapping of the input VTL Data Set."""
+        return _urn(self.dataset_mapping)
+
 
 class QueryExtraction(
     VtlDataExtraction, frozen=True, omit_defaults=True, kw_only=True
@@ -779,3 +785,8 @@ class VtlExecution(
                     f"data extraction for {mapping}.",
                 )
             mappings.add(mapping)
+
+    @property
+    def transformation_scheme_urn(self) -> Optional[str]:
+        """The URN of the transformation scheme to be executed."""
+        return _urn(self.transformation_scheme)
