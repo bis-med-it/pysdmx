@@ -3,6 +3,7 @@
 from collections import OrderedDict
 from datetime import datetime
 from typing import Any, Dict, Optional, Sequence, Set, Union, cast
+from xml.sax.saxutils import escape, quoteattr
 
 from msgspec.structs import replace
 
@@ -92,6 +93,7 @@ from pysdmx.io.xml.__tokens import (
     PAR_VER,
     POSITION,
     PROV_AGREEMENT,
+    QUERY_EXTRACTION,
     REF,
     REPRESENTATION_MAP,
     ROLE,
@@ -112,6 +114,7 @@ from pysdmx.io.xml.__tokens import (
     UDO,
     UDO_SCHEME,
     URI,
+    URL_EXTRACTION,
     URN,
     URN_LOW,
     USAGE,
@@ -123,6 +126,9 @@ from pysdmx.io.xml.__tokens import (
     VALUE_LIST_LOW,
     VALUE_LISTS,
     VERSION,
+    VTL_CL_MAPP,
+    VTL_DS_MAPP,
+    VTL_EXECUTION,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
 )
@@ -133,6 +139,7 @@ from pysdmx.io.xml.__write_aux import (
     MSG_CONTENT_PKG_21,
     MSG_CONTENT_PKG_30,
     MSG_CONTENT_PKG_31,
+    MSG_CONTENT_PKG_32,
     __escape_xml,
     __escape_xml_vtl,
     __to_lower_camel_case,
@@ -177,18 +184,22 @@ from pysdmx.model import (
     MultiValueMap,
     NamePersonalisation,
     NamePersonalisationScheme,
+    QueryExtraction,
     RepresentationMap,
     Ruleset,
     RulesetScheme,
     StructureMap,
     Transformation,
     TransformationScheme,
+    UrlExtraction,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
     ValueMap,
     VtlCodelistMapping,
     VtlConceptMapping,
     VtlDataflowMapping,
+    VtlDatasetMapping,
+    VtlExecution,
     VtlMappingScheme,
     VtlScheme,
 )
@@ -330,6 +341,11 @@ STR_DICT_TYPE_LIST_30 = {
 STR_DICT_TYPE_LIST_31 = {
     **STR_DICT_TYPE_LIST_30,
     AvailabilityConstraint: "AvailabilityConstraints",
+}
+
+STR_DICT_TYPE_LIST_32 = {
+    **STR_DICT_TYPE_LIST_31,
+    VtlExecution: "VtlExecutions",
 }
 
 
@@ -2178,8 +2194,11 @@ def __write_scheme(  # noqa: C901
     scheme: str,
     references_30: bool = False,
     references_31: bool = False,
+    references_32: bool = False,
 ) -> str:
     """Writes the scheme to the XML file."""
+    if isinstance(item_scheme, VtlExecution):
+        return __write_vtl_execution(item_scheme, indent)
     if getattr(item_scheme, "sdmx_type", None) == "valuelist":
         scheme = VALUE_LIST
 
@@ -2250,7 +2269,7 @@ def __write_scheme(  # noqa: C901
         NAME_PER_SCHEME,
     ]:
         data["Attributes"] += (
-            f" {_write_vtl(item_scheme, indent, references_30)}"
+            f" {_write_vtl(item_scheme, indent, references_30, references_32)}"
         )
 
     outfile = ""
@@ -2328,7 +2347,9 @@ def __write_scheme(  # noqa: C901
         NAME_PER_SCHEME,
     ]:
         for item in item_scheme.items:
-            outfile += _write_vtl(item, add_indent(indent), references_30)
+            outfile += _write_vtl(
+                item, add_indent(indent), references_30, references_32
+            )
         outfile += _write_vtl_references(
             item_scheme, add_indent(indent), references_30
         )
@@ -2357,6 +2378,7 @@ def __write_metadata_element(
     prettyprint: object,
     references_30: bool = False,
     references_31: bool = False,
+    references_32: bool = False,
 ) -> str:
     """Writes the metadata element to the XML file.
 
@@ -2365,7 +2387,8 @@ def __write_metadata_element(
         key: The key to be used
         prettyprint: Prettyprint or not
         references_30: Whether to use SDMX 3.0 references
-        references_31: Whether the target format is SDMX-ML 3.1
+        references_31: Whether the target format is SDMX-ML 3.1 or later
+        references_32: Whether the target format is SDMX-ML 3.2
 
     Returns:
         A string with the metadata element
@@ -2376,7 +2399,9 @@ def __write_metadata_element(
 
     base_indent = f"{nl}{child2}"
 
-    if references_31:
+    if references_32:
+        msg_content = MSG_CONTENT_PKG_32
+    elif references_31:
         msg_content = MSG_CONTENT_PKG_31
     elif references_30:
         msg_content = MSG_CONTENT_PKG_30
@@ -2398,6 +2423,7 @@ def __write_metadata_element(
                 item,
                 references_30,
                 references_31,
+                references_32,
             )
 
         outfile += f"{base_indent}</{ABBR_STR}:{scheme}>"
@@ -2509,6 +2535,7 @@ def __write_structures(
     prettyprint: bool,
     references_30: bool = False,
     references_31: bool = False,
+    references_32: bool = False,
 ) -> str:
     """Writes the structures to the XML file.
 
@@ -2516,7 +2543,8 @@ def __write_structures(
         content: The Message Content to be written
         prettyprint: Prettyprint or not
         references_30: Whether to use SDMX 3.0 references
-        references_31: Whether the target format is SDMX-ML 3.1
+        references_31: Whether the target format is SDMX-ML 3.1 or later
+        references_32: Whether the target format is SDMX-ML 3.2
 
     Returns:
         A string with the structures
@@ -2525,7 +2553,9 @@ def __write_structures(
     child1 = "\t" if prettyprint else ""
 
     outfile = f"{nl}{child1}<{ABBR_MSG}:Structures>"
-    if references_31:
+    if references_32:
+        msg_content = MSG_CONTENT_PKG_32
+    elif references_31:
         msg_content = MSG_CONTENT_PKG_31
     elif references_30:
         msg_content = MSG_CONTENT_PKG_30
@@ -2533,7 +2563,12 @@ def __write_structures(
         msg_content = MSG_CONTENT_PKG_21
     for key in msg_content:
         outfile += __write_metadata_element(
-            content, key, prettyprint, references_30, references_31
+            content,
+            key,
+            prettyprint,
+            references_30,
+            references_31,
+            references_32,
         )
 
     outfile += f"{nl}{child1}</{ABBR_MSG}:Structures>"
@@ -2548,6 +2583,7 @@ def _write_vtl(  # noqa: C901
     item_or_scheme: Union[Item, ItemScheme],
     indent: str,
     references_30: bool = False,
+    references_32: bool = False,
 ) -> str:  # noqa: C901
     """Writes the VTL attribute to the XML file for a single item.
 
@@ -2560,6 +2596,11 @@ def _write_vtl(  # noqa: C901
             ItemScheme: The item scheme to be written
         indent: The current indentation level
         references_30: Whether to use SDMX 3.0 references
+        references_32: Whether the target format is SDMX-ML 3.2
+
+    Raises:
+        Invalid: If the item cannot be written as the requested SDMX-ML
+            version, or if an SDMX-ML 3.2 scheme has no VTL version.
     """
     outfile = ""
 
@@ -2665,8 +2706,30 @@ def _write_vtl(  # noqa: C901
                     data += f"{indent_2}</{ABBR_STR}:FromVtlSuperSpace>"
                     data += f"{add_indent(indent)}</{ABBR_STR}:FromVtlMapping>"
 
+        if isinstance(item_or_scheme, VtlDatasetMapping):
+            if not references_32:
+                raise Invalid(
+                    "Invalid input",
+                    "VtlDatasetMapping cannot be written as the requested "
+                    "SDMX-ML version.",
+                    {"vtl_mapping": item_or_scheme.id},
+                )
+            label = f"{ABBR_STR}:{VTL_DS_MAPP}"
+            urn = str(item_or_scheme.sdmx_urn)
+            artefact = urn.split("=")[0].rsplit(".", 1)[1]
+            attrib += (
+                f" vtlAlias={item_or_scheme.vtl_alias!r}"
+                f" isInput={str(item_or_scheme.is_input).lower()!r}"
+            )
+            data += (
+                f"{add_indent(indent)}<{ABBR_STR}:{artefact}>{urn}"
+                f"</{ABBR_STR}:{artefact}>"
+            )
+
         if isinstance(item_or_scheme, VtlCodelistMapping):
-            label = f"{ABBR_STR}:{VTLMAPPING}"
+            label = (
+                f"{ABBR_STR}:{VTL_CL_MAPP if references_32 else VTLMAPPING}"
+            )
             data += f"{add_indent(indent)}<{ABBR_STR}:Codelist>"
             ref_codelist = (
                 item_or_scheme.codelist
@@ -2687,7 +2750,8 @@ def _write_vtl(  # noqa: C901
                     f"version={ref_codelist.version!r} class={CL!r} />"
                     f"{add_indent(indent)}</{ABBR_STR}:Codelist>"
                 )
-            attrib += f" alias={item_or_scheme.codelist_alias!r}"
+            alias = "vtlAlias" if references_32 else "alias"
+            attrib += f" {alias}={item_or_scheme.codelist_alias!r}"
 
         if isinstance(item_or_scheme, VtlConceptMapping) and not isinstance(
             item_or_scheme.concept, Concept
@@ -2781,8 +2845,78 @@ def _write_vtl(  # noqa: C901
         outfile += f"{indent}</{label}>"
 
     if isinstance(item_or_scheme, VtlScheme):
+        if references_32 and item_or_scheme.vtl_version is None:
+            raise Invalid(
+                "Invalid input",
+                f"{type(item_or_scheme).__name__} must have a VTL version "
+                "in SDMX-ML 3.2.",
+                {"scheme": item_or_scheme.id},
+            )
         outfile += f' vtlVersion="{item_or_scheme.vtl_version}"'
 
+    return outfile
+
+
+def __write_query_parameters(
+    extraction: Union[QueryExtraction, UrlExtraction], indent: str
+) -> str:
+    """Writes the query parameters of a data extraction."""
+    outfile = ""
+    for parameter in extraction.parameters:
+        value = (
+            ""
+            if parameter.value is None
+            else f" value={quoteattr(parameter.value)}"
+        )
+        outfile += (
+            f"{indent}<{ABBR_STR}:QueryParameter "
+            f"name={quoteattr(parameter.name)}{value} "
+            f'isFixed="{str(parameter.is_fixed).lower()}"/>'
+        )
+    return outfile
+
+
+def __write_vtl_execution(execution: VtlExecution, indent: str) -> str:
+    """Writes a VTL execution (SDMX-ML 3.2) to the XML file."""
+
+    def element(tag: str, text: Optional[str], level: str) -> str:
+        return (
+            f"{level}<{ABBR_STR}:{tag}>{escape(str(text))}</{ABBR_STR}:{tag}>"
+        )
+
+    child = add_indent(indent)
+    inner = add_indent(child)
+    data = __write_maintainable(execution, indent, references_30=True)
+    attributes = data["Attributes"].replace("'", '"')
+    outfile = f"{indent}<{ABBR_STR}:{VTL_EXECUTION}{attributes}>"
+    outfile += __export_intern_data(data)
+    outfile += element(
+        TRANS_SCHEME, execution.transformation_scheme_urn, child
+    )
+    for extraction in execution.extractions:
+        mapping = element(
+            "DatasetMapping", extraction.dataset_mapping_urn, inner
+        )
+        if isinstance(extraction, QueryExtraction):
+            version = (
+                ""
+                if extraction.sdmx_api_version is None
+                else f' sdmxApiVersion="{extraction.sdmx_api_version}"'
+            )
+            outfile += f"{child}<{ABBR_STR}:{QUERY_EXTRACTION}{version}>"
+            outfile += mapping
+            outfile += element("EntryPoint", extraction.entry_point, inner)
+            if extraction.context is not None:
+                outfile += element("Context", extraction.context_urn, inner)
+            outfile += __write_query_parameters(extraction, inner)
+            outfile += f"{child}</{ABBR_STR}:{QUERY_EXTRACTION}>"
+        else:
+            outfile += f"{child}<{ABBR_STR}:{URL_EXTRACTION}>"
+            outfile += mapping
+            outfile += element("UrlTemplate", extraction.url_template, inner)
+            outfile += __write_query_parameters(extraction, inner)
+            outfile += f"{child}</{ABBR_STR}:{URL_EXTRACTION}>"
+    outfile += f"{indent}</{ABBR_STR}:{VTL_EXECUTION}>"
     return outfile
 
 

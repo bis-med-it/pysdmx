@@ -26,6 +26,7 @@ WRITERS = {
     Format.STRUCTURE_SDMX_ML_3_0: "pysdmx.io.xml.sdmx30.writer.structure",
     Format.DATA_SDMX_ML_3_1: "pysdmx.io.xml.sdmx31.writer.structure_specific",
     Format.STRUCTURE_SDMX_ML_3_1: "pysdmx.io.xml.sdmx31.writer.structure",
+    Format.STRUCTURE_SDMX_ML_3_2: "pysdmx.io.xml.sdmx32.writer.structure",
     Format.STRUCTURE_SDMX_JSON_2_0_0: (
         "pysdmx.io.json.sdmxjson2.writer.v2_0.structure"
     ),
@@ -46,8 +47,10 @@ STRUCTURE_WRITERS = (
     Format.STRUCTURE_SDMX_ML_2_1,
     Format.STRUCTURE_SDMX_ML_3_0,
     Format.STRUCTURE_SDMX_ML_3_1,
+    Format.STRUCTURE_SDMX_ML_3_2,
     Format.STRUCTURE_SDMX_JSON_2_0_0,
     Format.STRUCTURE_SDMX_JSON_2_1_0,
+    Format.STRUCTURE_SDMX_JSON_2_2_0,
 )
 
 REFMETA_WRITERS = (

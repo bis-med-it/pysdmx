@@ -29,6 +29,7 @@ from pysdmx.io.format import Format
 from pysdmx.util import map_httpx_errors
 from pysdmx.util._net_utils import GZIP_MAGIC, decompress_gzip
 
+SCHEMA_ROOT_32 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_2/"
 SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
 SCHEMA_ROOT_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
 # Characters read at a time from a file or a BytesIO
@@ -81,7 +82,10 @@ def __get_sdmx_ml_version(
     v21: Format,
     v30: Format,
     v31: Format,
+    v32: Optional[Format] = None,
 ) -> Format:
+    if v32 is not None and SCHEMA_ROOT_32 in flavour_check:
+        return v32
     if SCHEMA_ROOT_30 in flavour_check:
         return v30
     elif SCHEMA_ROOT_31 in flavour_check:
@@ -138,6 +142,7 @@ def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
             Format.STRUCTURE_SDMX_ML_2_1,
             Format.STRUCTURE_SDMX_ML_3_0,
             Format.STRUCTURE_SDMX_ML_3_1,
+            Format.STRUCTURE_SDMX_ML_3_2,
         )
     raise Invalid("Validation Error", "Cannot parse input as SDMX-ML.")
 
@@ -164,6 +169,8 @@ def __get_sdmx_json_flavour(input_str: str) -> Tuple[str, Format]:
         return input_str, Format.STRUCTURE_SDMX_JSON_2_0_0
     elif "2.1/sdmx-json-structure-schema.json" in flavour_check:
         return input_str, Format.STRUCTURE_SDMX_JSON_2_1_0
+    elif "2.2/sdmx-json-structure-schema.json" in flavour_check:
+        return input_str, Format.STRUCTURE_SDMX_JSON_2_2_0
     elif "sdmx-json" in flavour_check:
         raise NotImplemented(
             "Unsupported format", "This flavour of SDMX-JSON is not supported."

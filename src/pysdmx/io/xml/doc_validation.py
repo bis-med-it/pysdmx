@@ -9,10 +9,14 @@ from sdmxschemas import SDMX_ML_30_MESSAGE_PATH as SCHEMA_PATH_30
 from sdmxschemas import SDMX_ML_31_MESSAGE_PATH as SCHEMA_PATH_31
 
 from pysdmx.errors import Invalid
+from pysdmx.io._draft_schemas import (
+    SDMX_ML_32_MESSAGE_PATH as SCHEMA_PATH_32,
+)
 from pysdmx.io.xml.__allowed_lxml_errors import ALLOWED_ERRORS_CONTENT
 
 SCHEMA_ROOT_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
 SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
+SCHEMA_ROOT_32 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_2/"
 
 
 def sdmx_ml_version(head: str) -> str:
@@ -23,9 +27,11 @@ def sdmx_ml_version(head: str) -> str:
             the version.
 
     Returns:
-        "3.1", "3.0" or "2.1".
+        "3.2", "3.1", "3.0" or "2.1".
     """
     check = head[:1000].lower()
+    if SCHEMA_ROOT_32 in check:
+        return "3.2"
     if SCHEMA_ROOT_31 in check:
         return "3.1"
     if SCHEMA_ROOT_30 in check:
@@ -43,9 +49,11 @@ def load_schema(head: str) -> etree.XMLSchema:
     Returns:
         The XSD schema of the SDMX-ML message.
     """
-    path = {"3.1": SCHEMA_PATH_31, "3.0": SCHEMA_PATH_30}.get(
-        sdmx_ml_version(head), SCHEMA_PATH_21
-    )
+    path = {
+        "3.2": SCHEMA_PATH_32,
+        "3.1": SCHEMA_PATH_31,
+        "3.0": SCHEMA_PATH_30,
+    }.get(sdmx_ml_version(head), SCHEMA_PATH_21)
     return etree.XMLSchema(etree.parse(path))
 
 
