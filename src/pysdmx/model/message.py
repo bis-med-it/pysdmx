@@ -67,6 +67,7 @@ from pysdmx.model.vtl import (
     RulesetScheme,
     TransformationScheme,
     UserDefinedOperatorScheme,
+    VtlExecution,
     VtlMappingScheme,
 )
 
@@ -368,6 +369,10 @@ class StructureMessage(Struct, repr_omit_defaults=True, frozen=True):
     def get_value_lists(self) -> List[Codelist]:
         """Returns the Codelists."""
         return self.__get_enumerations(Codelist, True)
+
+    def get_vtl_executions(self) -> List[VtlExecution]:
+        """Returns the VTL Executions."""
+        return self.__get_elements(VtlExecution)
 
     def get_vtl_mapping_schemes(self) -> List[VtlMappingScheme]:
         """Returns the VTL Mapping Schemes."""

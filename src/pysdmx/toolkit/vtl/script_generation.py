@@ -12,6 +12,16 @@ from pysdmx.model import (
 )
 
 
+def _with_semicolon(definition: str) -> str:
+    """Returns a VTL definition with the semicolon that ends its statement.
+
+    In SDMX, the definition of a ruleset or of a user defined operator can
+    be written without it.
+    """
+    stripped = definition.rstrip()
+    return definition if stripped.endswith(";") else f"{stripped};"
+
+
 def _process_ruleset_scheme(
     ruleset_schemes: Sequence[Union[RulesetScheme, Reference]],
 ) -> str:
@@ -20,7 +30,8 @@ def _process_ruleset_scheme(
     for ruleset_scheme in ruleset_schemes:
         if isinstance(ruleset_scheme, RulesetScheme):
             for ruleset in ruleset_scheme.items:
-                vtl_script += f"{ruleset.ruleset_definition}\n"
+                definition = _with_semicolon(ruleset.ruleset_definition)
+                vtl_script += f"{definition}\n"
 
     return vtl_script
 
@@ -33,7 +44,8 @@ def _process_udo_scheme(
     for udo_scheme in udo_schemes:
         if isinstance(udo_scheme, UserDefinedOperatorScheme):
             for udo in udo_scheme.items:
-                vtl_script += f"{udo.operator_definition}\n"
+                definition = _with_semicolon(udo.operator_definition)
+                vtl_script += f"{definition}\n"
 
     return vtl_script
 
@@ -57,6 +69,10 @@ def generate_vtl_script(
     This method iterates over the TransformationScheme object and its referred
     RulesetSchemes and UserDefinedOperatorSchemes to generate the VTL script
     as string
+
+    The definitions of the rulesets and of the user defined operators can
+    be written with or without the semicolon that ends a VTL statement: it
+    is added to the script when it is missing.
 
     The model_validation feature checks if the model object is valid by
     parsing the VTL code inside the definitions.
