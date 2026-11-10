@@ -1,4 +1,5 @@
 import pytest
+from msgspec.structs import replace
 
 from pysdmx.errors import Invalid
 from pysdmx.model import (
@@ -26,6 +27,22 @@ def valid_ruleset():
                 sign1c: when AE = "C" and IAI = "G" then O > 0 errorcode
                 "sign1c" errorlevel 1
                 end datapoint ruleset;""",
+        ruleset_scope="variable",
+    )
+
+
+@pytest.fixture
+def viral_propagation():
+    return Ruleset(
+        id="OBS_STATUS_PROP",
+        name="Viral propagation of OBS_STATUS",
+        ruleset_type="viral",
+        ruleset_definition="""define viral propagation OBS_STATUS_PROP
+            (variable OBS_STATUS) is
+                when "M" then "M";
+                when "E" then "E";
+                else "A"
+            end viral propagation;""",
         ruleset_scope="variable",
     )
 
@@ -125,3 +142,32 @@ def test_valid_model_object_ts(valid_ts):
 def test_invalid_model_object():
     with pytest.raises(Invalid, match="Invalid model object"):
         model_validations("invalid")
+
+
+def test_valid_model_object_viral_propagation(viral_propagation):
+    model_validations(viral_propagation)
+
+
+def test_viral_ruleset_must_define_a_viral_propagation(valid_ruleset):
+    ruleset = replace(valid_ruleset, ruleset_type="viral")
+
+    with pytest.raises(Invalid, match="type does not match the definition"):
+        model_validations(ruleset)
+
+
+@pytest.mark.parametrize(
+    "scheme", ["valid_ruleset_scheme", "valid_udo_scheme", "valid_ts"]
+)
+def test_scheme_must_have_a_vtl_version(scheme, request):
+    no_version = replace(request.getfixturevalue(scheme), vtl_version=None)
+
+    with pytest.raises(Invalid, match="must have a VTL version"):
+        model_validations(no_version)
+
+
+def test_schemes_of_transformation_scheme_must_have_a_vtl_version(valid_ts):
+    ruleset_scheme = replace(valid_ts.ruleset_schemes[0], vtl_version=None)
+    ts = replace(valid_ts, ruleset_schemes=[ruleset_scheme])
+
+    with pytest.raises(Invalid, match="RulesetScheme must have a VTL version"):
+        model_validations(ts)

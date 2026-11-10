@@ -4,6 +4,7 @@ from vtlengine.API import create_ast
 from vtlengine.AST import DPRuleset as ASTDPRuleset
 from vtlengine.AST import HRuleset as ASTHRuleset
 from vtlengine.AST import Operator as ASTOperator
+from vtlengine.AST import ViralPropagationDef as ASTViralPropagation
 
 from pysdmx.errors import Invalid
 from pysdmx.model import Reference
@@ -14,6 +15,7 @@ from pysdmx.model.vtl import (
     TransformationScheme,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
+    VtlScheme,
 )
 
 
@@ -33,6 +35,10 @@ def _ruleset_validation(ruleset: Ruleset) -> None:
         ast.children[0], ASTDPRuleset
     ):
         raise Invalid("Ruleset type does not match the definition")
+    if ruleset.ruleset_type == "viral" and not isinstance(
+        ast.children[0], ASTViralPropagation
+    ):
+        raise Invalid("Ruleset type does not match the definition")
 
     child = ast.children[0]
     signature_type = getattr(child, "signature_type", None)
@@ -45,8 +51,15 @@ def _ruleset_validation(ruleset: Ruleset) -> None:
         raise Invalid("Ruleset scope does not match the definition")
 
 
+def _vtl_version_validation(scheme: VtlScheme) -> None:
+    """Checks that a VTL scheme has the mandatory VTL version."""
+    if scheme.vtl_version is None:
+        raise Invalid(f"{type(scheme).__name__} must have a VTL version")
+
+
 def _ruleset_scheme_validations(ruleset_scheme: RulesetScheme) -> None:
     """Additional validation checks for ruleset schemes."""
+    _vtl_version_validation(ruleset_scheme)
     if not ruleset_scheme.items:
         raise Invalid("RulesetScheme must contain at least one Ruleset")
     for ruleset in ruleset_scheme.items:
@@ -84,6 +97,7 @@ def _user_defined_operator_scheme_validations(
     udo_scheme: UserDefinedOperatorScheme,
 ) -> None:
     """Additional validation checks for user defined operator schemes."""
+    _vtl_version_validation(udo_scheme)
     if not udo_scheme.items:
         raise Invalid(
             "UserDefinedOperatorScheme must contain at least one "
@@ -122,6 +136,7 @@ def _transformation_scheme_validations(
     transformation_scheme: TransformationScheme,
 ) -> None:
     """Additional validation checks for transformation schemes."""
+    _vtl_version_validation(transformation_scheme)
     if not transformation_scheme.items:
         raise Invalid(
             "TransformationScheme must contain at least one Transformation"

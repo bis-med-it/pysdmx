@@ -32,7 +32,8 @@ def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
 
         * A single RulesetDefinition (define ...) is valid in a Ruleset
 
-        * Ruleset type matches the definition (hierarchical or datapoint)
+        * Ruleset type matches the definition (hierarchical, datapoint
+          or viral, the latter for a viral propagation)
 
         * Ruleset scope matches the signature (variable or valuedomain)
 
@@ -48,6 +49,11 @@ def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
         * Checks a single assignment is present in the expression
 
     The model validation checks on VTLScheme:
+
+    * All the schemes below, also when they are checked as part of a
+      TransformationScheme
+
+        * Checks if it has the VTL version, which is mandatory
 
     * RulesetScheme validation
 
