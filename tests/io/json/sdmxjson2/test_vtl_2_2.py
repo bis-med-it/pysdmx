@@ -90,8 +90,14 @@ def execution():
     )
 
 
+def test_sdmx_json_2_2_structure_is_detected():
+    _, read_format = process_string_to_read(SAMPLES / "vtl-sample-4.json")
+
+    assert read_format == Format.STRUCTURE_SDMX_JSON_2_2_0
+
+
 def test_dataset_mappings_and_execution():
-    msg = read_sdmx(SAMPLES / "vtl-sample-4.json", validate=False)
+    msg = read_sdmx(SAMPLES / "vtl-sample-4.json")
 
     mappings = msg.get_vtl_mapping_schemes()[0].items
     assert [type(m) for m in mappings] == [VtlDatasetMapping] * 3
@@ -150,7 +156,7 @@ def test_context_of_query_extractions():
 
 
 def test_codelist_mapping_and_viral_propagation():
-    msg = read_sdmx(SAMPLES / "vtl-sample-6.json", validate=False)
+    msg = read_sdmx(SAMPLES / "vtl-sample-6.json")
 
     mappings = msg.get_vtl_mapping_schemes()[0].items
     assert [type(m) for m in mappings] == [VtlDatasetMapping] * 4 + [
@@ -165,7 +171,7 @@ def test_codelist_mapping_and_viral_propagation():
 
 
 def test_deprecated_mappings():
-    msg = read_sdmx(SAMPLES / "deprecated-vtl-sample-3.json", validate=False)
+    msg = read_sdmx(SAMPLES / "deprecated-vtl-sample-3.json")
 
     mappings = msg.get_vtl_mapping_schemes()[0].items
     assert [type(m) for m in mappings] == [VtlDataflowMapping] * 2
@@ -174,7 +180,7 @@ def test_deprecated_mappings():
 
 @pytest.mark.parametrize("sample", ["vtl-sample-4.json", "vtl-sample-6.json"])
 def test_vtl_artefacts_of_samples_are_written_as_read(sample):
-    msg = read_sdmx(SAMPLES / sample, validate=False)
+    msg = read_sdmx(SAMPLES / sample)
     structures = [s for s in msg.structures if isinstance(s, VTL_ARTEFACTS)]
 
     written = write_sdmx(structures, Format.STRUCTURE_SDMX_JSON_2_2_0)
@@ -300,3 +306,17 @@ def test_dataset_mapping_without_artefact_is_rejected():
 
     with pytest.raises(Invalid, match="Data Structure Definition, Dataflow"):
         mapping.to_model()
+
+
+def test_stub_of_an_execution():
+    stub = VtlExecution(
+        id="EXEC", agency="AG", name="Stub", is_external_reference=True
+    )
+
+    written = write([stub])
+
+    assert "transformationScheme" not in written
+    read_stub = read_sdmx(written, validate=False).get_vtl_executions()[0]
+    assert read_stub.is_external_reference is True
+    assert read_stub.transformation_scheme is None
+    assert read_stub.extractions == ()
