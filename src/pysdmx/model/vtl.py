@@ -37,8 +37,9 @@ _PACKAGES = {
     "ValueList": "codelist",
     "VtlDatasetMapping": "transformation",
 }
-_VTL_ALIAS = re.compile(r"[^\s']{1,128}")
-_PARAMETER_NAME = re.compile(r"\S+")
+# White space as in the SDMX schemas: space, tab, line feed, carriage return
+_VTL_ALIAS = re.compile(r"[^ \t\n\r']{1,128}")
+_PARAMETER_NAME = re.compile(r"[^ \t\n\r]+")
 _SDMX_API_VERSION = re.compile(r"(0|[1-9]\d*)\.(0|[1-9]\d*)")
 
 

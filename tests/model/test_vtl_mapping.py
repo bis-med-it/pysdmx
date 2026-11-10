@@ -159,12 +159,24 @@ def test_dataset_mapping(artefact, urn):
     assert mapping.sdmx_urn == urn
 
 
+def test_dataset_mapping_alias_follows_the_schemas():
+    alias = "d\u00a0s-1"
+
+    mapping = VtlDatasetMapping(
+        id="DS", vtl_alias=alias, sdmx_artefact=DF_URN, is_input=True
+    )
+
+    assert mapping.vtl_alias == alias
+
+
 def test_dataset_mapping_needs_is_input():
     with pytest.raises(TypeError, match="is_input"):
         VtlDatasetMapping(id="DS", vtl_alias="ds", sdmx_artefact=DF_URN)
 
 
-@pytest.mark.parametrize("alias", ["", "my ds", "'ds'", "d" * 129])
+@pytest.mark.parametrize(
+    "alias", ["", "my ds", "my\tds", "my\nds", "'ds'", "d" * 129]
+)
 def test_dataset_mapping_invalid_alias(alias):
     with pytest.raises(Invalid, match="VTL alias"):
         VtlDatasetMapping(
