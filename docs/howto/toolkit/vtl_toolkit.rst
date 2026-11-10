@@ -88,6 +88,28 @@ are correct before generating the final VTL script:
     # validate the metadata
     model_validations(transformation_scheme)
 
+The checks that involve several artefacts need them to be available. A Transformation Scheme
+read from a message can have references to artefacts instead of the artefacts themselves,
+so the structures of the message can be given as well:
+
+.. code-block:: python
+
+    # validate the metadata, finding the referenced artefacts in the message
+    model_validations(transformation_scheme, structures=msg.structures)
+
+With them, the validation also covers the definitions of SDMX 3.2:
+
+- Each output of the VTL Mapping Scheme (a ``VtlDatasetMapping`` with ``is_input`` false) is the
+  result of a persistent Transformation.
+- A variable or value domain has a single viral propagation (a Ruleset of type ``viral``).
+- The Ruleset Schemes and User Defined Operator Schemes have the VTL version of the Transformation Scheme.
+- A ``VtlExecution`` can be validated too: its data extractions apply to inputs of the VTL Mapping Scheme
+  of its Transformation Scheme, and the context of a query extraction uses the data structure of the
+  mapped artefact.
+
+The definitions of Rulesets and User Defined Operators can be written with or without the
+semicolon that ends a VTL statement.
+
 For more information, please check :ref:`vtl-validation`
 
 

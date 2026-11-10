@@ -33,7 +33,8 @@ Step-by-Step Solution
 ---------------------
 
 Using pysdmx we will read the Datasets, its Structures and the VTL objects. For the purpose of this tutorial, we shall employ the XML files
-``structures.xml`` (data structure), ``data.xml`` (data) and ``vtl_ts.xml`` (Transformation and VTLMapping).
+``structures.xml`` (data structure), ``data.xml`` (data) and ``vtl_ts.xml`` (Transformation Scheme and
+VTL Mapping Scheme, in SDMX-ML 3.2).
 
 Files used in the example can be found here:
 
@@ -78,6 +79,15 @@ and extract the data:
 
 Getting the Transformation Scheme and VTL Mapping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The VTL statements reference the SDMX artefacts through aliases, and the VTL mappings
+say which artefact each alias stands for. Since SDMX 3.2:
+
+- a :class:`~pysdmx.model.vtl.VtlDatasetMapping` maps a VTL Data Set to a Data Structure Definition,
+  Dataflow or Provision Agreement, and says whether it is an input of the VTL program (``is_input``);
+- a :class:`~pysdmx.model.vtl.VtlCodelistMapping` maps a VTL Value Domain to a codelist.
+
+Every mapping has the alias (``vtl_alias``) and the URN of the mapped artefact (``sdmx_urn``).
+
 For the next step, we have three options available.
 We can read the transformation scheme and VTL mapping from a file,
 we can read a file from a Fusion Registry URL or we can create the pysdmx Model objects.
@@ -94,30 +104,35 @@ we can read a file from a Fusion Registry URL or we can create the pysdmx Model 
 
     # Get the Transformation Schemes
     ts = message.get_transformation_schemes()[0]
-    # Get the VTL Mapping Scheme
+    # Get the VTL Mapping Scheme, with the VTL dataset mappings
     mapping_scheme = message.get_vtl_mapping_schemes()[0]
-    # Get the VTL Dataflow Mapping from the items, assuming the first item is the one we want
-    dataflow_mapping = mapping_scheme.items[0]
 
 Optionally, we can also create the Transformation Scheme and VTL Mapping objects directly in code.
 
 .. code-block:: python
 
-    from pysdmx.model import VtlDataflowMapping, DataflowRef, VtlMappingScheme, TransformationScheme, Transformation
+    from pysdmx.model import (
+        Reference,
+        Transformation,
+        TransformationScheme,
+        VtlDatasetMapping,
+        VtlMappingScheme,
+    )
 
-    # Mapping using VTLDataflowMapping object:
-    dataflow_mapping = VtlDataflowMapping(
-        dataflow=DataflowRef(agency="MD", id="TEST_DF", version="1.0"),
-        dataflow_alias="DS_1",
+    # The VTL Data Set DS_1 is an input, mapped to the Dataflow MD:TEST_DF(1.0)
+    dataset_mapping = VtlDatasetMapping(
         id="VTL_MAP_1",
         name="VTL Mapping 1",
+        vtl_alias="DS_1",
+        sdmx_artefact=Reference("Dataflow", "MD", "TEST_DF", "1.0"),
+        is_input=True,
     )
     mapping_scheme = VtlMappingScheme(
         id="VTL_MAP_SCHEME_1",
         name="VTL Mapping Scheme 1",
         version="1.0",
         agency="MD",
-        items=[dataflow_mapping],
+        items=[dataset_mapping],
     )
 
     # Transformation Scheme object
@@ -130,25 +145,29 @@ Optionally, we can also create the Transformation Scheme and VTL Mapping objects
         items=[
             Transformation(
                 id="T1",
-                uri=None,
-                urn=None,
                 name="Transformation 1",
-                description=None,
                 expression="DS_1 [calc Me_4 := OBS_VALUE]",
                 is_persistent=True,
                 result="DS_r",
-                annotations=(),
             ),
         ],
-        vtl_mapping_scheme=mapping_scheme
+        vtl_mapping_scheme=mapping_scheme,
     )
+
+.. note::
+
+    The messages of SDMX-ML 2.1, 3.0 and 3.1 and of SDMX-JSON 2.0 and 2.1 have the mappings
+    deprecated in SDMX 3.2, which are read as :class:`~pysdmx.model.vtl.VtlDataflowMapping`
+    (with its ``dataflow`` and ``dataflow_alias``). A ``VtlDatasetMapping`` can only be written
+    in SDMX-ML 3.2 and SDMX-JSON 2.2.
 
 You may download as well directly the structures from the FMR or the SDMX API:
 
 - :ref:`FMR tutorial <fs>`
 - :ref:`SDMX-REST tutorial <sdmx-rest>`
 
-At this point you may use the :ref:`VTL Toolkit Model validations <vtl-validation>` to validate the Transformation Scheme.
+At this point you may use the :ref:`VTL Toolkit Model validations <vtl-validation>` to validate the Transformation Scheme
+and its VTL mappings.
 
 Running the VTL Script
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -160,13 +179,60 @@ Now that we have the VTL script, we can run it using the
 
 .. code-block:: python
 
+    from pysdmx.model import VtlDatasetMapping
+    from pysdmx.util import parse_urn
     from vtlengine import run_sdmx
 
-    # Run the VTL script with the datasets and the dataflow mapping
-    run_sdmx(script=ts, datasets=datasets, mappings=dataflow_mapping)
+    # The inputs of the VTL program: the SDMX artefact of each one and its VTL alias
+    mappings = {
+        str(parse_urn(mapping.sdmx_urn)): mapping.vtl_alias
+        for mapping in mapping_scheme.items
+        if isinstance(mapping, VtlDatasetMapping) and mapping.is_input
+    }
+    # {"Dataflow=MD:TEST_DF(1.0)": "DS_1"}
+
+    # Run the VTL script with the datasets and the mappings
+    run_sdmx(script=ts, datasets=datasets, mappings=mappings)
 
 The `run_sdmx` method will execute the Transformation Scheme (VTL Script) using the provided
-datasets and dataflow mapping.
+datasets, each one named after the alias of its mapping.
+
+Defining how the data are retrieved
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this tutorial the data come from a file. In SDMX 3.2, a :class:`~pysdmx.model.vtl.VtlExecution`
+can also say where the data of each input are retrieved from: a query to a web service
+compliant with the SDMX REST API (:class:`~pysdmx.model.vtl.QueryExtraction`) or a URL built from a
+template (:class:`~pysdmx.model.vtl.UrlExtraction`), with parameters that are fixed or can be
+given at run time.
+
+.. code-block:: python
+
+    from pysdmx.model import ItemReference, QueryExtraction, QueryParameter, VtlExecution
+
+    execution = VtlExecution(
+        id="EXEC_TS1",
+        agency="MD",
+        name="Execution of TS1",
+        transformation_scheme=ts,
+        extractions=[
+            QueryExtraction(
+                dataset_mapping=ItemReference(
+                    "VtlDatasetMapping", "MD", "VTL_MAP_SCHEME_1", "1.0", "VTL_MAP_1"
+                ),
+                entry_point="https://sdmx.example.org/rest",
+                sdmx_api_version="2.1",
+                parameters=[
+                    QueryParameter(name="key", value="*.A", is_fixed=True),
+                    QueryParameter(name="c[TIME_PERIOD]", value="ge:2020", is_fixed=False),
+                ],
+            )
+        ],
+    )
+
+``pysdmx`` reads and writes the VTL executions (``message.get_vtl_executions()``) and validates them
+with the :ref:`VTL Toolkit Model validations <vtl-validation>`. Building the queries and retrieving
+the data is up to the application that runs the VTL program.
 
 Summary
 -------
