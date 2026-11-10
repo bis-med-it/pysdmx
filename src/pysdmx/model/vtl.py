@@ -742,27 +742,36 @@ class VtlExecution(
     for the transformation schemes of other organisations. The data of the
     inputs without a data extraction are provided at run time.
 
+    The transformation scheme and one data extraction are mandatory, unless
+    the execution is a stub (``is_external_reference``).
+
     Attributes:
         transformation_scheme: The transformation scheme to be executed:
             the scheme, a reference to it or its URN.
         extractions: The data extractions of the input VTL Data Sets, at
-            most one for each input.
+            most one for each input. They have no order.
     """
 
-    transformation_scheme: Union[str, TransformationScheme, Reference]
+    transformation_scheme: Optional[
+        Union[str, TransformationScheme, Reference]
+    ] = None
     extractions: Sequence[Union[QueryExtraction, UrlExtraction]] = ()
 
     def __post_init__(self) -> None:
         """Checks the execution.
 
         Raises:
-            Invalid: If the execution has no agency, does not reference a
-                transformation scheme, has no data extraction, or has
-                several data extractions for the same VtlDatasetMapping.
+            Invalid: If the execution has no agency, has several data
+                extractions for the same VtlDatasetMapping or, unless it
+                is a stub, does not reference a transformation scheme or
+                has no data extraction.
         """
         super().__post_init__()
-        if not _is_maintainable(
-            self.transformation_scheme, "TransformationScheme"
+        stub = self.is_external_reference
+        if not (stub and self.transformation_scheme is None) and not (
+            _is_maintainable(
+                self.transformation_scheme, "TransformationScheme"
+            )
         ):
             raise Invalid(
                 "Invalid VTL execution",
@@ -770,7 +779,7 @@ class VtlExecution(
                 "Transformation Scheme (the scheme, a reference to it or "
                 "its URN).",
             )
-        if not self.extractions:
+        if not self.extractions and not stub:
             raise Invalid(
                 "Invalid VTL execution",
                 f"The VTL execution {self.id} must have at least one data "
