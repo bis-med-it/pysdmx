@@ -26,6 +26,9 @@ def model_validations(model_obj: Union[VtlScheme, Item]) -> None:
 
     It raises an Invalid exception if the model object is not valid.
 
+    The definitions of rulesets and user defined operators are valid with
+    or without the semicolon that ends a VTL statement.
+
     The model validation checks on items:
 
     * Ruleset validation

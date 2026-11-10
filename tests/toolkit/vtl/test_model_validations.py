@@ -171,3 +171,15 @@ def test_schemes_of_transformation_scheme_must_have_a_vtl_version(valid_ts):
 
     with pytest.raises(Invalid, match="RulesetScheme must have a VTL version"):
         model_validations(ts)
+
+
+def test_ruleset_definition_without_final_semicolon(valid_ruleset):
+    definition = valid_ruleset.ruleset_definition.rstrip(";")
+
+    model_validations(replace(valid_ruleset, ruleset_definition=definition))
+
+
+def test_operator_definition_without_final_semicolon(valid_udo):
+    definition = valid_udo.operator_definition.rstrip(";")
+
+    model_validations(replace(valid_udo, operator_definition=definition))
