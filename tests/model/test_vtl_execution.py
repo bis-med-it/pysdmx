@@ -66,7 +66,7 @@ def test_fixed_parameter_needs_a_value():
         QueryParameter(name="key", is_fixed=True)
 
 
-@pytest.mark.parametrize("name", ["", "start period"])
+@pytest.mark.parametrize("name", ["", "start period", "start\tperiod"])
 def test_invalid_parameter_name(name):
     with pytest.raises(Invalid, match="name"):
         QueryParameter(name=name, is_fixed=False)
