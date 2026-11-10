@@ -36,7 +36,7 @@ def read(input_str: str, validate: bool = True) -> StructureMessage:
         raise errors.Invalid(
             "Invalid message",
             (
-                "The supplied file could not be read as SDMX-JSON 2.0.0 "
-                "or 2.1.0 structure message."
+                "The supplied file could not be read as SDMX-JSON 2.0.0, "
+                "2.1.0 or 2.2.0 structure message."
             ),
         ) from de

@@ -33,6 +33,9 @@ WRITERS = {
     Format.STRUCTURE_SDMX_JSON_2_1_0: (
         "pysdmx.io.json.sdmxjson2.writer.v2_1.structure"
     ),
+    Format.STRUCTURE_SDMX_JSON_2_2_0: (
+        "pysdmx.io.json.sdmxjson2.writer.v2_2.structure"
+    ),
     Format.REFMETA_SDMX_JSON_2_0_0: (
         "pysdmx.io.json.sdmxjson2.writer.v2_0.metadata"
     ),
