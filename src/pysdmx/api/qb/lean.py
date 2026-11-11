@@ -83,9 +83,10 @@ class LeanRestService(RestService):
 class AsyncLeanRestService(AsyncRestService):
     """Asynchronous, lenient connector to SDMX-REST services.
 
-    It is instantiated and used as the ``AsyncRestService``, which expects
-    the service to be protocol-correct, but it also copes with the same
-    deviations as the :class:`~pysdmx.api.qb.LeanRestService`.
+    It is instantiated and used as the
+    :class:`~pysdmx.api.qb.AsyncRestService`, which expects the service to
+    be protocol-correct, but it also copes with the same deviations as the
+    :class:`~pysdmx.api.qb.LeanRestService`.
     """
 
     def _decode(
