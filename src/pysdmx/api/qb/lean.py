@@ -14,7 +14,7 @@ from pysdmx.util._net_utils import (
 
 
 class LeanRestService(RestService):
-    """Synchronous, lenient connector to SDMX-REST services.
+    """Synchronous connector to SDMX-REST services, protocol-correct or not.
 
     It is instantiated and used as the
     :class:`~pysdmx.api.qb.RestService`, which expects the service to be
@@ -81,7 +81,7 @@ class LeanRestService(RestService):
 
 
 class AsyncLeanRestService(AsyncRestService):
-    """Asynchronous, lenient connector to SDMX-REST services.
+    """Asynchronous connector to SDMX-REST services, protocol-correct or not.
 
     It is instantiated and used as the
     :class:`~pysdmx.api.qb.AsyncRestService`, which expects the service to
