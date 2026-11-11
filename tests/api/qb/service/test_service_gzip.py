@@ -7,7 +7,7 @@ from pysdmx.api.qb import (
     ApiVersion,
     DataContext,
     DataQuery,
-    LeanRestClient,
+    LeanRestService,
 )
 from pysdmx.errors import Unavailable
 
@@ -45,7 +45,7 @@ def test_gzip_body(respx_mock, end_point, version, query, url, body, method):
     respx_mock.get(url).mock(
         return_value=httpx.Response(200, content=compressed)
     )
-    service = LeanRestClient(end_point, version)
+    service = LeanRestService(end_point, version)
 
     if method == "data":
         assert service.data(query) == body
@@ -61,7 +61,7 @@ def test_body_shorter_than_gzip_magic(
 ):
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
 
-    assert LeanRestClient(end_point, version).data(query) == b"x"
+    assert LeanRestService(end_point, version).data(query) == b"x"
 
 
 @pytest.mark.parametrize(
@@ -79,4 +79,4 @@ def test_invalid_gzip_body(
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=content))
 
     with pytest.raises(Unavailable):
-        LeanRestClient(end_point, version).data(query)
+        LeanRestService(end_point, version).data(query)

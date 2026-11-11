@@ -216,12 +216,12 @@ def __url_chunks(
         )
     # Imported here to avoid a circular import: the API package imports
     # pysdmx.io
-    from pysdmx.api.qb import ApiVersion, LeanRestClient
+    from pysdmx.api.qb import ApiVersion, LeanRestService
 
     # The URL is the endpoint, and the API version is not used to read it
-    client = LeanRestClient(url, ApiVersion.V2_0_0, pem=pem, timeout=60)
+    service = LeanRestService(url, ApiVersion.V2_0_0, pem=pem, timeout=60)
     try:
-        with contextlib.closing(client.stream_message(url)) as chunks:
+        with contextlib.closing(service.stream_message(url)) as chunks:
             for chunk in chunks:
                 yield __remove_bom(chunk)
     except Exception as e:

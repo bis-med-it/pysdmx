@@ -9,7 +9,7 @@ from pysdmx.api.qb.service import RestService
 from pysdmx.util._net_utils import decompress_gzip, map_httpx_errors
 
 
-class LeanRestClient(RestService):
+class LeanRestService(RestService):
     """Synchronous, lenient connector to SDMX-REST services.
 
     It is instantiated and used as the

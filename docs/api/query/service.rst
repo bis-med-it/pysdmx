@@ -8,4 +8,4 @@ SDMX-REST Service Clients
     - :ref:`sdmx-rest`.
 
 .. automodule:: pysdmx.api.qb
-    :members: ApiVersion, RestService, LeanRestClient
+    :members: ApiVersion, RestService, LeanRestService

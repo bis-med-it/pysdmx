@@ -67,16 +67,16 @@ The ``RestService`` expects the service to be protocol-correct. For example,
 a response is only decompressed if the service declares its compression in
 the ``Content-Encoding`` header. Some services do not, such as Eurostat's
 SDMX API, which sends gzip-compressed responses without that header. The
-``LeanRestClient`` is used exactly as the ``RestService``, but it also
+``LeanRestService`` is used exactly as the ``RestService``, but it also
 decompresses such responses.
 
 .. code-block:: python
 
-    from pysdmx.api.qb import ApiVersion, LeanRestClient
+    from pysdmx.api.qb import ApiVersion, LeanRestService
 
     endpoint = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0"
     version = ApiVersion.V2_0_0
-    service = LeanRestClient(endpoint, version)
+    service = LeanRestService(endpoint, version)
 
 Deserializing the response
 --------------------------

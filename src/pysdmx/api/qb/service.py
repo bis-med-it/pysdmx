@@ -82,7 +82,7 @@ class RestService(_CoreRestService):
     The service is expected to be protocol-correct: a response is only
     decoded as declared by its ``Content-Encoding`` header. Services that
     are not can be queried using the
-    :class:`~pysdmx.api.qb.LeanRestClient`.
+    :class:`~pysdmx.api.qb.LeanRestService`.
 
     Args:
         api_endpoint: The entry point (URL) of the SDMX-REST service.
