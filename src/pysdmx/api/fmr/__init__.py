@@ -14,8 +14,8 @@ from msgspec.json import decode
 
 from pysdmx.api.qb import (
     ApiVersion,
-    AsyncLeanRestService,
-    LeanRestService,
+    AsyncLenientRestService,
+    LenientRestService,
     RefMetaByMetadatasetQuery,
     RefMetaByStructureQuery,
     SchemaContext,
@@ -358,7 +358,7 @@ class RegistryClient(__BaseRegistryClient):
                 10 seconds.
         """
         super().__init__(api_endpoint, format)
-        self.__service = LeanRestService(
+        self.__service = LenientRestService(
             self.api_endpoint,
             API_VERSION,
             structure_format=format,
@@ -947,7 +947,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
                 10 seconds.
         """
         super().__init__(api_endpoint, format)
-        self.__service = AsyncLeanRestService(
+        self.__service = AsyncLenientRestService(
             self.api_endpoint,
             API_VERSION,
             structure_format=format,

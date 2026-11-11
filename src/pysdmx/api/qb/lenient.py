@@ -1,4 +1,4 @@
-"""Connector to SDMX-REST services that are not protocol-correct."""
+"""Lenient connectors to SDMX-REST services."""
 
 import codecs
 from typing import AsyncGenerator, AsyncIterable, Generator, Iterable
@@ -13,12 +13,13 @@ from pysdmx.util._net_utils import (
 )
 
 
-class LeanRestService(RestService):
-    """Synchronous connector to SDMX-REST services, protocol-correct or not.
+class LenientRestService(RestService):
+    """A lenient synchronous connector to SDMX-REST services.
 
     It is instantiated and used as the
-    :class:`~pysdmx.api.qb.RestService`, which expects the service to be
-    protocol-correct, but it also copes with the following deviations:
+    :class:`~pysdmx.api.qb.RestService`, which is strict: it expects the
+    service to be protocol-correct. This connector also accepts the
+    following deviations:
 
     * A response body compressed with gzip, but sent without a
       ``Content-Encoding`` header (e.g. by Eurostat's SDMX API), is
@@ -80,13 +81,13 @@ class LeanRestService(RestService):
         return decompress_gzip(chunks, request)
 
 
-class AsyncLeanRestService(AsyncRestService):
-    """Asynchronous connector to SDMX-REST services, protocol-correct or not.
+class AsyncLenientRestService(AsyncRestService):
+    """A lenient asynchronous connector to SDMX-REST services.
 
     It is instantiated and used as the
-    :class:`~pysdmx.api.qb.AsyncRestService`, which expects the service to
-    be protocol-correct, but it also copes with the same deviations as the
-    :class:`~pysdmx.api.qb.LeanRestService`.
+    :class:`~pysdmx.api.qb.AsyncRestService`, which is strict, but it also
+    accepts the same deviations as the
+    :class:`~pysdmx.api.qb.LenientRestService`.
     """
 
     def _decode(

@@ -63,21 +63,21 @@ as well as the version of the SDMX-REST API that the endpoint supports.
 In case the query requires features that are not available in the version
 of the API supported by the endpoint, an error will be raised.
 
-The ``RestService`` expects the service to be protocol-correct. For example,
-a response is only decompressed if the service declares its compression in
-the ``Content-Encoding`` header. Some services do not, such as Eurostat's
-SDMX API, which sends gzip-compressed responses without that header. The
-``LeanRestService`` is used exactly as the ``RestService``, but it also
-decompresses such responses. The ``AsyncLeanRestService`` does the same
-for the ``AsyncRestService``.
+The ``RestService`` is strict: it expects the service to be protocol-correct.
+For example, a response is only decompressed if the service declares its
+compression in the ``Content-Encoding`` header. Some services do not, such as
+Eurostat's SDMX API, which sends gzip-compressed responses without that
+header. The ``LenientRestService`` is used exactly as the ``RestService``, but
+it also accepts such responses and decompresses them. The
+``AsyncLenientRestService`` does the same for the ``AsyncRestService``.
 
 .. code-block:: python
 
-    from pysdmx.api.qb import ApiVersion, LeanRestService
+    from pysdmx.api.qb import ApiVersion, LenientRestService
 
     endpoint = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0"
     version = ApiVersion.V2_0_0
-    service = LeanRestService(endpoint, version)
+    service = LenientRestService(endpoint, version)
 
 Deserializing the response
 --------------------------

@@ -21,7 +21,7 @@ from pysdmx.api.qb import (
     AvailabilityQuery,
     DataContext,
     DataFormat,
-    LeanRestService,
+    LenientRestService,
     StructureDetail,
     StructureFormat,
     StructureQuery,
@@ -54,7 +54,7 @@ class SdmxConnector(BasicConnector):
         timeout: Optional[float] = 5.0,
     ):
         """Instantiate a data discovery and retrieval SDMX-REST connector."""
-        self.__client = LeanRestService(
+        self.__client = LenientRestService(
             api_endpoint,
             ApiVersion.V2_0_0,
             data_format=DataFormat.SDMX_CSV_2_0_0,

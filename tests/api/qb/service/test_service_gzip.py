@@ -5,10 +5,10 @@ import pytest
 
 from pysdmx.api.qb import (
     ApiVersion,
-    AsyncLeanRestService,
+    AsyncLenientRestService,
     DataContext,
     DataQuery,
-    LeanRestService,
+    LenientRestService,
 )
 from pysdmx.errors import Unavailable
 
@@ -46,7 +46,7 @@ def test_gzip_body(respx_mock, end_point, version, query, url, body, method):
     respx_mock.get(url).mock(
         return_value=httpx.Response(200, content=compressed)
     )
-    service = LeanRestService(end_point, version)
+    service = LenientRestService(end_point, version)
 
     if method == "data":
         assert service.data(query) == body
@@ -66,7 +66,7 @@ async def test_gzip_body_async(
     respx_mock.get(url).mock(
         return_value=httpx.Response(200, content=compressed)
     )
-    service = AsyncLeanRestService(end_point, version)
+    service = AsyncLenientRestService(end_point, version)
 
     if method == "data":
         assert await service.data(query) == body
@@ -81,7 +81,7 @@ def test_body_shorter_than_gzip_magic(
 ):
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
 
-    assert LeanRestService(end_point, version).data(query) == b"x"
+    assert LenientRestService(end_point, version).data(query) == b"x"
 
 
 @pytest.mark.asyncio
@@ -89,7 +89,7 @@ async def test_body_shorter_than_gzip_magic_async(
     respx_mock, end_point, version, query, url
 ):
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
-    service = AsyncLeanRestService(end_point, version)
+    service = AsyncLenientRestService(end_point, version)
 
     chunks = [c async for c in service.stream_data(query)]
 
@@ -111,4 +111,4 @@ def test_invalid_gzip_body(
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=content))
 
     with pytest.raises(Unavailable):
-        LeanRestService(end_point, version).data(query)
+        LenientRestService(end_point, version).data(query)
