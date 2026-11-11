@@ -326,6 +326,49 @@ def test_read_url_valid(respx_mock, data_csv_v1_str):
 
 
 @pytest.mark.data
+def test_read_url_timeout(respx_mock, data_csv_v1_str):
+    url = "http://validurl.com"
+    route = respx_mock.get(url).mock(
+        return_value=httpx.Response(200, content=data_csv_v1_str)
+    )
+
+    read_sdmx(url, timeout=12.0)
+
+    assert route.calls[0].request.extensions["timeout"]["read"] == 12.0
+
+
+@pytest.mark.data
+def test_read_url_default_timeout(respx_mock, data_csv_v1_str):
+    url = "http://validurl.com"
+    route = respx_mock.get(url).mock(
+        return_value=httpx.Response(200, content=data_csv_v1_str)
+    )
+
+    read_sdmx(url)
+
+    assert route.calls[0].request.extensions["timeout"]["read"] == 600.0
+
+
+def test_get_datasets_url_timeout(respx_mock, data_path, structures_path):
+    data_url = "http://validurl.com/data"
+    structure_url = "http://validurl.com/structure"
+    routes = [
+        respx_mock.get(url).mock(
+            return_value=httpx.Response(200, content=Path(path).read_bytes())
+        )
+        for url, path in (
+            (data_url, data_path),
+            (structure_url, structures_path),
+        )
+    ]
+
+    get_datasets(data_url, structure_url, timeout=12.0)
+
+    for route in routes:
+        assert route.calls[0].request.extensions["timeout"]["read"] == 12.0
+
+
+@pytest.mark.data
 def test_read_url_invalid_pem():
     url = "https://validurl.com"
     invalid_pem_path = Path(__file__).parent / "samples" / "invalid_pem.pem"

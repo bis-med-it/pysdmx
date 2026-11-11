@@ -59,6 +59,18 @@ A message compressed with gzip, such as a ``.gz`` file or a response of
 Eurostat's SDMX API, is detected from its first bytes and decompressed
 while it is read, so it is read in a single pass as well.
 
+When reading from a URL, the ``timeout`` argument sets the seconds to wait
+for each network operation, such as the server starting to send the message
+(600 seconds by default). It does not limit the whole download. If the
+server has not started to send the message after 60 seconds, a
+``UserWarning`` is emitted, and another one every 10 seconds while it keeps
+waiting, so that a long wait is not silent.
+
+.. code-block:: python
+
+    # Wait up to 20 minutes for the server to start sending the message
+    message = read_sdmx("https://example.com/large_sample.xml", timeout=1200)
+
 The output is always a Message object, which holds the Datasets at the `data` attribute.
 
 .. code-block:: python
