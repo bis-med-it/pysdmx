@@ -17,7 +17,7 @@ from pysdmx.api.dc import BasicConnector, MaintainableIdentification
 from pysdmx.api.dc.query import BasicFilter
 from pysdmx.api.dc.rest import SdmxConnector
 from pysdmx.api.dc.util import prepare_basic_data_query
-from pysdmx.api.qb import ApiVersion, DataFormat, RestService
+from pysdmx.api.qb import ApiVersion, DataFormat, LeanRestService
 from pysdmx.model import Dataflow
 from pysdmx.toolkit.pd import to_pandas_schema
 from pysdmx.util import experimental
@@ -44,7 +44,7 @@ class PandasConnector(BasicConnector):
     ):
         """Instantiate a data discovery and retrieval Pandas connector."""
         self.__conn = SdmxConnector(api_endpoint, pem, timeout)
-        self.__client = RestService(
+        self.__client = LeanRestService(
             api_endpoint,
             ApiVersion.V2_0_0,
             data_format=DataFormat.SDMX_CSV_1_0_0,
