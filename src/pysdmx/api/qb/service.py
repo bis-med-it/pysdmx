@@ -1,6 +1,13 @@
 """Connector to SDMX-REST and GDS-REST services."""
 
-from typing import AsyncGenerator, Generator, NoReturn, Optional, Union
+from typing import (
+    AsyncGenerator,
+    Generator,
+    Iterable,
+    NoReturn,
+    Optional,
+    Union,
+)
 
 import httpx
 
@@ -24,11 +31,7 @@ from pysdmx.api.qb.schema import SchemaFormat, SchemaQuery
 from pysdmx.api.qb.structure import StructureFormat, StructureQuery
 from pysdmx.api.qb.util import ApiVersion
 from pysdmx.io.format import GDS_FORMAT
-from pysdmx.util._net_utils import (
-    adecompress_gzip,
-    decompress_gzip,
-    map_httpx_errors,
-)
+from pysdmx.util._net_utils import map_httpx_errors
 
 
 class _CoreRestService:
@@ -75,6 +78,11 @@ class _CoreRestService:
 
 class RestService(_CoreRestService):
     """Synchronous connector to SDMX-REST services.
+
+    The service is expected to be protocol-correct: a response is only
+    decoded as declared by its ``Content-Encoding`` header. Services that
+    are not can be queried using the
+    :class:`~pysdmx.api.qb.LeanRestClient`.
 
     Args:
         api_endpoint: The entry point (URL) of the SDMX-REST service.
@@ -178,6 +186,25 @@ class RestService(_CoreRestService):
         f = self._registry_format.value
         return self.__fetch(q, f)
 
+    def _decode(
+        self, chunks: Iterable[bytes], request: httpx.Request
+    ) -> Iterable[bytes]:
+        """Decodes the chunks of a response body.
+
+        The chunks are already decoded from the ``Content-Encoding`` of the
+        response. As the service is expected to be protocol-correct, they
+        are not decoded any further. Subclasses can override this method to
+        deal with services that are not.
+
+        Args:
+            chunks: The chunks of the body.
+            request: The request of the response.
+
+        Returns:
+            The chunks of the decoded body.
+        """
+        return chunks
+
     def __fetch(self, query: str, format: str) -> bytes:
         with httpx.Client(
             verify=self._ssl_context, follow_redirects=True
@@ -191,7 +218,7 @@ class RestService(_CoreRestService):
                 h["Accept"] = format
                 r = client.get(url, headers=h, timeout=self._timeout)
                 r.raise_for_status()
-                return b"".join(decompress_gzip([r.content], r.request))
+                return b"".join(self._decode([r.content], r.request))
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -213,7 +240,7 @@ class RestService(_CoreRestService):
                     if cs.is_error:
                         cs.read()
                         cs.raise_for_status()
-                    yield from decompress_gzip(
+                    yield from self._decode(
                         cs.iter_bytes(chunk_size), cs.request
                     )
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
@@ -344,7 +371,7 @@ class AsyncRestService(_CoreRestService):
                 h["Accept"] = format
                 r = await client.get(url, headers=h, timeout=self._timeout)
                 r.raise_for_status()
-                return b"".join(decompress_gzip([r.content], r.request))
+                return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -366,8 +393,8 @@ class AsyncRestService(_CoreRestService):
                     if cs.is_error:
                         await cs.aread()
                         cs.raise_for_status()
-                    async for chunk in adecompress_gzip(
-                        cs.aiter_bytes(chunk_size), cs.request
+                    async for chunk in cs.aiter_bytes(
+                        chunk_size
                     ):  # pragma: no cover
                         yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:

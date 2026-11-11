@@ -6,6 +6,7 @@ from pysdmx.api.qb.availability import (
     AvailabilityQuery,
 )
 from pysdmx.api.qb.data import DataContext, DataFormat, DataQuery
+from pysdmx.api.qb.lean import LeanRestClient
 from pysdmx.api.qb.refmeta import (
     RefMetaByMetadataflowQuery,
     RefMetaByMetadatasetQuery,
@@ -39,6 +40,7 @@ __all__ = [
     "DataContext",
     "DataFormat",
     "DataQuery",
+    "LeanRestClient",
     "RefMetaByMetadataflowQuery",
     "RefMetaByMetadatasetQuery",
     "RefMetaByStructureQuery",

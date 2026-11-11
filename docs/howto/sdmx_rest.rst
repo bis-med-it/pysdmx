@@ -63,14 +63,27 @@ as well as the version of the SDMX-REST API that the endpoint supports.
 In case the query requires features that are not available in the version
 of the API supported by the endpoint, an error will be raised.
 
+The ``RestService`` expects the service to be protocol-correct. For example,
+a response is only decompressed if the service declares its compression in
+the ``Content-Encoding`` header. Some services do not, such as Eurostat's
+SDMX API, which sends gzip-compressed responses without that header. The
+``LeanRestClient`` is used exactly as the ``RestService``, but it also
+decompresses such responses.
+
+.. code-block:: python
+
+    from pysdmx.api.qb import ApiVersion, LeanRestClient
+
+    endpoint = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0"
+    version = ApiVersion.V2_0_0
+    service = LeanRestClient(endpoint, version)
+
 Deserializing the response
 --------------------------
 
 The response of the web service will be returned as a sequence of bytes.
 By default, the returned responses will be in the SDMX-JSON format, but
 this can be configured when instantiating the ``RestService``.
-A response compressed with gzip without a ``Content-Encoding`` header, as
-Eurostat's SDMX API sends them, is decompressed as well.
 
 You can then process the response using your preferred library for the
 requested format, such as, for example, Python ``json`` module, for SDMX-JSON

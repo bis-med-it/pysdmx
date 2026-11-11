@@ -7,7 +7,6 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-import pysdmx.io.input_processor as m
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.reader import get_datasets
@@ -236,7 +235,7 @@ def mock_ssl_context(monkeypatch):
         seen["verify"] = verify
         return "CTX"
 
-    monkeypatch.setattr(m, "create_ssl_context", mock_create_ssl_context)
+    monkeypatch.setattr(httpx, "create_ssl_context", mock_create_ssl_context)
     return seen
 
 
@@ -260,13 +259,13 @@ def mock_http_client(monkeypatch, structures_path):
         def __enter__(self):
             return self
 
-        def stream(self, method, u, timeout=60):
+        def stream(self, method, u, headers=None, timeout=60):
             return contextlib.nullcontext(mock_response)
 
         def __exit__(self, *a):
             return False
 
-    monkeypatch.setattr(m, "httpx_Client", DummyClient)
+    monkeypatch.setattr(httpx, "Client", DummyClient)
     return last
 
 

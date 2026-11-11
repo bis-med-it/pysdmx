@@ -5,10 +5,9 @@ import pytest
 
 from pysdmx.api.qb import (
     ApiVersion,
-    AsyncRestService,
     DataContext,
     DataQuery,
-    RestService,
+    LeanRestClient,
 )
 from pysdmx.errors import Unavailable
 
@@ -46,7 +45,7 @@ def test_gzip_body(respx_mock, end_point, version, query, url, body, method):
     respx_mock.get(url).mock(
         return_value=httpx.Response(200, content=compressed)
     )
-    service = RestService(end_point, version)
+    service = LeanRestClient(end_point, version)
 
     if method == "data":
         assert service.data(query) == body
@@ -57,43 +56,12 @@ def test_gzip_body(respx_mock, end_point, version, query, url, body, method):
         assert b"".join(chunks) == body
 
 
-@pytest.mark.asyncio
-@pytest.mark.parametrize("method", ["data", "stream_data"])
-async def test_gzip_body_async(
-    respx_mock, end_point, version, query, url, body, method
-):
-    compressed = gzip.compress(body)
-    respx_mock.get(url).mock(
-        return_value=httpx.Response(200, content=compressed)
-    )
-    service = AsyncRestService(end_point, version)
-
-    if method == "data":
-        assert await service.data(query) == body
-    else:
-        chunks = [c async for c in service.stream_data(query, chunk_size=1)]
-        assert all(chunks)
-        assert b"".join(chunks) == body
-
-
 def test_body_shorter_than_gzip_magic(
     respx_mock, end_point, version, query, url
 ):
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
 
-    assert RestService(end_point, version).data(query) == b"x"
-
-
-@pytest.mark.asyncio
-async def test_body_shorter_than_gzip_magic_async(
-    respx_mock, end_point, version, query, url
-):
-    respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
-    service = AsyncRestService(end_point, version)
-
-    chunks = [c async for c in service.stream_data(query)]
-
-    assert chunks == [b"x"]
+    assert LeanRestClient(end_point, version).data(query) == b"x"
 
 
 @pytest.mark.parametrize(
@@ -111,4 +79,4 @@ def test_invalid_gzip_body(
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=content))
 
     with pytest.raises(Unavailable):
-        RestService(end_point, version).data(query)
+        LeanRestClient(end_point, version).data(query)

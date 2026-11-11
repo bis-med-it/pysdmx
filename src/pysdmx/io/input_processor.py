@@ -1,6 +1,5 @@
 """Processes the input that comes into read_sdmx function."""
 
-import codecs
 import contextlib
 import csv
 import gzip
@@ -11,7 +10,6 @@ from pathlib import Path
 from typing import (
     BinaryIO,
     Generator,
-    Iterable,
     Iterator,
     List,
     Optional,
@@ -21,13 +19,10 @@ from typing import (
 )
 
 import msgspec
-from httpx import Client as httpx_Client
-from httpx import HTTPStatusError, create_ssl_context
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
-from pysdmx.util import map_httpx_errors
-from pysdmx.util._net_utils import GZIP_MAGIC, decompress_gzip
+from pysdmx.util._net_utils import GZIP_MAGIC
 
 SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
 SCHEMA_ROOT_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
@@ -209,14 +204,6 @@ def __string_chunks(text: str) -> Generator[str, None, None]:
     yield __remove_bom(text)
 
 
-def __body_chunks(
-    chunks: Iterable[bytes], encoding: str
-) -> Generator[str, None, None]:
-    """Decodes the chunks of an HTTP body as httpx's iter_text does."""
-    for text in codecs.iterdecode(chunks, encoding, errors="replace"):
-        yield __remove_bom(text)
-
-
 def __url_chunks(
     url: str, pem: Optional[Union[str, Path]]
 ) -> Generator[str, None, None]:
@@ -227,30 +214,16 @@ def __url_chunks(
             "Validation Error",
             f"PEM file {pem} does not exist.",
         )
-    ssl_context = (
-        create_ssl_context(verify=pem) if pem else create_ssl_context()
-    )
+    # Imported here to avoid a circular import: the API package imports
+    # pysdmx.io
+    from pysdmx.api.qb import ApiVersion, LeanRestClient
+
+    # The URL is the endpoint, and the API version is not used to read it
+    client = LeanRestClient(url, ApiVersion.V2_0_0, pem=pem, timeout=60)
     try:
-        with (
-            httpx_Client(verify=ssl_context) as client,
-            client.stream("GET", url, timeout=60) as response,
-        ):
-            try:
-                response.raise_for_status()
-            except HTTPStatusError as e:
-                # The body of an error is read whole: it is small, and
-                # map_httpx_errors needs it
-                response.read()
-                if "<?xml" in response.text:
-                    yield __remove_bom(response.text)
-                    return
-                map_httpx_errors(e)
-            # The body is decoded from its Content-Encoding by httpx, but
-            # some services (e.g. Eurostat) send a gzip body without one
-            yield from __body_chunks(
-                decompress_gzip(response.iter_bytes(), response.request),
-                response.encoding or "utf-8",
-            )
+        with contextlib.closing(client.stream_message(url)) as chunks:
+            for chunk in chunks:
+                yield __remove_bom(chunk)
     except Exception as e:
         raise Invalid(
             "Validation Error",
