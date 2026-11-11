@@ -6,7 +6,7 @@ from pysdmx.api.qb.availability import (
     AvailabilityQuery,
 )
 from pysdmx.api.qb.data import DataContext, DataFormat, DataQuery
-from pysdmx.api.qb.lean import LeanRestService
+from pysdmx.api.qb.lean import AsyncLeanRestService, LeanRestService
 from pysdmx.api.qb.refmeta import (
     RefMetaByMetadataflowQuery,
     RefMetaByMetadatasetQuery,
@@ -33,6 +33,7 @@ from pysdmx.api.qb.util import ApiVersion
 
 __all__ = [
     "ApiVersion",
+    "AsyncLeanRestService",
     "AsyncRestService",
     "AvailabilityFormat",
     "AvailabilityMode",

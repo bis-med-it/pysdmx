@@ -68,7 +68,8 @@ a response is only decompressed if the service declares its compression in
 the ``Content-Encoding`` header. Some services do not, such as Eurostat's
 SDMX API, which sends gzip-compressed responses without that header. The
 ``LeanRestService`` is used exactly as the ``RestService``, but it also
-decompresses such responses.
+decompresses such responses. The ``AsyncLeanRestService`` does the same
+for the ``AsyncRestService``.
 
 .. code-block:: python
 

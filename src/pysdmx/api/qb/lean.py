@@ -1,12 +1,16 @@
 """Connector to SDMX-REST services that are not protocol-correct."""
 
 import codecs
-from typing import Generator, Iterable
+from typing import AsyncGenerator, AsyncIterable, Generator, Iterable
 
 import httpx
 
-from pysdmx.api.qb.service import RestService
-from pysdmx.util._net_utils import decompress_gzip, map_httpx_errors
+from pysdmx.api.qb.service import AsyncRestService, RestService
+from pysdmx.util._net_utils import (
+    adecompress_gzip,
+    decompress_gzip,
+    map_httpx_errors,
+)
 
 
 class LeanRestService(RestService):
@@ -74,3 +78,22 @@ class LeanRestService(RestService):
         # httpx decodes the body from its Content-Encoding, but some
         # services (e.g. Eurostat) send a gzip body without one
         return decompress_gzip(chunks, request)
+
+
+class AsyncLeanRestService(AsyncRestService):
+    """Asynchronous, lenient connector to SDMX-REST services.
+
+    It is instantiated and used as the ``AsyncRestService``, which expects
+    the service to be protocol-correct, but it also copes with the same
+    deviations as the :class:`~pysdmx.api.qb.LeanRestService`.
+    """
+
+    def _decode(
+        self, chunks: Iterable[bytes], request: httpx.Request
+    ) -> Generator[bytes, None, None]:
+        return decompress_gzip(chunks, request)
+
+    def _adecode(
+        self, chunks: AsyncIterable[bytes], request: httpx.Request
+    ) -> AsyncGenerator[bytes, None]:
+        return adecompress_gzip(chunks, request)

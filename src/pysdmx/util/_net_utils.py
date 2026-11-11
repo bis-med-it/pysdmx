@@ -1,5 +1,7 @@
 import zlib
 from typing import (
+    AsyncGenerator,
+    AsyncIterable,
     Generator,
     Iterable,
     NoReturn,
@@ -120,6 +122,32 @@ def decompress_gzip(
     """
     decoder = _GzipDecoder(request)
     for chunk in chunks:
+        if data := decoder.decode(chunk):
+            yield data
+    if data := decoder.flush():
+        yield data
+
+
+async def adecompress_gzip(
+    chunks: AsyncIterable[bytes], request: httpx.Request
+) -> AsyncGenerator[bytes, None]:
+    """Decompresses the chunks of an HTTP body sent gzipped.
+
+    The asynchronous counterpart of decompress_gzip.
+
+    Args:
+        chunks: The chunks of the body, decoded from its Content-Encoding.
+        request: The request of the response, for the errors.
+
+    Yields:
+        The chunks of the body, decompressed if its first bytes are a gzip
+        stream's, or as they are otherwise.
+
+    Raises:
+        httpx.DecodingError: If the gzip stream is invalid.
+    """
+    decoder = _GzipDecoder(request)
+    async for chunk in chunks:
         if data := decoder.decode(chunk):
             yield data
     if data := decoder.flush():
