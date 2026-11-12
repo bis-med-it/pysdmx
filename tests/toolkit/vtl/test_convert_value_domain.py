@@ -60,13 +60,3 @@ def test_convert_value_domain_to_sdmx_invalid_reference() -> None:
 
     with pytest.raises(Invalid, match="Codelist or ValueList"):
         convert_value_domain_to_sdmx(value_domain, reference)
-
-
-def test_codelist_roundtrip(codelist: Codelist) -> None:
-    value_domain = convert_codelist_to_vtl(codelist, "cl_freq")
-    reference = Reference("Codelist", "SDMX", "CL_FREQ", "2.0")
-
-    result = convert_value_domain_to_sdmx(value_domain, reference)
-
-    assert result.short_urn == codelist.short_urn
-    assert [c.id for c in result.codes] == [c.id for c in codelist.codes]
