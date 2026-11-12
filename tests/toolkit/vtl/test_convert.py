@@ -2,6 +2,7 @@
 
 import pandas as pd
 import pytest
+from vtlengine import semantic_analysis
 from vtlengine.DataTypes import (
     Boolean,
     Date,
@@ -418,7 +419,7 @@ def test_convert_to_sdmx_with_schema(
 def test_convert_to_sdmx_with_schema_no_data(
     basic_schema: Schema,
 ) -> None:
-    """Test conversion with Schema but no data raises error."""
+    """Test conversion with Schema but no data gives an empty dataset."""
     components = {
         "FREQ": VTLComponent(
             name="FREQ",
@@ -450,11 +451,11 @@ def test_convert_to_sdmx_with_schema_no_data(
         name="no_data", components=components, data=None
     )
 
-    with pytest.raises(
-        Invalid,
-        match="VTL dataset has no data for conversion to SDMX",
-    ):
-        convert_dataset_to_sdmx(vtl_dataset_no_data, schema=basic_schema)
+    result = convert_dataset_to_sdmx(vtl_dataset_no_data, schema=basic_schema)
+
+    assert result.structure == basic_schema
+    assert list(result.data.columns) == list(components)
+    assert result.data.empty
 
 
 @pytest.mark.parametrize(
@@ -560,11 +561,11 @@ def test_convert_to_sdmx_without_data(
     vtl_dataset_none = VTLengineDataset(
         name="empty_none", components=components, data=None
     )
-    with pytest.raises(
-        Invalid,
-        match="VTL dataset has no data for conversion to SDMX",
-    ):
-        convert_dataset_to_sdmx(vtl_dataset_none, basic_reference)
+    result_none = convert_dataset_to_sdmx(vtl_dataset_none, basic_reference)
+
+    assert [c.id for c in result_none.structure.components] == ["DIM1"]
+    assert list(result_none.data.columns) == ["DIM1"]
+    assert result_none.data.empty
 
     # Test with empty DataFrame
     empty_df = pd.DataFrame(columns=["DIM1"])
@@ -961,3 +962,40 @@ def test_convert_to_sdmx_unsupported_vtl_role(
         match="VTL Role",
     ):
         convert_dataset_to_sdmx(vtl_dataset, basic_reference)
+
+
+def test_convert_to_sdmx_result_of_semantic_analysis(
+    basic_reference: Reference,
+) -> None:
+    """Test conversion of a result of the semantic analysis, without data."""
+    structures = {
+        "datasets": [
+            {
+                "name": "DS_1",
+                "DataStructure": [
+                    {
+                        "name": "Id_1",
+                        "type": "Integer",
+                        "role": "Identifier",
+                        "nullable": False,
+                    },
+                    {
+                        "name": "Me_1",
+                        "type": "Number",
+                        "role": "Measure",
+                        "nullable": True,
+                    },
+                ],
+            }
+        ]
+    }
+    result = semantic_analysis("DS_r <- DS_1 * 2;", structures)["DS_r"]
+
+    dataset = convert_dataset_to_sdmx(result, reference=basic_reference)
+
+    assert [(c.id, c.role) for c in dataset.structure.components] == [
+        ("Id_1", Role.DIMENSION),
+        ("Me_1", Role.MEASURE),
+    ]
+    assert list(dataset.data.columns) == ["Id_1", "Me_1"]
+    assert dataset.data.empty
