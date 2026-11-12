@@ -53,6 +53,12 @@ def read_sdmx(  # noqa: C901
     message after 60 seconds, a ``UserWarning`` is emitted, and another one
     every 10 seconds while it keeps waiting.
 
+    A data query that Eurostat's SDMX API queues as an asynchronous
+    extraction, answering with the id of the extraction instead of the
+    data, is followed: the status of the extraction is checked every 10
+    seconds, until it is available or the timeout has passed, and its data
+    are then read.
+
     .. important::
         When reading a SDMX-JSON structure message, you can read it
         without installing the pysdmx[json] extra
@@ -71,8 +77,9 @@ def read_sdmx(  # noqa: C901
           authority using this parameter.
         timeout: When using a URL, the seconds to wait for each network
           operation, such as the server starting to send the message or
-          sending its next part. It does not limit the whole download.
-          Defaults to 600 seconds.
+          sending its next part. It does not limit the whole download, but
+          it limits the wait for an asynchronous extraction of Eurostat's
+          SDMX API to be available. Defaults to 600 seconds.
 
     Returns:
         A Message with the content of the SDMX document. A message without

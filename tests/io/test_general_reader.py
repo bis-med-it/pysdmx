@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
+from pysdmx.api.qb import lenient
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.reader import get_datasets
@@ -366,6 +367,52 @@ def test_get_datasets_url_timeout(respx_mock, data_path, structures_path):
 
     for route in routes:
         assert route.calls[0].request.extensions["timeout"]["read"] == 12.0
+
+
+def test_read_url_queued_extraction(respx_mock, monkeypatch, data_path):
+    # Eurostat's SDMX API queues a large data query as an asynchronous
+    # extraction, and answers with its id instead of the data
+    monkeypatch.setattr(lenient, "_POLL_EVERY", 0.0)
+    extraction = "423abd6b-c7b0-4530-b249-7216bf78c785"
+    root = "https://ec.europa.eu/eurostat/api/dissemination"
+    url = f"{root}/sdmx/2.1/data/nrg_bal_c/A....DE"
+    envelope = (
+        '<?xml version="1.0" encoding="UTF-8" ?>\n'
+        '<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">'
+        "<env:Header/><env:Body>{}</env:Body></env:Envelope>"
+    )
+    respx_mock.get(url).mock(
+        return_value=httpx.Response(
+            200,
+            content=envelope.format(
+                "<ns0:syncResponse xmlns:ns0="
+                '"http://estat.ec.europa.eu/disschain/soap/extraction">'
+                "<processingTime>96</processingTime><queued>"
+                f"<id>{extraction}</id><status>SUBMITTED</status>"
+                "</queued></ns0:syncResponse>"
+            ),
+        )
+    )
+    respx_mock.get(f"{root}/1.0/async/status/{extraction}").mock(
+        return_value=httpx.Response(
+            200,
+            content=envelope.format(
+                "<ns0:asyncResponse xmlns:ns0="
+                '"http://estat.ec.europa.eu/disschain/soap/asynchronous" '
+                'xmlns:ns1="http://estat.ec.europa.eu/disschain/asynchronous">'
+                f"<ns1:status><ns1:key>{extraction}</ns1:key>"
+                "<ns1:status>AVAILABLE</ns1:status></ns1:status>"
+                "</ns0:asyncResponse>"
+            ),
+        )
+    )
+    respx_mock.get(f"{root}/1.0/async/data/{extraction}").mock(
+        return_value=httpx.Response(200, content=Path(data_path).read_bytes())
+    )
+
+    result = read_sdmx(url)
+
+    assert result.data[0].data.equals(read_sdmx(data_path).data[0].data)
 
 
 @pytest.mark.data

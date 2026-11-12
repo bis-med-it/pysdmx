@@ -70,6 +70,10 @@ Eurostat's SDMX API, which sends gzip-compressed responses without that
 header. The ``LenientRestService`` is used exactly as the ``RestService``, but
 it also accepts such responses and decompresses them. The
 ``AsyncLenientRestService`` does the same for the ``AsyncRestService``.
+The ``stream_message`` method of the ``LenientRestService``, which
+``read_sdmx`` uses to read URLs, also follows the asynchronous extractions
+in which Eurostat's SDMX API queues large data queries, and streams their
+data once available.
 
 .. code-block:: python
 
