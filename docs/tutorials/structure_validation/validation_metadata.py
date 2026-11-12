@@ -30,7 +30,7 @@ submission = read_sdmx(file_path)
 print(submission.data[0])
 
 # Step 5: Inspect the data.
-# Notice you get a Pandas DataFrame.
+# The data are represented as Pandas DataFrames.
 
 # Bonus: Write your own code to validate a data message using the schema.
 # Note: pysdmx will soon offer a validate() function!
