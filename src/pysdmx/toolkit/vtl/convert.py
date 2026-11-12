@@ -1,4 +1,4 @@
-"""Conversions between pysdmx PandasDataset and vtlengine Dataset."""
+"""Conversions between pysdmx SDMX objects and vtlengine VTL objects."""
 
 from typing import Dict, Optional, Type, Union
 
