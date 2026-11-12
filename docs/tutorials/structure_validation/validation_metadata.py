@@ -1,4 +1,8 @@
-"""Retrieve metadata for validation process."""
+"""Retrieve metadata for validation process.
+
+This script shows how pysdmx can be used to retrieve the structures required
+to validate data.
+"""
 
 from pathlib import Path
 
