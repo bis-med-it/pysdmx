@@ -4,8 +4,21 @@ import re
 import httpx
 import pytest
 
-from pysdmx.api.qb import ApiVersion, LenientRestService, lenient
-from pysdmx.errors import InternalError, Invalid, NotImplemented, Unavailable
+from pysdmx.api.qb import (
+    ApiVersion,
+    AsyncLenientRestService,
+    DataContext,
+    DataQuery,
+    LenientRestService,
+    lenient,
+)
+from pysdmx.errors import (
+    InternalError,
+    Invalid,
+    NotFound,
+    NotImplemented,
+    Unavailable,
+)
 from tests.io.byte_chunks import ByteChunks, split
 
 EXTRACTION = "423abd6b-c7b0-4530-b249-7216bf78c785"
@@ -16,6 +29,12 @@ URL = (
 ASYNC = "https://ec.europa.eu/eurostat/api/dissemination/1.0/async"
 STATUS_URL = f"{ASYNC}/status/{EXTRACTION}"
 DATA_URL = f"{ASYNC}/data/{EXTRACTION}"
+# A data query, as sent by the data methods of the services
+ENDPOINT = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0"
+QUERY = DataQuery(
+    DataContext.DATAFLOW, "ESTAT", "NRG_BAL_C", "1.0", "*.*.*.*.DE"
+)
+QUERY_URL = f"{ENDPOINT}{QUERY.get_url(ApiVersion.V2_0_0, True)}/"
 
 # The answers of Eurostat's SDMX API: to a data query it queues as an
 # asynchronous extraction, to the checks of the status of the extraction,
@@ -32,6 +51,12 @@ QUEUED = (
 MESSAGE = (
     '<?xml version="1.0" encoding="UTF-8"?><m:GenericData xmlns:m="http://'
     'www.sdmx.org/resources/sdmxml/schemas/v2_1/message"/>'
+)
+# The data of an extraction queued for a query of SDMX-CSV 1.0
+CSV = (
+    "DATAFLOW,LAST UPDATE,freq,nrg_bal,siec,unit,geo,TIME_PERIOD,OBS_VALUE,"
+    "OBS_FLAG,CONF_STATUS\r\nESTAT:NRG_BAL_C(1.0),02/06/26 23:00:00,A,AFC,"
+    "BIOE,GWH,DE,1990,38479.998,,\r\n"
 )
 
 
@@ -74,25 +99,29 @@ def status(value: str, compress: bool = False) -> httpx.Response:
     )
 
 
-def data(compress: bool = False) -> httpx.Response:
+def data(content: str, compress: bool = False) -> httpx.Response:
+    extension = "csv" if content == CSV else "xml"
     return httpx.Response(
         200,
         headers={
             "Content-Type": "application/octet-stream;charset=UTF-8",
             "Content-Disposition": (
-                "attachment;filename=estat_nrg_bal_c_filtered.xml"
+                f"attachment;filename=estat_nrg_bal_c_filtered.{extension}"
             ),
         },
-        content=body(MESSAGE, compress),
+        content=body(content, compress),
     )
 
 
 class Extraction:
     """An extraction, whose data can only be requested once available."""
 
-    def __init__(self, *statuses: str, compress: bool = False):
+    def __init__(
+        self, *statuses: str, content: str = MESSAGE, compress: bool = False
+    ):
         """Takes the statuses that the checks of the status answer."""
         self.__statuses = iter(statuses)
+        self.__content = content
         self.__compress = compress
         self.__available = False
 
@@ -105,7 +134,7 @@ class Extraction:
     def data(self, request: httpx.Request) -> httpx.Response:
         """Answers a request of the data, which must be available."""
         assert self.__available, "The data were requested before available"
-        return data(self.__compress)
+        return data(self.__content, self.__compress)
 
 
 @pytest.fixture(autouse=True)
@@ -115,7 +144,34 @@ def no_wait(monkeypatch):
 
 @pytest.fixture
 def service() -> LenientRestService:
-    return LenientRestService(URL, ApiVersion.V2_0_0, timeout=30.0)
+    return LenientRestService(
+        URL, ApiVersion.V2_0_0, timeout=30.0, extraction_timeout=300.0
+    )
+
+
+@pytest.fixture
+def async_service() -> AsyncLenientRestService:
+    return AsyncLenientRestService(
+        ENDPOINT, ApiVersion.V2_0_0, timeout=30.0, extraction_timeout=300.0
+    )
+
+
+def read(service: LenientRestService, method: str) -> bytes:
+    if method == "data":
+        return service.data(QUERY)
+    return b"".join(service.stream_data(QUERY, 64))
+
+
+async def aread(service: AsyncLenientRestService, method: str) -> bytes:
+    if method == "data":
+        return await service.data(QUERY)
+    return b"".join([c async for c in service.stream_data(QUERY, 64)])
+
+
+def mock_extraction(respx_mock, extraction: Extraction, url: str = URL):
+    respx_mock.get(url).mock(return_value=queued())
+    respx_mock.get(STATUS_URL).mock(side_effect=extraction.status)
+    respx_mock.get(DATA_URL).mock(side_effect=extraction.data)
 
 
 @pytest.mark.parametrize(
@@ -134,9 +190,9 @@ def service() -> LenientRestService:
         ),
     ],
 )
-@pytest.mark.parametrize("timeout", [30.0, None])
+@pytest.mark.parametrize("extraction_timeout", [300.0, None])
 def test_streams_the_data_of_a_queued_extraction(
-    respx_mock, url, root, timeout
+    respx_mock, url, root, extraction_timeout
 ):
     extraction = Extraction("PROCESSING", "AVAILABLE")
     respx_mock.get(url).mock(return_value=queued())
@@ -146,7 +202,9 @@ def test_streams_the_data_of_a_queued_extraction(
     respx_mock.get(f"{root}/1.0/async/data/{EXTRACTION}").mock(
         side_effect=extraction.data
     )
-    service = LenientRestService(url, ApiVersion.V2_0_0, timeout=timeout)
+    service = LenientRestService(
+        url, ApiVersion.V2_0_0, extraction_timeout=extraction_timeout
+    )
 
     assert "".join(service.stream_message(url)) == MESSAGE
 
@@ -182,7 +240,9 @@ def test_raises_if_the_extraction_is_not_available_in_time(
     respx_mock.get(STATUS_URL).mock(
         side_effect=[status("PROCESSING") for _ in range(100)]
     )
-    service = LenientRestService(URL, ApiVersion.V2_0_0, timeout=0.2)
+    service = LenientRestService(
+        URL, ApiVersion.V2_0_0, extraction_timeout=0.2
+    )
 
     with pytest.raises(Unavailable) as error:
         "".join(service.stream_message(URL))
@@ -293,6 +353,136 @@ def test_warns_while_waiting_for_the_extraction(
     # The first warnings may come before the extraction is queued
     waiting = re.compile(
         f"Still waiting for the asynchronous extraction {EXTRACTION} of "
-        rf"{re.escape(URL)} after \d+ seconds \(timeout: 30 seconds\)"
+        rf"{re.escape(URL)} after \d+ seconds \(timeout: 300 seconds\)"
+    )
+    assert any(waiting.fullmatch(str(w.message)) for w in record)
+
+
+@pytest.mark.parametrize("method", ["data", "stream_data"])
+def test_returns_the_data_of_a_queued_extraction(respx_mock, method):
+    mock_extraction(
+        respx_mock,
+        Extraction("PROCESSING", "AVAILABLE", content=CSV),
+        QUERY_URL,
+    )
+    service = LenientRestService(ENDPOINT, ApiVersion.V2_0_0)
+
+    assert read(service, method) == CSV.encode()
+
+
+@pytest.mark.parametrize("method", ["data", "stream_data"])
+def test_raises_the_error_of_a_data_query(respx_mock, method):
+    respx_mock.get(QUERY_URL).mock(return_value=httpx.Response(404))
+    service = LenientRestService(ENDPOINT, ApiVersion.V2_0_0)
+
+    with pytest.raises(NotFound):
+        read(service, method)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("method", ["data", "stream_data"])
+@pytest.mark.parametrize("compress", [False, True])
+async def test_async_returns_the_data_of_a_queued_extraction(
+    respx_mock, async_service, method, compress
+):
+    extraction = Extraction(
+        "PROCESSING", "AVAILABLE", content=CSV, compress=compress
+    )
+    respx_mock.get(QUERY_URL).mock(return_value=queued(compress))
+    respx_mock.get(STATUS_URL).mock(side_effect=extraction.status)
+    respx_mock.get(DATA_URL).mock(side_effect=extraction.data)
+
+    assert await aread(async_service, method) == CSV.encode()
+
+
+@pytest.mark.asyncio
+async def test_async_raises_if_the_extraction_fails(respx_mock, async_service):
+    respx_mock.get(QUERY_URL).mock(return_value=queued())
+    respx_mock.get(STATUS_URL).mock(
+        side_effect=[status("PROCESSING"), status("EXPIRED")]
+    )
+
+    with pytest.raises(Unavailable, match="EXPIRED"):
+        await async_service.data(QUERY)
+
+
+@pytest.mark.asyncio
+async def test_async_raises_if_the_extraction_is_not_available_in_time(
+    respx_mock, monkeypatch
+):
+    monkeypatch.setattr(lenient, "_POLL_EVERY", 0.05)
+    respx_mock.get(QUERY_URL).mock(return_value=queued())
+    # Limited checks, so that the test ends if the timeout is ignored
+    respx_mock.get(STATUS_URL).mock(
+        side_effect=[status("PROCESSING") for _ in range(100)]
+    )
+    service = AsyncLenientRestService(
+        ENDPOINT, ApiVersion.V2_0_0, extraction_timeout=0.2
+    )
+
+    with pytest.raises(Unavailable, match="0.2 seconds") as error:
+        await service.data(QUERY)
+
+    assert DATA_URL in str(error.value)
+
+
+@pytest.mark.asyncio
+async def test_async_raises_the_error_of_a_status_check(
+    respx_mock, async_service
+):
+    respx_mock.get(QUERY_URL).mock(return_value=queued())
+    respx_mock.get(STATUS_URL).mock(return_value=httpx.Response(400))
+
+    with pytest.raises(Invalid, match="400"):
+        await async_service.data(QUERY)
+
+
+@pytest.mark.asyncio
+async def test_async_raises_the_error_of_the_data_request(
+    respx_mock, async_service
+):
+    respx_mock.get(QUERY_URL).mock(return_value=queued())
+    respx_mock.get(STATUS_URL).mock(return_value=status("AVAILABLE"))
+    respx_mock.get(DATA_URL).mock(return_value=httpx.Response(500))
+
+    with pytest.raises(InternalError, match="500"):
+        await async_service.data(QUERY)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("method", ["data", "stream_data"])
+async def test_async_raises_the_error_of_a_data_query(
+    respx_mock, async_service, method
+):
+    respx_mock.get(QUERY_URL).mock(return_value=httpx.Response(404))
+
+    with pytest.raises(NotFound):
+        await aread(async_service, method)
+
+
+@pytest.mark.asyncio
+async def test_async_warns_while_waiting_for_the_extraction(
+    respx_mock, async_service, monkeypatch
+):
+    monkeypatch.setattr(lenient, "_WARN_AFTER", 0.0)
+    monkeypatch.setattr(lenient, "_WARN_EVERY", 0.01)
+    monkeypatch.setattr(lenient, "_POLL_EVERY", 0.2)
+    mock_extraction(
+        respx_mock,
+        Extraction("PROCESSING", "AVAILABLE", content=CSV),
+        QUERY_URL,
+    )
+
+    with pytest.warns(UserWarning, match="Still waiting for") as record:
+        assert await async_service.data(QUERY) == CSV.encode()
+
+    # The URL of the query as requested, with its special characters quoted
+    requested = (
+        "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/"
+        "dataflow/ESTAT/NRG_BAL_C/1.0/%2A.%2A.%2A.%2A.DE/"
+    )
+    waiting = re.compile(
+        f"Still waiting for the asynchronous extraction {EXTRACTION} of "
+        rf"{re.escape(requested)} after \d+ seconds \(timeout: 300 seconds\)"
     )
     assert any(waiting.fullmatch(str(w.message)) for w in record)

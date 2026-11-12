@@ -222,7 +222,11 @@ def __url_chunks(
 
     # The URL is the endpoint, and the API version is not used to read it
     service = LenientRestService(
-        url, ApiVersion.V2_0_0, pem=pem, timeout=timeout
+        url,
+        ApiVersion.V2_0_0,
+        pem=pem,
+        timeout=timeout,
+        extraction_timeout=timeout,
     )
     try:
         with contextlib.closing(service.stream_message(url)) as chunks:

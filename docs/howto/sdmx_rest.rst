@@ -70,10 +70,15 @@ Eurostat's SDMX API, which sends gzip-compressed responses without that
 header. The ``LenientRestService`` is used exactly as the ``RestService``, but
 it also accepts such responses and decompresses them. The
 ``AsyncLenientRestService`` does the same for the ``AsyncRestService``.
-The ``stream_message`` method of the ``LenientRestService``, which
-``read_sdmx`` uses to read URLs, also follows the asynchronous extractions
-in which Eurostat's SDMX API queues large data queries, and streams their
-data once available.
+
+Both lenient services also follow the asynchronous extractions in which
+Eurostat's SDMX API queues large data queries: instead of the data, the
+service answers with the id of an extraction, whose status the lenient
+services check every 10 seconds, until it is available, to return its data.
+The ``extraction_timeout`` argument sets the seconds to wait for it (600 by
+default). As for any long wait, a ``UserWarning`` is emitted if the data
+have not started to arrive after 60 seconds, and another one every 10
+seconds afterwards.
 
 .. code-block:: python
 
@@ -81,7 +86,7 @@ data once available.
 
     endpoint = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0"
     version = ApiVersion.V2_0_0
-    service = LenientRestService(endpoint, version)
+    service = LenientRestService(endpoint, version, extraction_timeout=1200)
 
 Deserializing the response
 --------------------------
