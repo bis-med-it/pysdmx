@@ -33,12 +33,16 @@ from pysdmx.util._net_utils import (
 _WARN_AFTER = 60.0
 _WARN_EVERY = 10.0
 
-# When a data query is too large to be answered at once, Eurostat's SDMX
-# API queues it as an asynchronous extraction: instead of the data, it
-# answers with a SOAP message that holds the id of the extraction. Other
-# SOAP messages, from a URL of their own, tell the status of the extraction,
-# and its data are sent from a third URL once it is available.
-_SOAP = re.compile(r"\s*(?:<\?xml[^>]*\?>\s*)?<(?:[\w.-]+:)?Envelope[\s/>]")
+# Eurostat's SDMX API sends SOAP messages, besides SDMX ones. Instead of an
+# SDMX-ML error message, it describes an error in a SOAP fault, without an
+# envelope. When a data query is too large to be answered at once, it
+# queues it as an asynchronous extraction: instead of the data, it answers
+# with a SOAP message that holds the id of the extraction. Other SOAP
+# messages, from a URL of their own, tell the status of the extraction, and
+# its data are sent from a third URL once it is available.
+_SOAP = re.compile(
+    r"\s*(?:<\?xml[^>]*\?>\s*)?<(?:[\w.-]+:)?(?:Envelope|Fault)[\s/>]"
+)
 _QUEUED = re.compile(
     r"<(?:[\w.-]+:)?queued>\s*<(?:[\w.-]+:)?id>\s*([\w-]+)\s*</"
 )
@@ -185,6 +189,9 @@ class LenientRestService(RestService):
       extraction, answering with the id of the extraction instead of the
       data, is followed by :meth:`stream_message`, which streams the data
       once the extraction is available.
+    * An error that Eurostat's SDMX API describes in a SOAP fault, instead
+      of an SDMX-ML error message, is raised by :meth:`stream_message` as
+      any other error, with the fault in its message.
     """
 
     def stream_message(self, url: str) -> Generator[str, None, None]:
@@ -193,7 +200,9 @@ class LenientRestService(RestService):
         The URL is requested as it is, whatever the endpoint of the service
         is. If the service answers with an error status and an XML body, as
         an SDMX-ML error message, the body is streamed as the message, so
-        that the error it describes can be read.
+        that the error it describes can be read. A SOAP fault, in which
+        Eurostat's SDMX API describes its errors instead, is raised as any
+        other error.
 
         If the service queues the query as an asynchronous extraction, as
         Eurostat's SDMX API does with large data queries, the status of the
@@ -247,9 +256,10 @@ class LenientRestService(RestService):
             response.raise_for_status()
         except httpx.HTTPStatusError:
             # The body of an error is read whole: it is small, and
-            # map_httpx_errors needs it
+            # map_httpx_errors needs it. An SDMX-ML error message is
+            # streamed as the message, but not a SOAP fault.
             response.read()
-            if "<?xml" in response.text:
+            if "<?xml" in response.text and not _SOAP.match(response.text):
                 return iter((response.text,))
             raise
         chunks = self.__text(response)
