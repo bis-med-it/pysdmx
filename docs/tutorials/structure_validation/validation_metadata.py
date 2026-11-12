@@ -21,7 +21,7 @@ print(schema)
 # Step 4: Load a data file
 # Note: The CSV file was generated automatically, i.e. there is
 # no guarantee the data are meaningful.
-file_path = Path(__file__).parent / "bpm6_bop_m.csv"
+file_path = Path(__file__).parent.parent / "samples" / "bpm6_bop_m.csv"
 submission = read_sdmx(file_path)
 print(submission.data[0])
 
