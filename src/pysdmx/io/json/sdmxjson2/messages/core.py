@@ -356,7 +356,7 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
         self,
         header: Header,
         msg_type: Literal["structure", "metadata"] = "structure",
-        msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
+        msg_version: Literal["2.0.0", "2.1", "2.2"] = "2.0.0",
     ) -> "JsonHeader":
         """Create an SDMX-JSON header from a pysdmx Header."""
         if msg_version == "2.0.0":
@@ -367,7 +367,8 @@ class JsonHeader(msgspec.Struct, frozen=True, omit_defaults=True):
             )
         else:
             schema = (
-                f"https://json.sdmx.org/2.1/sdmx-json-{msg_type}-schema.json"
+                f"https://json.sdmx.org/{msg_version}/"
+                f"sdmx-json-{msg_type}-schema.json"
             )
         return JsonHeader(
             header.id,

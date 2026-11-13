@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright SDMX 2025 - www.sdmx.org -->
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:xml="http://www.w3.org/XML/1998/namespace"
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/message"
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/structure"
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/common"
+				xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/message https://xml.sdmx.org/3.2/SDMXMessage.xsd">
+  <mes:Header>
+    <mes:ID>VTL_SAMPLE5</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2026-10-29T00:00:00Z</mes:Prepared>
+    <mes:Sender id="SDMX" />
+    <mes:Receiver id="SDMX" />
+  </mes:Header>
+  <mes:Structures>
+    <!-- Examples 2 and 3 of the section "Retrieving the data of the input VTL Data Sets" of the SDMX Technical Notes:
+         two VTL Data Sets mapped to the same Data Structure Definition, and two VtlExecutions of the same
+         TransformationScheme, one by its maintenance agency SDMX and one by the agency EXAMPLE on its own data. -->
+    <str:AgencySchemes>
+      <str:AgencyScheme agencyID="SDMX" id="AGENCIES">
+        <com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+        <str:Agency id="SDMX">
+          <com:Name xml:lang="en">SDMX</com:Name>
+          <com:Description xml:lang="en">SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank.</com:Description>
+          <str:Contact>
+            <com:Name xml:lang="en">SDMX Secretariat</com:Name>
+            <str:Department xml:lang="en">SDMX Secretariat</str:Department>
+            <str:Role xml:lang="en">Single entry point for external inquiries</str:Role>
+            <str:URI>http://sdmx.org</str:URI>
+            <str:Email>secretariat@sdmx.org</str:Email>
+          </str:Contact>
+        </str:Agency>
+        <str:Agency id="EXAMPLE">
+          <com:Name xml:lang="en">Example Agency</com:Name>
+        </str:Agency>
+      </str:AgencyScheme>
+    </str:AgencySchemes>
+    <str:Codelists>
+      <str:Codelist agencyID="SDMX" id="CL_AREA" version="1.0.0">
+        <com:Name xml:lang="en">Reference area</com:Name>
+        <str:Code id="USA">
+          <com:Name xml:lang="en">United States</com:Name>
+        </str:Code>
+        <str:Code id="CAN">
+          <com:Name xml:lang="en">Canada</com:Name>
+        </str:Code>
+        <str:Code id="MEX">
+          <com:Name xml:lang="en">Mexico</com:Name>
+        </str:Code>
+      </str:Codelist>
+      <str:Codelist agencyID="SDMX" id="CL_SEX" version="1.0.0">
+        <com:Name xml:lang="en">Sex</com:Name>
+        <str:Code id="M">
+          <com:Name xml:lang="en">Male</com:Name>
+        </str:Code>
+        <str:Code id="F">
+          <com:Name xml:lang="en">Female</com:Name>
+        </str:Code>
+      </str:Codelist>
+      <str:Codelist agencyID="SDMX" id="CL_AGE" version="1.0.0">
+        <com:Name xml:lang="en">Age</com:Name>
+        <str:Code id="Y_LT15">
+          <com:Name xml:lang="en">Less than 15 years</com:Name>
+        </str:Code>
+        <str:Code id="Y15T64">
+          <com:Name xml:lang="en">From 15 to 64 years</com:Name>
+        </str:Code>
+        <str:Code id="Y_GE65">
+          <com:Name xml:lang="en">65 years or over</com:Name>
+        </str:Code>
+      </str:Codelist>
+    </str:Codelists>
+    <str:ConceptSchemes>
+      <str:ConceptScheme agencyID="SDMX" id="POP_CONCEPTS" version="1.0.0">
+        <com:Name xml:lang="en">Population concepts</com:Name>
+        <str:Concept id="REF_AREA">
+          <com:Name xml:lang="en">Reference area</com:Name>
+        </str:Concept>
+        <str:Concept id="SEX">
+          <com:Name xml:lang="en">Sex</com:Name>
+        </str:Concept>
+        <str:Concept id="AGE">
+          <com:Name xml:lang="en">Age</com:Name>
+        </str:Concept>
+        <str:Concept id="TIME_PERIOD">
+          <com:Name xml:lang="en">Time period</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_VALUE">
+          <com:Name xml:lang="en">Observation value</com:Name>
+        </str:Concept>
+      </str:ConceptScheme>
+    </str:ConceptSchemes>
+    <str:DataStructures>
+      <str:DataStructure agencyID="SDMX" id="POP" version="1.0.0">
+        <com:Name xml:lang="en">Population</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList>
+            <str:Dimension id="REF_AREA">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).REF_AREA</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AREA(1.0.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="SEX">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).SEX</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_SEX(1.0.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="AGE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).AGE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AGE(1.0.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="GregorianYear" startTime="1950"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+          <str:MeasureList>
+            <str:Measure id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).OBS_VALUE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Integer" minValue="0"/>
+              </str:LocalRepresentation>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+      <str:DataStructure agencyID="SDMX" id="DSD_POPRATIO" version="1.0.0">
+        <com:Name xml:lang="en">Ratio between the male and the female population</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList>
+            <str:Dimension id="REF_AREA">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).REF_AREA</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AREA(1.0.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="AGE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).AGE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AGE(1.0.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="GregorianYear" startTime="1950"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+          <str:MeasureList>
+            <str:Measure id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=SDMX:POP_CONCEPTS(1.0.0).OBS_VALUE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Double" minValue="0"/>
+              </str:LocalRepresentation>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures>
+    <str:Dataflows>
+      <str:Dataflow agencyID="SDMX" id="DF_POPRATIO" version="1.0.0">
+        <com:Name xml:lang="en">Ratio between the male and the female population</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=SDMX:DSD_POPRATIO(1.0.0)</str:Structure>
+      </str:Dataflow>
+      <!-- A Dataflow of the agency EXAMPLE, which uses the Data Structure Definition SDMX:POP(1.0.0) maintained by SDMX. -->
+      <str:Dataflow agencyID="EXAMPLE" id="DF_POP" version="1.0">
+        <com:Name xml:lang="en">Population of the Example Agency</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=SDMX:POP(1.0.0)</str:Structure>
+      </str:Dataflow>
+    </str:Dataflows>
+    <str:VtlMappingSchemes>
+      <!-- pop_m and pop_f are distinct VTL Data Sets mapped to the same Data Structure Definition: the mapping is
+           many-to-many and a VtlDatasetMapping can reference a Data Structure Definition. -->
+      <str:VtlMappingScheme agencyID="SDMX" id="VTL_MAP_POP" version="1.0.0">
+        <com:Name xml:lang="en">VTL mappings of TS_POPRATIO</com:Name>
+        <str:VtlDatasetMapping id="POP_M" vtlAlias="pop_m" isInput="true">
+          <com:Name xml:lang="en">Male population</com:Name>
+          <str:DataStructure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=SDMX:POP(1.0.0)</str:DataStructure>
+        </str:VtlDatasetMapping>
+        <str:VtlDatasetMapping id="POP_F" vtlAlias="pop_f" isInput="true">
+          <com:Name xml:lang="en">Female population</com:Name>
+          <str:DataStructure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=SDMX:POP(1.0.0)</str:DataStructure>
+        </str:VtlDatasetMapping>
+        <str:VtlDatasetMapping id="RATIO" vtlAlias="ratio" isInput="false">
+          <com:Name xml:lang="en">Ratio between the male and the female population</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=SDMX:DF_POPRATIO(1.0.0)</str:Dataflow>
+        </str:VtlDatasetMapping>
+      </str:VtlMappingScheme>
+    </str:VtlMappingSchemes>
+    <str:TransformationSchemes>
+      <str:TransformationScheme agencyID="SDMX" id="TS_POPRATIO" version="1.0.0" vtlVersion="2.2">
+        <com:Name xml:lang="en">Ratio between the male and the female population</com:Name>
+        <str:Transformation id="RATIO" isPersistent="true">
+          <com:Name xml:lang="en">Ratio between the male and the female population</com:Name>
+          <com:Description xml:lang="en">The sub clauses drop the SEX Identifier, whose value is fixed in each input by the key of its data extraction. Without them, the division would not match any data points, because VTL composes the data points having the same values for all the Identifiers. The result has the Identifiers REF_AREA, AGE and TIME_PERIOD and the Measure OBS_VALUE, as the data structure of DF_POPRATIO.</com:Description>
+          <str:Expression>pop_m [ sub SEX = "M" ] / pop_f [ sub SEX = "F" ]</str:Expression>
+          <str:Result>ratio</str:Result>
+        </str:Transformation>
+        <str:VtlMappingScheme>urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=SDMX:VTL_MAP_POP(1.0.0)</str:VtlMappingScheme>
+      </str:TransformationScheme>
+    </str:TransformationSchemes>
+    <str:VtlExecutions>
+      <!-- Execution by SDMX on a web service implementing version 2.1 of the SDMX REST API, which has data queries by
+           Data Structure Definition. As the two inputs reference the same URN, the run-time values are addressed to
+           them through their aliases. With c[TIME_PERIOD]=ge:2015 provided at run time for both, the queries are:
+             https://sdmx.example.org/rest/data/datastructure/SDMX/POP/1.0.0/*.M.*?c[TIME_PERIOD]=ge:2015
+             https://sdmx.example.org/rest/data/datastructure/SDMX/POP/1.0.0/*.F.*?c[TIME_PERIOD]=ge:2015 -->
+      <str:VtlExecution agencyID="SDMX" id="EXEC_POPRATIO" version="1.0.0">
+        <com:Name xml:lang="en">Execution of TS_POPRATIO by SDMX</com:Name>
+        <str:TransformationScheme>urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TS_POPRATIO(1.0.0)</str:TransformationScheme>
+        <str:QueryExtraction sdmxApiVersion="2.1">
+          <str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=SDMX:VTL_MAP_POP(1.0.0).POP_M</str:DatasetMapping>
+          <str:EntryPoint>https://sdmx.example.org/rest</str:EntryPoint>
+          <str:QueryParameter name="key" value="*.M.*" isFixed="true"/>
+          <str:QueryParameter name="c[TIME_PERIOD]" value="ge:2010" isFixed="false"/>
+        </str:QueryExtraction>
+        <str:QueryExtraction sdmxApiVersion="2.1">
+          <str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=SDMX:VTL_MAP_POP(1.0.0).POP_F</str:DatasetMapping>
+          <str:EntryPoint>https://sdmx.example.org/rest</str:EntryPoint>
+          <str:QueryParameter name="key" value="*.F.*" isFixed="true"/>
+          <str:QueryParameter name="c[TIME_PERIOD]" value="ge:2010" isFixed="false"/>
+        </str:QueryExtraction>
+      </str:VtlExecution>
+      <!-- Execution by EXAMPLE of the same TransformationScheme on its own data, without copying the TransformationScheme
+           and its VtlMappingScheme. The Context is the Dataflow of EXAMPLE, which uses the same Data Structure Definition
+           as the mapped artefact; the web service implements version 1.5 of the SDMX REST API, which has no data
+           queries by Data Structure Definition. Without run-time values, the queries are:
+             https://data.example.org/rest/data/EXAMPLE,DF_POP,1.0/.M.?startPeriod=2010
+             https://data.example.org/rest/data/EXAMPLE,DF_POP,1.0/.F.?startPeriod=2010 -->
+      <str:VtlExecution agencyID="EXAMPLE" id="EXEC_POPRATIO" version="1.0">
+        <com:Name xml:lang="en">Execution of TS_POPRATIO by EXAMPLE</com:Name>
+        <str:TransformationScheme>urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=SDMX:TS_POPRATIO(1.0.0)</str:TransformationScheme>
+        <str:QueryExtraction sdmxApiVersion="1.5">
+          <str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=SDMX:VTL_MAP_POP(1.0.0).POP_M</str:DatasetMapping>
+          <str:EntryPoint>https://data.example.org/rest</str:EntryPoint>
+          <str:Context>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_POP(1.0)</str:Context>
+          <str:QueryParameter name="key" value=".M." isFixed="true"/>
+          <str:QueryParameter name="startPeriod" value="2010" isFixed="false"/>
+        </str:QueryExtraction>
+        <str:QueryExtraction sdmxApiVersion="1.5">
+          <str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=SDMX:VTL_MAP_POP(1.0.0).POP_F</str:DatasetMapping>
+          <str:EntryPoint>https://data.example.org/rest</str:EntryPoint>
+          <str:Context>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_POP(1.0)</str:Context>
+          <str:QueryParameter name="key" value=".F." isFixed="true"/>
+          <str:QueryParameter name="startPeriod" value="2010" isFixed="false"/>
+        </str:QueryExtraction>
+      </str:VtlExecution>
+    </str:VtlExecutions>
+  </mes:Structures>
+</mes:Structure>

@@ -132,9 +132,17 @@ def read_sdmx(  # noqa: C901
 
         # SDMX-ML 3.1 Structure
         result_structures = read_structure(input_str, validate=validate)
+    elif read_format == Format.STRUCTURE_SDMX_ML_3_2:
+        from pysdmx.io.xml.sdmx32.reader.structure import (
+            read as read_structure,
+        )
+
+        # SDMX-ML 3.2 Structure
+        result_structures = read_structure(input_str, validate=validate)
     elif read_format in (
         Format.STRUCTURE_SDMX_JSON_2_0_0,
         Format.STRUCTURE_SDMX_JSON_2_1_0,
+        Format.STRUCTURE_SDMX_JSON_2_2_0,
     ):
         from pysdmx.io.json.sdmxjson2.reader.structure import (
             read as read_struct,
@@ -183,6 +191,7 @@ def read_sdmx(  # noqa: C901
         Format.STRUCTURE_SDMX_ML_2_1,
         Format.STRUCTURE_SDMX_ML_3_0,
         Format.STRUCTURE_SDMX_ML_3_1,
+        Format.STRUCTURE_SDMX_ML_3_2,
         Format.REFMETA_SDMX_ML_3_0,
         Format.REFMETA_SDMX_ML_3_1,
     ):
@@ -196,8 +205,10 @@ def read_sdmx(  # noqa: C901
         Format.STRUCTURE_SDMX_ML_2_1,
         Format.STRUCTURE_SDMX_ML_3_0,
         Format.STRUCTURE_SDMX_ML_3_1,
+        Format.STRUCTURE_SDMX_ML_3_2,
         Format.STRUCTURE_SDMX_JSON_2_0_0,
         Format.STRUCTURE_SDMX_JSON_2_1_0,
+        Format.STRUCTURE_SDMX_JSON_2_2_0,
     ):
         # A structure message without artefacts is valid SDMX (it is how
         # a service reports an empty catalogue), so it is returned as an

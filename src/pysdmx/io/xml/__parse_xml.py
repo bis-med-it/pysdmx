@@ -64,6 +64,15 @@ XML_OPTIONS_31 = {
 }
 
 
+SCHEMA_ROOT_32 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_2/"
+NAMESPACES_32 = {
+    key.replace(SCHEMA_ROOT_31, SCHEMA_ROOT_32): value
+    for key, value in NAMESPACES_31.items()
+}
+
+XML_OPTIONS_32 = {**XML_OPTIONS_31, "namespaces": NAMESPACES_32}
+
+
 def xml_options(input_str: str) -> Dict[str, Any]:
     """Returns the xmltodict options for the SDMX-ML version of a message.
 
@@ -71,8 +80,10 @@ def xml_options(input_str: str) -> Dict[str, Any]:
         input_str: SDMX-ML message.
 
     Returns:
-        The xmltodict options for SDMX-ML 3.1, 3.0 or 2.1.
+        The xmltodict options for SDMX-ML 3.2, 3.1, 3.0 or 2.1.
     """
+    if SCHEMA_ROOT_32 in input_str:
+        return XML_OPTIONS_32
     if SCHEMA_ROOT_31 in input_str:
         return XML_OPTIONS_31
     if SCHEMA_ROOT_30 in input_str:

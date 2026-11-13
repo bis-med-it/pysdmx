@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright SDMX 2025 - www.sdmx.org -->
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:xml="http://www.w3.org/XML/1998/namespace"
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/message"
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/structure"
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/common"
+				xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/message https://xml.sdmx.org/3.2/SDMXMessage.xsd">
+  <mes:Header>
+    <mes:ID>VTL_SAMPLE6</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2026-10-29T00:00:00Z</mes:Prepared>
+    <mes:Sender id="EXAMPLE" />
+    <mes:Receiver id="SDMX" />
+  </mes:Header>
+  <mes:Structures>
+    <!-- A VTL 2.2 program using a VTL Value Domain mapped to a Codelist and a viral propagation. It has no
+         VtlExecution: the VtlExecution is optional, and without it the data of the inputs are provided to the
+         VTL engine at run time. -->
+    <str:AgencySchemes>
+      <str:AgencyScheme agencyID="SDMX" id="AGENCIES">
+        <com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+        <str:Agency id="SDMX">
+          <com:Name xml:lang="en">SDMX</com:Name>
+          <com:Description xml:lang="en">SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank.</com:Description>
+          <str:Contact>
+            <com:Name xml:lang="en">SDMX Secretariat</com:Name>
+            <str:Department xml:lang="en">SDMX Secretariat</str:Department>
+            <str:Role xml:lang="en">Single entry point for external inquiries</str:Role>
+            <str:URI>http://sdmx.org</str:URI>
+            <str:Email>secretariat@sdmx.org</str:Email>
+          </str:Contact>
+        </str:Agency>
+        <str:Agency id="EXAMPLE">
+          <com:Name xml:lang="en">Example Agency</com:Name>
+        </str:Agency>
+      </str:AgencyScheme>
+    </str:AgencySchemes>
+    <str:Codelists>
+      <str:Codelist agencyID="SDMX" id="CL_AREA" version="2.0" isPartial="true">
+        <!-- Only some codes are included to keep the sample smaller; hence the isPartial flag. -->
+        <com:Name xml:lang="en">Reference area</com:Name>
+        <str:Code id="AT">
+          <com:Name xml:lang="en">Austria</com:Name>
+        </str:Code>
+        <str:Code id="BE">
+          <com:Name xml:lang="en">Belgium</com:Name>
+        </str:Code>
+        <str:Code id="DE">
+          <com:Name xml:lang="en">Germany</com:Name>
+        </str:Code>
+        <str:Code id="ES">
+          <com:Name xml:lang="en">Spain</com:Name>
+        </str:Code>
+        <str:Code id="FR">
+          <com:Name xml:lang="en">France</com:Name>
+        </str:Code>
+        <str:Code id="IT">
+          <com:Name xml:lang="en">Italy</com:Name>
+        </str:Code>
+      </str:Codelist>
+      <str:Codelist agencyID="EXAMPLE" id="CL_OBS_STATUS" version="1.0">
+        <com:Name xml:lang="en">Observation status</com:Name>
+        <str:Code id="A">
+          <com:Name xml:lang="en">Normal value</com:Name>
+        </str:Code>
+        <str:Code id="E">
+          <com:Name xml:lang="en">Estimated value</com:Name>
+        </str:Code>
+        <str:Code id="M">
+          <com:Name xml:lang="en">Missing value</com:Name>
+        </str:Code>
+      </str:Codelist>
+    </str:Codelists>
+    <str:ConceptSchemes>
+      <str:ConceptScheme agencyID="EXAMPLE" id="CONCEPTS" version="1.0">
+        <com:Name xml:lang="en">Concepts</com:Name>
+        <str:Concept id="REF_AREA">
+          <com:Name xml:lang="en">Reference area</com:Name>
+        </str:Concept>
+        <str:Concept id="TIME_PERIOD">
+          <com:Name xml:lang="en">Time period</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_VALUE">
+          <com:Name xml:lang="en">Observation value</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_STATUS">
+          <com:Name xml:lang="en">Observation status</com:Name>
+        </str:Concept>
+      </str:ConceptScheme>
+    </str:ConceptSchemes>
+    <str:DataStructures>
+      <str:DataStructure agencyID="EXAMPLE" id="DSD_X" version="1.0">
+        <com:Name xml:lang="en">Data collected by reference area</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList>
+            <!-- REF_AREA is not coded, so the reported values can be checked against SDMX:CL_AREA(2.0). -->
+            <str:Dimension id="REF_AREA">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).REF_AREA</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Alpha" minLength="2" maxLength="2"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+          <str:AttributeList>
+            <str:Attribute id="OBS_STATUS">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).OBS_STATUS</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EXAMPLE:CL_OBS_STATUS(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Observation />
+              </str:AttributeRelationship>
+            </str:Attribute>
+          </str:AttributeList>
+          <str:MeasureList>
+            <str:Measure id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).OBS_VALUE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Double"/>
+              </str:LocalRepresentation>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures>
+    <str:Dataflows>
+      <str:Dataflow agencyID="EXAMPLE" id="DF_X" version="1.0">
+        <com:Name xml:lang="en">Data collected from source X</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EXAMPLE:DSD_X(1.0)</str:Structure>
+      </str:Dataflow>
+      <str:Dataflow agencyID="EXAMPLE" id="DF_Y" version="1.0">
+        <com:Name xml:lang="en">Data collected from source Y</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EXAMPLE:DSD_X(1.0)</str:Structure>
+      </str:Dataflow>
+      <str:Dataflow agencyID="EXAMPLE" id="DF_INVALID" version="1.0">
+        <com:Name xml:lang="en">Data of source X with an invalid reference area</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EXAMPLE:DSD_X(1.0)</str:Structure>
+      </str:Dataflow>
+      <str:Dataflow agencyID="EXAMPLE" id="DF_TOTAL" version="1.0">
+        <com:Name xml:lang="en">Total of sources X and Y</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EXAMPLE:DSD_X(1.0)</str:Structure>
+      </str:Dataflow>
+    </str:Dataflows>
+    <str:VtlMappingSchemes>
+      <str:VtlMappingScheme agencyID="EXAMPLE" id="VTL_MAP_X" version="1.0">
+        <com:Name xml:lang="en">VTL mappings of TS_AREACHK</com:Name>
+        <str:VtlDatasetMapping id="DS_X" vtlAlias="ds_x" isInput="true">
+          <com:Name xml:lang="en">Data collected from source X</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_X(1.0)</str:Dataflow>
+        </str:VtlDatasetMapping>
+        <str:VtlDatasetMapping id="DS_Y" vtlAlias="ds_y" isInput="true">
+          <com:Name xml:lang="en">Data collected from source Y</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_Y(1.0)</str:Dataflow>
+        </str:VtlDatasetMapping>
+        <str:VtlDatasetMapping id="DS_INVALID" vtlAlias="ds_invalid" isInput="false">
+          <com:Name xml:lang="en">Data of source X with an invalid reference area</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_INVALID(1.0)</str:Dataflow>
+        </str:VtlDatasetMapping>
+        <str:VtlDatasetMapping id="DS_TOTAL" vtlAlias="ds_total" isInput="false">
+          <com:Name xml:lang="en">Total of sources X and Y</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_TOTAL(1.0)</str:Dataflow>
+        </str:VtlDatasetMapping>
+        <!-- cl_area is the VTL Value Domain whose values are the Codes of SDMX:CL_AREA(2.0). -->
+        <str:VtlCodelistMapping id="CL_AREA" vtlAlias="cl_area">
+          <com:Name xml:lang="en">Reference areas</com:Name>
+          <str:Codelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=SDMX:CL_AREA(2.0)</str:Codelist>
+        </str:VtlCodelistMapping>
+      </str:VtlMappingScheme>
+    </str:VtlMappingSchemes>
+    <str:RulesetSchemes>
+      <str:RulesetScheme agencyID="EXAMPLE" id="RS_X" version="1.0" vtlVersion="2.2">
+        <com:Name xml:lang="en">Viral propagations</com:Name>
+        <!-- A viral propagation (VTL 2.2) defined on the Variable OBS_STATUS: it makes the SDMX DataAttribute OBS_STATUS
+             a viral VTL Attribute and tells the VTL operators how to combine its values: a missing value prevails over
+             an estimated one, which prevails over a normal one. -->
+        <str:Ruleset id="OBS_STATUS_PROP" rulesetType="viral" rulesetScope="variable">
+          <com:Name xml:lang="en">Viral propagation of OBS_STATUS</com:Name>
+          <str:RulesetDefinition>
+            define viral propagation OBS_STATUS_PROP (variable OBS_STATUS) is
+              when "M" then "M";
+              when "E" then "E";
+              else "A"
+            end viral propagation
+          </str:RulesetDefinition>
+        </str:Ruleset>
+      </str:RulesetScheme>
+    </str:RulesetSchemes>
+    <str:TransformationSchemes>
+      <str:TransformationScheme agencyID="EXAMPLE" id="TS_AREACHK" version="1.0" vtlVersion="2.2">
+        <com:Name xml:lang="en">Check of the reference areas and total of two sources</com:Name>
+        <str:Transformation id="INVALID" isPersistent="true">
+          <com:Name xml:lang="en">Data points with an invalid reference area</com:Name>
+          <com:Description xml:lang="en">Selects the data points of ds_x whose REF_AREA is not a value of the VTL Value Domain cl_area, i.e. not a Code of SDMX:CL_AREA(2.0).</com:Description>
+          <str:Expression>ds_x [ filter not ( REF_AREA in cl_area ) ]</str:Expression>
+          <str:Result>ds_invalid</str:Result>
+        </str:Transformation>
+        <str:Transformation id="TOTAL" isPersistent="true">
+          <com:Name xml:lang="en">Total of sources X and Y</com:Name>
+          <com:Description xml:lang="en">Adds the observations of ds_x and ds_y. OBS_STATUS is a viral VTL Attribute, because the ruleset scheme RS_X referenced by this transformation scheme contains a viral propagation for it: the + operator keeps it in the result, combining the values of the inputs through OBS_STATUS_PROP, so that the result has the data structure of DF_TOTAL. Without the viral propagation, OBS_STATUS would be a non-viral VTL Attribute and the result would not have it.</com:Description>
+          <str:Expression>ds_x + ds_y</str:Expression>
+          <str:Result>ds_total</str:Result>
+        </str:Transformation>
+        <str:VtlMappingScheme>urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=EXAMPLE:VTL_MAP_X(1.0)</str:VtlMappingScheme>
+        <str:RulesetScheme>urn:sdmx:org.sdmx.infomodel.transformation.RulesetScheme=EXAMPLE:RS_X(1.0)</str:RulesetScheme>
+      </str:TransformationScheme>
+    </str:TransformationSchemes>
+  </mes:Structures>
+</mes:Structure>

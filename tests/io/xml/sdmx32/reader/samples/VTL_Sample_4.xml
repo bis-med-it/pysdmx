@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright SDMX 2025 - www.sdmx.org -->
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:xml="http://www.w3.org/XML/1998/namespace"
+				xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/message"
+				xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/structure"
+				xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/common"
+				xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/message https://xml.sdmx.org/3.2/SDMXMessage.xsd">
+  <mes:Header>
+    <mes:ID>VTL_SAMPLE4</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2026-10-29T00:00:00Z</mes:Prepared>
+    <mes:Sender id="EXAMPLE" />
+    <mes:Receiver id="SDMX" />
+  </mes:Header>
+  <mes:Structures>
+    <!-- Example 1 of the section "Retrieving the data of the input VTL Data Sets" of the SDMX Technical Notes:
+         the difference between two Dataflows, with a VtlExecution that retrieves the data of the inputs. -->
+    <str:AgencySchemes>
+      <str:AgencyScheme agencyID="SDMX" id="AGENCIES">
+        <com:Name xml:lang="en">SDMX Agency Scheme</com:Name>
+        <str:Agency id="SDMX">
+          <com:Name xml:lang="en">SDMX</com:Name>
+          <com:Description xml:lang="en">SDMX is an initiative to foster standards for the exchange of statistical information. It is sponsored by the Bank for International Settlements (BIS), the European Central Bank (ECB), the Statistical Office of the European Union (Eurostat), the International Monetary Fund (IMF), the Organization for Economic Co-Operation and Development (OECD), the United Nations (UN) and the World Bank.</com:Description>
+          <str:Contact>
+            <com:Name xml:lang="en">SDMX Secretariat</com:Name>
+            <str:Department xml:lang="en">SDMX Secretariat</str:Department>
+            <str:Role xml:lang="en">Single entry point for external inquiries</str:Role>
+            <str:URI>http://sdmx.org</str:URI>
+            <str:Email>secretariat@sdmx.org</str:Email>
+          </str:Contact>
+        </str:Agency>
+        <str:Agency id="EXAMPLE">
+          <com:Name xml:lang="en">Example Agency</com:Name>
+        </str:Agency>
+      </str:AgencyScheme>
+    </str:AgencySchemes>
+    <str:Codelists>
+      <str:Codelist agencyID="EXAMPLE" id="CL_FREQ" version="1.0">
+        <com:Name xml:lang="en">Frequency</com:Name>
+        <str:Code id="A">
+          <com:Name xml:lang="en">Annual</com:Name>
+        </str:Code>
+        <str:Code id="Q">
+          <com:Name xml:lang="en">Quarterly</com:Name>
+        </str:Code>
+        <str:Code id="M">
+          <com:Name xml:lang="en">Monthly</com:Name>
+        </str:Code>
+      </str:Codelist>
+      <str:Codelist agencyID="EXAMPLE" id="CL_AREA" version="1.0">
+        <com:Name xml:lang="en">Reference area</com:Name>
+        <str:Code id="USA">
+          <com:Name xml:lang="en">United States</com:Name>
+        </str:Code>
+        <str:Code id="CAN">
+          <com:Name xml:lang="en">Canada</com:Name>
+        </str:Code>
+        <str:Code id="MEX">
+          <com:Name xml:lang="en">Mexico</com:Name>
+        </str:Code>
+      </str:Codelist>
+      <str:Codelist agencyID="EXAMPLE" id="CL_INDICATOR" version="1.0">
+        <com:Name xml:lang="en">Indicator</com:Name>
+        <str:Code id="EXP">
+          <com:Name xml:lang="en">Exports of goods</com:Name>
+        </str:Code>
+        <str:Code id="IMP">
+          <com:Name xml:lang="en">Imports of goods</com:Name>
+        </str:Code>
+      </str:Codelist>
+    </str:Codelists>
+    <str:ConceptSchemes>
+      <str:ConceptScheme agencyID="EXAMPLE" id="CONCEPTS" version="1.0">
+        <com:Name xml:lang="en">Concepts</com:Name>
+        <str:Concept id="FREQ">
+          <com:Name xml:lang="en">Frequency</com:Name>
+        </str:Concept>
+        <str:Concept id="REF_AREA">
+          <com:Name xml:lang="en">Reference area</com:Name>
+        </str:Concept>
+        <str:Concept id="INDICATOR">
+          <com:Name xml:lang="en">Indicator</com:Name>
+        </str:Concept>
+        <str:Concept id="TIME_PERIOD">
+          <com:Name xml:lang="en">Time period</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_VALUE">
+          <com:Name xml:lang="en">Observation value</com:Name>
+        </str:Concept>
+      </str:ConceptScheme>
+    </str:ConceptSchemes>
+    <str:DataStructures>
+      <str:DataStructure agencyID="EXAMPLE" id="DSD_AB" version="1.0">
+        <com:Name xml:lang="en">Trade in goods</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList>
+            <str:Dimension id="FREQ">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).FREQ</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EXAMPLE:CL_FREQ(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="REF_AREA">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).REF_AREA</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EXAMPLE:CL_AREA(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="INDICATOR">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).INDICATOR</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:Enumeration>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=EXAMPLE:CL_INDICATOR(1.0)</str:Enumeration>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension id="TIME_PERIOD">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).TIME_PERIOD</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+          <str:MeasureList>
+            <str:Measure id="OBS_VALUE">
+              <str:ConceptIdentity>urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=EXAMPLE:CONCEPTS(1.0).OBS_VALUE</str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Double"/>
+              </str:LocalRepresentation>
+            </str:Measure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures>
+    <str:Dataflows>
+      <str:Dataflow agencyID="EXAMPLE" id="DF_A" version="1.0">
+        <com:Name xml:lang="en">Trade in goods - source A</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EXAMPLE:DSD_AB(1.0)</str:Structure>
+      </str:Dataflow>
+      <str:Dataflow agencyID="EXAMPLE" id="DF_B" version="1.0">
+        <com:Name xml:lang="en">Trade in goods - source B</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EXAMPLE:DSD_AB(1.0)</str:Structure>
+      </str:Dataflow>
+      <str:Dataflow agencyID="EXAMPLE" id="DF_DIFF" version="1.0">
+        <com:Name xml:lang="en">Trade in goods - difference between source A and source B</com:Name>
+        <str:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=EXAMPLE:DSD_AB(1.0)</str:Structure>
+      </str:Dataflow>
+    </str:Dataflows>
+    <str:VtlMappingSchemes>
+      <!-- The VTL dataset mappings define the VTL Data Sets used by TS_DIFF. Under the Basic mapping, the Dimensions and
+           the TimeDimension of DSD_AB become VTL Identifiers and OBS_VALUE a VTL Measure. ds_a and ds_b are inputs, whose
+           definitions and data are obtained from SDMX; ds_diff is an output, whose data are converted into SDMX. -->
+      <str:VtlMappingScheme agencyID="EXAMPLE" id="VTL_MAP" version="1.0">
+        <com:Name xml:lang="en">VTL mappings of TS_DIFF</com:Name>
+        <str:VtlDatasetMapping id="DS_A" vtlAlias="ds_a" isInput="true">
+          <com:Name xml:lang="en">Trade in goods - source A</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_A(1.0)</str:Dataflow>
+        </str:VtlDatasetMapping>
+        <str:VtlDatasetMapping id="DS_B" vtlAlias="ds_b" isInput="true">
+          <com:Name xml:lang="en">Trade in goods - source B</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_B(1.0)</str:Dataflow>
+        </str:VtlDatasetMapping>
+        <str:VtlDatasetMapping id="DIFF" vtlAlias="ds_diff" isInput="false">
+          <com:Name xml:lang="en">Difference between source A and source B</com:Name>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=EXAMPLE:DF_DIFF(1.0)</str:Dataflow>
+        </str:VtlDatasetMapping>
+      </str:VtlMappingScheme>
+    </str:VtlMappingSchemes>
+    <str:TransformationSchemes>
+      <str:TransformationScheme agencyID="EXAMPLE" id="TS_DIFF" version="1.0" vtlVersion="2.2">
+        <com:Name xml:lang="en">Difference between two sources</com:Name>
+        <str:Transformation id="DIFF" isPersistent="true">
+          <com:Name xml:lang="en">Difference between source A and source B</com:Name>
+          <com:Description xml:lang="en">Calculates the difference between the observations of ds_a and ds_b having the same values of the Identifiers. The result is persistent, as it is an output of the program (mapped with isInput equal to false), and has the data structure of DF_DIFF.</com:Description>
+          <str:Expression>ds_a - ds_b</str:Expression>
+          <str:Result>ds_diff</str:Result>
+        </str:Transformation>
+        <str:VtlMappingScheme>urn:sdmx:org.sdmx.infomodel.transformation.VtlMappingScheme=EXAMPLE:VTL_MAP(1.0)</str:VtlMappingScheme>
+      </str:TransformationScheme>
+    </str:TransformationSchemes>
+    <str:VtlExecutions>
+      <!-- The VtlExecution says how the VTL engine retrieves the data of the inputs, so that TS_DIFF can be executed on
+           the basis of its SDMX definition. It is maintained independently of TS_DIFF. If startPeriod=2020 and
+           endPeriod=2023 are provided at run time for both inputs, the VTL engine retrieves the data of ds_a and ds_b
+           through the following queries (the fixed key A.USA. selects the annual data of the USA for any INDICATOR):
+             https://sdmx.example.org/rest/data/EXAMPLE,DF_A,1.0/A.USA.?startPeriod=2020&endPeriod=2023
+             https://sdmx.example.org/rest/data/EXAMPLE,DF_B,1.0/A.USA.?startPeriod=2020&endPeriod=2023 -->
+      <str:VtlExecution agencyID="EXAMPLE" id="EXEC_DIFF" version="1.0">
+        <com:Name xml:lang="en">Execution of TS_DIFF</com:Name>
+        <str:TransformationScheme>urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=EXAMPLE:TS_DIFF(1.0)</str:TransformationScheme>
+        <!-- Query to a web service implementing version 1.5 of the SDMX REST API: the VTL engine builds the query for
+             DF_A, the Dataflow referenced by the mapping of ds_a. -->
+        <str:QueryExtraction sdmxApiVersion="1.5">
+          <str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=EXAMPLE:VTL_MAP(1.0).DS_A</str:DatasetMapping>
+          <str:EntryPoint>https://sdmx.example.org/rest</str:EntryPoint>
+          <str:QueryParameter name="key" value="A.USA." isFixed="true"/>
+          <str:QueryParameter name="startPeriod" value="2015" isFixed="false"/>
+          <str:QueryParameter name="endPeriod" isFixed="false"/>
+        </str:QueryExtraction>
+        <!-- The analogous retrieval for ds_b, written as a URL template: the tokens in curly braces are replaced by the
+             values of the query parameters having the same names. endPeriod has no default, so it must be provided
+             at run time. -->
+        <str:UrlExtraction>
+          <str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=EXAMPLE:VTL_MAP(1.0).DS_B</str:DatasetMapping>
+          <str:UrlTemplate>https://sdmx.example.org/rest/data/EXAMPLE,DF_B,1.0/A.USA.?startPeriod={startPeriod}&amp;endPeriod={endPeriod}</str:UrlTemplate>
+          <str:QueryParameter name="startPeriod" value="2015" isFixed="false"/>
+          <str:QueryParameter name="endPeriod" isFixed="false"/>
+        </str:UrlExtraction>
+      </str:VtlExecution>
+    </str:VtlExecutions>
+  </mes:Structures>
+</mes:Structure>
