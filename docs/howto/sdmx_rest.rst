@@ -88,6 +88,11 @@ seconds afterwards.
     version = ApiVersion.V2_0_0
     service = LenientRestService(endpoint, version, extraction_timeout=1200)
 
+The ``RegistryClient`` and the ``AsyncRegistryClient`` use the strict services
+by default; instantiate them with ``lenient=True`` to use the lenient ones.
+The ``PandasConnector`` takes the same argument, which applies to the data it
+retrieves: its metadata are always retrieved with the strict service.
+
 Deserializing the response
 --------------------------
 

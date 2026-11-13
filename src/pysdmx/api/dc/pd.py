@@ -17,7 +17,12 @@ from pysdmx.api.dc import BasicConnector, MaintainableIdentification
 from pysdmx.api.dc.query import BasicFilter
 from pysdmx.api.dc.rest import SdmxConnector
 from pysdmx.api.dc.util import prepare_basic_data_query
-from pysdmx.api.qb import ApiVersion, DataFormat, LenientRestService
+from pysdmx.api.qb import (
+    ApiVersion,
+    DataFormat,
+    LenientRestService,
+    RestService,
+)
 from pysdmx.model import Dataflow
 from pysdmx.toolkit.pd import to_pandas_schema
 from pysdmx.util import experimental
@@ -41,10 +46,29 @@ class PandasConnector(BasicConnector):
         api_endpoint: str,
         pem: Optional[str] = None,
         timeout: Optional[float] = 20.0,
+        lenient: bool = False,
     ):
-        """Instantiate a data discovery and retrieval Pandas connector."""
+        """Instantiate a data discovery and retrieval Pandas connector.
+
+        Args:
+            api_endpoint: The endpoint of the targeted service.
+            pem: In case the service exposed a certificate created
+                by an unknown certificate authority, you can pass
+                a pem file for this authority using this parameter.
+            timeout: The maximum number of seconds to wait before
+                considering that a request timed out. Defaults to
+                20 seconds.
+            lenient: Whether to retrieve the data with the
+                :class:`~pysdmx.api.qb.LenientRestService`, which accepts
+                some deviations from the SDMX-REST specification (e.g.
+                the asynchronous extractions of Eurostat's SDMX API),
+                instead of the strict :class:`~pysdmx.api.qb.RestService`.
+                The metadata are always retrieved with the strict one.
+                Defaults to ``False``.
+        """
         self.__conn = SdmxConnector(api_endpoint, pem, timeout)
-        self.__client = LenientRestService(
+        service = LenientRestService if lenient else RestService
+        self.__client = service(
             api_endpoint,
             ApiVersion.V2_0_0,
             data_format=DataFormat.SDMX_CSV_1_0_0,

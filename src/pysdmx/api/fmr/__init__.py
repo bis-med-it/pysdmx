@@ -15,9 +15,11 @@ from msgspec.json import decode
 from pysdmx.api.qb import (
     ApiVersion,
     AsyncLenientRestService,
+    AsyncRestService,
     LenientRestService,
     RefMetaByMetadatasetQuery,
     RefMetaByStructureQuery,
+    RestService,
     SchemaContext,
     SchemaQuery,
     StructureDetail,
@@ -343,6 +345,7 @@ class RegistryClient(__BaseRegistryClient):
         format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
         timeout: float = 10.0,
+        lenient: bool = False,
     ):
         """Instantiate a new client against the target endpoint.
 
@@ -356,9 +359,16 @@ class RegistryClient(__BaseRegistryClient):
             timeout: The maximum number of seconds to wait before
                 considering that a request timed out. Defaults to
                 10 seconds.
+            lenient: Whether to use the
+                :class:`~pysdmx.api.qb.LenientRestService`, which accepts
+                some deviations from the SDMX-REST specification (e.g.
+                gzip-compressed responses sent without a
+                ``Content-Encoding`` header), instead of the strict
+                :class:`~pysdmx.api.qb.RestService`. Defaults to ``False``.
         """
         super().__init__(api_endpoint, format)
-        self.__service = LenientRestService(
+        service = LenientRestService if lenient else RestService
+        self.__service = service(
             self.api_endpoint,
             API_VERSION,
             structure_format=format,
@@ -932,6 +942,7 @@ class AsyncRegistryClient(__BaseRegistryClient):
         format: StructureFormat = StructureFormat.SDMX_JSON_2_0_0,
         pem: Optional[str] = None,
         timeout: float = 10.0,
+        lenient: bool = False,
     ):
         """Instantiate a new client against the target endpoint.
 
@@ -945,9 +956,17 @@ class AsyncRegistryClient(__BaseRegistryClient):
             timeout: The maximum number of seconds to wait before
                 considering that a request timed out. Defaults to
                 10 seconds.
+            lenient: Whether to use the
+                :class:`~pysdmx.api.qb.AsyncLenientRestService`, which accepts
+                some deviations from the SDMX-REST specification (e.g.
+                gzip-compressed responses sent without a
+                ``Content-Encoding`` header), instead of the strict
+                :class:`~pysdmx.api.qb.AsyncRestService`. Defaults to
+                ``False``.
         """
         super().__init__(api_endpoint, format)
-        self.__service = AsyncLenientRestService(
+        service = AsyncLenientRestService if lenient else AsyncRestService
+        self.__service = service(
             self.api_endpoint,
             API_VERSION,
             structure_format=format,
