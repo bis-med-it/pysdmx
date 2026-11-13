@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>true</mes:Test>
+		<mes:Prepared>2026-11-09T00:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:DataStructures>
+			<str:DataStructure agencyID="MD" id="DSD" version="1.0">
+				<com:Name xml:lang="en">Attributes of each attachment</com:Name>
+				<str:DataStructureComponents>
+					<str:DimensionList id="DimensionDescriptor">
+						<str:Dimension id="FREQ" position="1">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="FREQ" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+						</str:Dimension>
+						<str:Dimension id="REF_AREA" position="2">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="REF_AREA" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+						</str:Dimension>
+						<str:TimeDimension id="TIME_PERIOD" position="3">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="TIME_PERIOD" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:LocalRepresentation>
+								<str:TextFormat textType="ObservationalTimePeriod"/>
+							</str:LocalRepresentation>
+						</str:TimeDimension>
+					</str:DimensionList>
+					<str:Group id="SIBLING">
+						<str:GroupDimension>
+							<str:DimensionReference>
+								<Ref id="REF_AREA"/>
+							</str:DimensionReference>
+						</str:GroupDimension>
+					</str:Group>
+					<str:AttributeList id="AttributeDescriptor">
+						<str:Attribute id="COMMENT_DSET" assignmentStatus="Conditional">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="COMMENT_DSET" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:AttributeRelationship>
+								<str:None/>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute id="TITLE" assignmentStatus="Conditional">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="TITLE" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:AttributeRelationship>
+								<str:Group>
+									<Ref id="SIBLING"/>
+								</str:Group>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute id="UNIT_MULT" assignmentStatus="Conditional">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="UNIT_MULT" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:AttributeRelationship>
+								<str:Group>
+									<Ref id="SIBLING"/>
+								</str:Group>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute id="COMMENT_TS" assignmentStatus="Conditional">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="COMMENT_TS" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:AttributeRelationship>
+								<str:Dimension>
+									<Ref id="FREQ"/>
+								</str:Dimension>
+								<str:Dimension>
+									<Ref id="REF_AREA"/>
+								</str:Dimension>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute id="CONF_STATUS" assignmentStatus="Conditional">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="CONF_STATUS" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:AttributeRelationship>
+								<str:Dimension>
+									<Ref id="REF_AREA"/>
+								</str:Dimension>
+								<str:Dimension>
+									<Ref id="TIME_PERIOD"/>
+								</str:Dimension>
+							</str:AttributeRelationship>
+						</str:Attribute>
+						<str:Attribute id="OBS_STATUS" assignmentStatus="Conditional">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="OBS_STATUS" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+							<str:AttributeRelationship>
+								<str:PrimaryMeasure>
+									<Ref id="OBS_VALUE"/>
+								</str:PrimaryMeasure>
+							</str:AttributeRelationship>
+						</str:Attribute>
+					</str:AttributeList>
+					<str:MeasureList id="MeasureDescriptor">
+						<str:PrimaryMeasure id="OBS_VALUE">
+							<str:ConceptIdentity>
+								<Ref agencyID="MD" maintainableParentID="CS" maintainableParentVersion="1.0" id="OBS_VALUE" class="Concept" package="conceptscheme"/>
+							</str:ConceptIdentity>
+						</str:PrimaryMeasure>
+					</str:MeasureList>
+				</str:DataStructureComponents>
+			</str:DataStructure>
+		</str:DataStructures>
+	</mes:Structures>
+</mes:Structure>

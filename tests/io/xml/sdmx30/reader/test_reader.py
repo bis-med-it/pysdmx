@@ -175,18 +175,34 @@ def test_data_groups_30():
     assert read_format == Format.DATA_SDMX_ML_3_0
     data = read_sdmx(input_str, validate=True).data[0].data
 
-    # ATT3 is the attribute of the Groups
+    # ATT3 is the attribute of the Groups, and ATT1 that of the Atts
     expected = {
         "DIM2": ["4", "5", "6"],
-        "ATT1": ["A", "B", "C"],
         "DIM1": ["1", "2", "3"],
         "M1": ["10", "11", "12"],
         "ATT2": ["7", "8", "9"],
         "ATT3": ["H", "I", "J"],
+        "ATT1": ["A", "B", "C"],
     }
     assert data.to_dict("list") == expected
     assert list(data.columns) == list(expected)
     assert all(str(dtype) == "string[pyarrow]" for dtype in data.dtypes)
+
+
+def test_data_set_attributes_in_atts_30():
+    data_path = (
+        Path(__file__).parents[1]
+        / "writer"
+        / "samples"
+        / "test_dataset_with_groups.xml"
+    )
+    text = data_path.read_text(encoding="utf-8")
+    # Unlike the Atts of the sample, this one has a key (DIM2)
+    text = text.replace("<Atts ", '<Atts DIM2="4" ATT9="X" />\n\t\t<Atts ', 1)
+
+    result = read_sdmx(text, validate=True).data[0]
+
+    assert result.attributes == {"ds_att1": "value1", "ds_att2": "10"}
 
 
 def test_data_no_structure_specific(samples_folder):
