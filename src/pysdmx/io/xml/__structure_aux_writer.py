@@ -2544,6 +2544,19 @@ def __write_structures(
     return outfile
 
 
+def __method_attrib(method: Optional[str]) -> str:
+    """Gives the method attribute of a ToVtlMapping or a FromVtlMapping.
+
+    Args:
+        method: The mapping method, if any
+
+    Returns:
+        The attribute, preceded by a space, or an empty string if there
+        is no method, as the attribute is optional
+    """
+    return "" if method is None else f" method={method!r}"
+
+
 def _write_vtl(  # noqa: C901
     item_or_scheme: Union[Item, ItemScheme],
     indent: str,
@@ -2621,15 +2634,16 @@ def _write_vtl(  # noqa: C901
                 )
             if item_or_scheme.to_vtl_mapping_method is not None:
                 to_vtl = item_or_scheme.to_vtl_mapping_method
+                method = __method_attrib(to_vtl.method)
                 if len(to_vtl.to_vtl_sub_space) == 0:
                     data += (
-                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
-                        f"method='{to_vtl.method}' />"
+                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping"
+                        f"{method} />"
                     )
                 else:
                     data += (
-                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping "
-                        f"method='{to_vtl.method}'>"
+                        f"{add_indent(indent)}<{ABBR_STR}:ToVtlMapping"
+                        f"{method}>"
                     )
                     indent_2 = add_indent(add_indent(indent))
                     data += f"{indent_2}<{ABBR_STR}:ToVtlSubSpace>"
@@ -2643,17 +2657,16 @@ def _write_vtl(  # noqa: C901
 
             if item_or_scheme.from_vtl_mapping_method is not None:
                 from_vtl = item_or_scheme.from_vtl_mapping_method
+                method = __method_attrib(from_vtl.method)
                 if len(from_vtl.from_vtl_sub_space) == 0:
                     data += (
-                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
-                        f"method={from_vtl.method!r} />"
-                        if from_vtl.method is not None
-                        else f"method='{from_vtl.method}' />"
+                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping"
+                        f"{method} />"
                     )
                 else:
                     data += (
-                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping "
-                        f"method='{from_vtl.method}'>"
+                        f"{add_indent(indent)}<{ABBR_STR}:FromVtlMapping"
+                        f"{method}>"
                     )
                     indent_2 = add_indent(add_indent(indent))
                     data += f"{indent_2}<{ABBR_STR}:FromVtlSuperSpace>"

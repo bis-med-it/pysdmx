@@ -1,7 +1,8 @@
-"""Conversions between pysdmx PandasDataset and vtlengine Dataset."""
+"""Conversions between pysdmx SDMX objects and vtlengine VTL objects."""
 
 from typing import Dict, Optional, Type, Union
 
+import pandas as pd
 from vtlengine.API import (  # type: ignore[attr-defined]
     load_datasets,
     to_vtl_json,
@@ -19,10 +20,19 @@ from vtlengine.DataTypes import (
 )
 from vtlengine.Model import Dataset as VTLengineDataset
 from vtlengine.Model import Role as VTLRole
+from vtlengine.Model import ValueDomain
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
-from pysdmx.model import Component, Components, Concept, DataType, Reference
+from pysdmx.model import (
+    Code,
+    Codelist,
+    Component,
+    Components,
+    Concept,
+    DataType,
+    Reference,
+)
 from pysdmx.model.dataflow import Role, Schema
 
 # VTL to SDMX type mapping
@@ -96,6 +106,13 @@ def convert_dataset_to_vtl(
     return vtl_dataset
 
 
+def _data(dataset: VTLengineDataset) -> pd.DataFrame:
+    """Returns the data of a VTL dataset, without rows if it has no data."""
+    if dataset.data is None:
+        return pd.DataFrame(columns=list(dataset.components))
+    return dataset.data
+
+
 def convert_dataset_to_sdmx(
     dataset: VTLengineDataset,
     reference: Optional[Reference] = None,
@@ -116,16 +133,20 @@ def convert_dataset_to_sdmx(
     SDMX structure (with components, roles, and data types mapped from the
     VTL dataset) can be created.
 
+    A dataset without data (e.g. a result of the semantic analysis of
+    vtlengine, which only has the components) is converted too: the
+    `PandasDataset` then has an empty DataFrame, with a column for each
+    component.
+
     Invalid is raised in the following cases:
         * If neither `schema` nor `reference` is provided.
         * If the `reference` has an unsupported `sdmx_type`.
-        * If the `dataset` contains no data.
         * If component types or roles cannot be mapped to SDMX equivalents.
         * If validation fails when a `schema` is provided.
 
     Args:
         dataset: The VTLengine dataset to convert.
-            Must include components and associated data.
+            Must include components, and may have no data.
         reference: Optional reference to the SDMX structure
             (DataStructure, Dataflow, or ProvisionAgreement).
             Required only when no `schema` is provided.
@@ -146,16 +167,9 @@ def convert_dataset_to_sdmx(
     if schema is not None:
         _validate_vtl_dataset_against_schema(dataset, schema)
 
-        data = dataset.data
-        if data is None:
-            raise Invalid(
-                "Validation Error",
-                "VTL dataset has no data for conversion to SDMX",
-            )
-
         pandas_dataset = PandasDataset(
             structure=schema,
-            data=data,
+            data=_data(dataset),
         )
         return pandas_dataset
 
@@ -172,13 +186,6 @@ def convert_dataset_to_sdmx(
             "Validation Error",
             f"Reference sdmx_type must be one of {VALID_SDMX_TYPES}, "
             f"but got '{reference.sdmx_type}'",
-        )
-
-    data = dataset.data
-    if data is None:
-        raise Invalid(
-            "Validation Error",
-            "VTL dataset has no data for conversion to SDMX",
         )
 
     # Generate a new Schema from VTL Dataset components
@@ -215,7 +222,7 @@ def convert_dataset_to_sdmx(
 
     pandas_dataset = PandasDataset(
         structure=generated_schema,
-        data=data,
+        data=_data(dataset),
     )
     return pandas_dataset
 
@@ -332,3 +339,66 @@ def _validate_vtl_dataset_against_schema(
                 f"Component '{comp_id}' has role {expected_sdmx_role} "
                 f"in VTL but {component.role} in Schema",
             )
+
+
+def convert_codelist_to_vtl(
+    codelist: Codelist, vtl_value_domain_name: str
+) -> ValueDomain:
+    """Convert a codelist to a vtlengine Value Domain.
+
+    The values of the Value Domain are the ids of the codes, as strings.
+
+    Args:
+        codelist: The codelist (or value list) to convert.
+        vtl_value_domain_name: The name for the vtlengine Value Domain,
+            e.g. the alias of the VTL mapping of the codelist.
+
+    Returns:
+        A vtlengine Value Domain of type String with the ids of the codes.
+    """
+    return ValueDomain(
+        name=vtl_value_domain_name,
+        type=String,
+        setlist=[code.id for code in codelist.codes],
+    )
+
+
+def convert_value_domain_to_sdmx(
+    value_domain: ValueDomain, reference: Reference
+) -> Codelist:
+    """Convert a vtlengine Value Domain to a codelist.
+
+    The codelist has a code for each value of the Value Domain, whose id
+    and name are the value, and the name of the Value Domain.
+
+    Args:
+        value_domain: The vtlengine Value Domain to convert.
+        reference: The reference to the codelist to create (Codelist), or
+            to the value list (ValueList) if the values are not valid ids
+            of codes.
+
+    Returns:
+        The codelist, or value list, with the values of the Value Domain.
+
+    Raises:
+        Invalid: If the reference is not to a Codelist or ValueList.
+    """
+    if reference.sdmx_type not in ("Codelist", "ValueList"):
+        raise Invalid(
+            "Validation Error",
+            "Reference sdmx_type must be Codelist or ValueList, "
+            f"but got '{reference.sdmx_type}'",
+        )
+    return Codelist(
+        id=reference.id,
+        agency=reference.agency,
+        version=reference.version,
+        name=value_domain.name,
+        items=[
+            Code(id=str(value), name=str(value))
+            for value in value_domain.setlist
+        ],
+        sdmx_type=(
+            "valuelist" if reference.sdmx_type == "ValueList" else "codelist"
+        ),
+    )
