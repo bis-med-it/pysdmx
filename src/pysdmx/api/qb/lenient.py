@@ -10,11 +10,8 @@ import time
 import warnings
 from typing import (
     AsyncGenerator,
-    AsyncIterable,
     AsyncIterator,
-    Callable,
     Generator,
-    Iterable,
     Iterator,
     List,
     Optional,
@@ -248,19 +245,15 @@ async def _araise_for_status(response: httpx.Response) -> None:
         response.raise_for_status()
 
 
-def _body_text(
-    response: httpx.Response,
-    decode: Callable[[Iterable[bytes], httpx.Request], Iterable[bytes]],
-) -> str:
+def _body_text(response: httpx.Response) -> str:
     """Returns the text of the body of a response that is read whole."""
-    body = b"".join(decode([response.content], response.request))
+    body = b"".join(decompress_gzip([response.content], response.request))
     return body.decode(response.encoding or "utf-8", errors="replace")
 
 
-def _data_url(endpoint: str, query: DataQuery, version: ApiVersion) -> str:
-    """Returns the URL of a data query, as the REST services build it."""
-    url = _sanitize_query(_add_query_slash(query.get_url(version, True)))
-    return f"{endpoint}{url}"
+def _url(endpoint: str, query: str) -> str:
+    """Returns the URL of a query, as the REST services build it."""
+    return f"{endpoint}{_sanitize_query(_add_query_slash(query))}"
 
 
 class _Extraction:
@@ -435,7 +428,7 @@ class LenientRestService(RestService):
         ``UserWarning`` is emitted, and another one every 10 seconds while
         it keeps waiting.
         """
-        url = _data_url(self._api_endpoint, query, self._api_version)
+        url = _url(self._api_endpoint, query.get_url(self._api_version, True))
         headers = {**self._headers, "Accept": self._data_format.value}
         with self.__client() as client:
             try:
@@ -535,7 +528,7 @@ class LenientRestService(RestService):
         extraction are returned instead, once it is available. The response
         that the chunks come from is returned too.
         """
-        chunks = self._decode(
+        chunks = decompress_gzip(
             response.iter_bytes(chunk_size), response.request
         )
         head, extraction_id = _queued_extraction(chunks)
@@ -555,7 +548,7 @@ class LenientRestService(RestService):
         )
         _raise_for_status(response)
         return (
-            self._decode(response.iter_bytes(chunk_size), response.request),
+            decompress_gzip(response.iter_bytes(chunk_size), response.request),
             response,
         )
 
@@ -565,7 +558,7 @@ class LenientRestService(RestService):
             extraction.status_url, headers=self._headers, timeout=self._timeout
         )
         response.raise_for_status()
-        text = _body_text(response, self._decode)
+        text = _body_text(response)
         return extraction.status(text, extraction.status_url)
 
     def __client(self) -> httpx.Client:
@@ -583,12 +576,23 @@ class LenientRestService(RestService):
             client.stream("GET", url, headers=headers, timeout=self._timeout)
         )
 
-    def _decode(
-        self, chunks: Iterable[bytes], request: httpx.Request
-    ) -> Generator[bytes, None, None]:
+    def _fetch(self, query: str, format: str) -> bytes:
         # httpx decodes the body from its Content-Encoding, but some
         # services (e.g. Eurostat) send a gzip body without one
-        return decompress_gzip(chunks, request)
+        headers = {**self._headers, "Accept": format}
+        with self.__client() as client:
+            try:
+                response = client.get(
+                    _url(self._api_endpoint, query),
+                    headers=headers,
+                    timeout=self._timeout,
+                )
+                response.raise_for_status()
+                return b"".join(
+                    decompress_gzip([response.content], response.request)
+                )
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                map_httpx_errors(e)
 
 
 class AsyncLenientRestService(AsyncRestService):
@@ -663,7 +667,7 @@ class AsyncLenientRestService(AsyncRestService):
         ``UserWarning`` is emitted, and another one every 10 seconds while
         it keeps waiting.
         """
-        url = _data_url(self._api_endpoint, query, self._api_version)
+        url = _url(self._api_endpoint, query.get_url(self._api_version, True))
         headers = {**self._headers, "Accept": self._data_format.value}
         async with httpx.AsyncClient(
             verify=self._ssl_context, follow_redirects=True
@@ -696,7 +700,7 @@ class AsyncLenientRestService(AsyncRestService):
         If the response queues an extraction, the chunks of the data of the
         extraction are returned instead, once it is available.
         """
-        chunks = self._adecode(
+        chunks = adecompress_gzip(
             response.aiter_bytes(chunk_size), response.request
         )
         head, extraction_id = await _aqueued_extraction(chunks)
@@ -715,7 +719,7 @@ class AsyncLenientRestService(AsyncRestService):
             client, stack, extraction.data_url, self._headers
         )
         await _araise_for_status(response)
-        return self._adecode(
+        return adecompress_gzip(
             response.aiter_bytes(chunk_size), response.request
         )
 
@@ -727,7 +731,7 @@ class AsyncLenientRestService(AsyncRestService):
             extraction.status_url, headers=self._headers, timeout=self._timeout
         )
         response.raise_for_status()
-        text = _body_text(response, self._decode)
+        text = _body_text(response)
         return extraction.status(text, extraction.status_url)
 
     async def __get(
@@ -742,12 +746,22 @@ class AsyncLenientRestService(AsyncRestService):
             client.stream("GET", url, headers=headers, timeout=self._timeout)
         )
 
-    def _decode(
-        self, chunks: Iterable[bytes], request: httpx.Request
-    ) -> Generator[bytes, None, None]:
-        return decompress_gzip(chunks, request)
-
-    def _adecode(
-        self, chunks: AsyncIterable[bytes], request: httpx.Request
-    ) -> AsyncGenerator[bytes, None]:
-        return adecompress_gzip(chunks, request)
+    async def _fetch(self, query: str, format: str) -> bytes:
+        # As LenientRestService._fetch, it decompresses a gzip body sent
+        # without a Content-Encoding header
+        headers = {**self._headers, "Accept": format}
+        async with httpx.AsyncClient(
+            verify=self._ssl_context, follow_redirects=True
+        ) as client:
+            try:
+                response = await client.get(
+                    _url(self._api_endpoint, query),
+                    headers=headers,
+                    timeout=self._timeout,
+                )
+                response.raise_for_status()
+                return b"".join(
+                    decompress_gzip([response.content], response.request)
+                )
+            except (httpx.RequestError, httpx.HTTPStatusError) as e:
+                map_httpx_errors(e)

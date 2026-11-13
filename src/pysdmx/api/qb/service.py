@@ -1,14 +1,6 @@
 """Connector to SDMX-REST and GDS-REST services."""
 
-from typing import (
-    AsyncGenerator,
-    AsyncIterable,
-    Generator,
-    Iterable,
-    NoReturn,
-    Optional,
-    Union,
-)
+from typing import AsyncGenerator, Generator, NoReturn, Optional, Union
 
 import httpx
 
@@ -76,25 +68,6 @@ class _CoreRestService:
         }
         self._timeout = timeout
 
-    def _decode(
-        self, chunks: Iterable[bytes], request: httpx.Request
-    ) -> Iterable[bytes]:
-        """Decodes the chunks of a response body.
-
-        The chunks are already decoded from the ``Content-Encoding`` of the
-        response. As the service is expected to be protocol-correct, they
-        are not decoded any further. Subclasses can override this method to
-        deal with services that are not.
-
-        Args:
-            chunks: The chunks of the body.
-            request: The request of the response.
-
-        Returns:
-            The chunks of the decoded body.
-        """
-        return chunks
-
 
 class RestService(_CoreRestService):
     """Synchronous connector to SDMX-REST services.
@@ -152,7 +125,7 @@ class RestService(_CoreRestService):
         """Execute a data query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._data_format.value
-        return self.__fetch(q, f)
+        return self._fetch(q, f)
 
     def stream_data(
         self, query: DataQuery, chunk_size: int = 8192
@@ -166,19 +139,19 @@ class RestService(_CoreRestService):
         """Execute a structure query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._structure_format.value
-        return self.__fetch(q, f)
+        return self._fetch(q, f)
 
     def schema(self, query: SchemaQuery) -> bytes:
         """Execute a schema query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._schema_format.value
-        return self.__fetch(q, f)
+        return self._fetch(q, f)
 
     def availability(self, query: AvailabilityQuery) -> bytes:
         """Execute an availability query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._avail_format.value
-        return self.__fetch(q, f)
+        return self._fetch(q, f)
 
     def reference_metadata(
         self,
@@ -191,7 +164,7 @@ class RestService(_CoreRestService):
         """Execute a reference metadata query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._refmeta_format.value
-        return self.__fetch(q, f)
+        return self._fetch(q, f)
 
     def registration(
         self,
@@ -204,9 +177,9 @@ class RestService(_CoreRestService):
         """Execute a registration query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._registry_format.value
-        return self.__fetch(q, f)
+        return self._fetch(q, f)
 
-    def __fetch(self, query: str, format: str) -> bytes:
+    def _fetch(self, query: str, format: str) -> bytes:
         with httpx.Client(
             verify=self._ssl_context, follow_redirects=True
         ) as client:
@@ -219,7 +192,7 @@ class RestService(_CoreRestService):
                 h["Accept"] = format
                 r = client.get(url, headers=h, timeout=self._timeout)
                 r.raise_for_status()
-                return b"".join(self._decode([r.content], r.request))
+                return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -241,9 +214,8 @@ class RestService(_CoreRestService):
                     if cs.is_error:
                         cs.read()
                         cs.raise_for_status()
-                    yield from self._decode(
-                        cs.iter_bytes(chunk_size), cs.request
-                    )
+                    for chunk in cs.iter_bytes(chunk_size):
+                        yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -304,7 +276,7 @@ class AsyncRestService(_CoreRestService):
         """Execute a data query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._data_format.value
-        out = await self.__fetch(q, f)
+        out = await self._fetch(q, f)
         return out
 
     async def stream_data(
@@ -320,21 +292,21 @@ class AsyncRestService(_CoreRestService):
         """Execute a structure query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._structure_format.value
-        out = await self.__fetch(q, f)
+        out = await self._fetch(q, f)
         return out
 
     async def schema(self, query: SchemaQuery) -> bytes:
         """Execute a schema query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._schema_format.value
-        out = await self.__fetch(q, f)
+        out = await self._fetch(q, f)
         return out
 
     async def availability(self, query: AvailabilityQuery) -> bytes:
         """Execute an availability query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._avail_format.value
-        out = await self.__fetch(q, f)
+        out = await self._fetch(q, f)
         return out
 
     async def reference_metadata(
@@ -348,7 +320,7 @@ class AsyncRestService(_CoreRestService):
         """Execute a reference metadata query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._refmeta_format.value
-        out = await self.__fetch(q, f)
+        out = await self._fetch(q, f)
         return out
 
     async def registration(
@@ -362,28 +334,10 @@ class AsyncRestService(_CoreRestService):
         """Execute a registration query against the service."""
         q = query.get_url(self._api_version, True)
         f = self._registry_format.value
-        out = await self.__fetch(q, f)
+        out = await self._fetch(q, f)
         return out
 
-    def _adecode(
-        self, chunks: AsyncIterable[bytes], request: httpx.Request
-    ) -> AsyncIterable[bytes]:
-        """Decodes the chunks of a response body that is streamed.
-
-        The asynchronous counterpart of ``_decode``, which decodes the
-        response bodies that are not streamed. Subclasses overriding one
-        of them have to override the other.
-
-        Args:
-            chunks: The chunks of the body.
-            request: The request of the response.
-
-        Returns:
-            The chunks of the decoded body.
-        """
-        return chunks
-
-    async def __fetch(self, query: str, format: str) -> bytes:
+    async def _fetch(self, query: str, format: str) -> bytes:
         async with httpx.AsyncClient(
             verify=self._ssl_context, follow_redirects=True
         ) as client:
@@ -395,7 +349,7 @@ class AsyncRestService(_CoreRestService):
                 h["Accept"] = format
                 r = await client.get(url, headers=h, timeout=self._timeout)
                 r.raise_for_status()
-                return b"".join(self._decode([r.content], r.request))
+                return r.content
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
                 map_httpx_errors(e)
 
@@ -417,8 +371,8 @@ class AsyncRestService(_CoreRestService):
                     if cs.is_error:
                         await cs.aread()
                         cs.raise_for_status()
-                    async for chunk in self._adecode(
-                        cs.aiter_bytes(chunk_size), cs.request
+                    async for chunk in cs.aiter_bytes(
+                        chunk_size
                     ):  # pragma: no cover
                         yield chunk
             except (httpx.RequestError, httpx.HTTPStatusError) as e:
