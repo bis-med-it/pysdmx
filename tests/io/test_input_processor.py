@@ -298,6 +298,20 @@ def test_stream_sdmx_url_error_with_xml_body(respx_mock):
     assert read_format == Format.ERROR_SDMX_ML_2_1
 
 
+def test_stream_sdmx_url_error_with_soap_fault(respx_mock):
+    # Eurostat's SDMX API describes errors in SOAP faults
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?><S:Fault xmlns:S='
+        '"http://schemas.xmlsoap.org/soap/envelope/"><faultcode>140'
+        "</faultcode><faultstring>INVALID_URL_VALUE: Invalid value "
+        "&apos;,&apos; in key parameter.</faultstring></S:Fault>"
+    )
+    respx_mock.get(URL).mock(return_value=httpx.Response(400, content=body))
+
+    with pytest.raises(Invalid, match="INVALID_URL_VALUE: Invalid value"):
+        stream_sdmx(URL)
+
+
 def test_stream_sdmx_url_error_without_xml(respx_mock):
     respx_mock.get(URL).mock(return_value=httpx.Response(404, content=""))
     with pytest.raises(

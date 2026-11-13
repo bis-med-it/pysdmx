@@ -5,10 +5,12 @@ import pytest
 
 from pysdmx.api.qb import (
     ApiVersion,
-    AsyncRestService,
+    AsyncLenientRestService,
     DataContext,
     DataQuery,
-    RestService,
+    LenientRestService,
+    StructureQuery,
+    StructureType,
 )
 from pysdmx.errors import Unavailable
 
@@ -34,6 +36,18 @@ def url(end_point: str, query: DataQuery, version: ApiVersion) -> str:
 
 
 @pytest.fixture
+def structure_query() -> StructureQuery:
+    return StructureQuery(StructureType.DATAFLOW, "ESTAT", "UNE_RT_A")
+
+
+@pytest.fixture
+def structure_url(
+    end_point: str, structure_query: StructureQuery, version: ApiVersion
+) -> str:
+    return f"{end_point}{structure_query.get_url(version, True)}/"
+
+
+@pytest.fixture
 def body():
     with open("tests/api/fmr/samples/orgs/agencies.fusion.json", "rb") as f:
         return f.read()
@@ -46,7 +60,7 @@ def test_gzip_body(respx_mock, end_point, version, query, url, body, method):
     respx_mock.get(url).mock(
         return_value=httpx.Response(200, content=compressed)
     )
-    service = RestService(end_point, version)
+    service = LenientRestService(end_point, version)
 
     if method == "data":
         assert service.data(query) == body
@@ -66,7 +80,7 @@ async def test_gzip_body_async(
     respx_mock.get(url).mock(
         return_value=httpx.Response(200, content=compressed)
     )
-    service = AsyncRestService(end_point, version)
+    service = AsyncLenientRestService(end_point, version)
 
     if method == "data":
         assert await service.data(query) == body
@@ -81,7 +95,7 @@ def test_body_shorter_than_gzip_magic(
 ):
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
 
-    assert RestService(end_point, version).data(query) == b"x"
+    assert LenientRestService(end_point, version).data(query) == b"x"
 
 
 @pytest.mark.asyncio
@@ -89,7 +103,7 @@ async def test_body_shorter_than_gzip_magic_async(
     respx_mock, end_point, version, query, url
 ):
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=b"x"))
-    service = AsyncRestService(end_point, version)
+    service = AsyncLenientRestService(end_point, version)
 
     chunks = [c async for c in service.stream_data(query)]
 
@@ -111,4 +125,29 @@ def test_invalid_gzip_body(
     respx_mock.get(url).mock(return_value=httpx.Response(200, content=content))
 
     with pytest.raises(Unavailable):
-        RestService(end_point, version).data(query)
+        LenientRestService(end_point, version).data(query)
+
+
+def test_invalid_gzip_structure_body(
+    respx_mock, end_point, version, structure_query, structure_url
+):
+    respx_mock.get(structure_url).mock(
+        return_value=httpx.Response(200, content=b"\x1f\x8b" + bytes(20))
+    )
+    service = LenientRestService(end_point, version)
+
+    with pytest.raises(Unavailable):
+        service.structure(structure_query)
+
+
+@pytest.mark.asyncio
+async def test_invalid_gzip_structure_body_async(
+    respx_mock, end_point, version, structure_query, structure_url
+):
+    respx_mock.get(structure_url).mock(
+        return_value=httpx.Response(200, content=b"\x1f\x8b" + bytes(20))
+    )
+    service = AsyncLenientRestService(end_point, version)
+
+    with pytest.raises(Unavailable):
+        await service.structure(structure_query)

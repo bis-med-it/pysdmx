@@ -1,3 +1,4 @@
+import gzip
 import pathlib
 import tempfile
 
@@ -493,6 +494,22 @@ def test_data_query_no_schema_query(respx_mock, client, query_data, csv_data):
     respx_mock.get(query_data).mock(
         return_value=httpx.Response(200, content=csv_data)
     )
+    dfref = Reference("Dataflow", "BIS", "BIS_DER", "1.0")
+
+    data = client.data(
+        dfref, infer_index=False, infer_series_keys=False, apply_schema=False
+    )
+
+    assert len(data) == 20  # 20 observations
+
+
+def test_data_query_lenient(respx_mock, host, query_data, csv_data):
+    # The data are compressed with gzip, but sent without a
+    # Content-Encoding header, as some services (e.g. Eurostat) do
+    respx_mock.get(query_data).mock(
+        return_value=httpx.Response(200, content=gzip.compress(csv_data))
+    )
+    client = PandasConnector(host, lenient=True)
     dfref = Reference("Dataflow", "BIS", "BIS_DER", "1.0")
 
     data = client.data(
