@@ -10,7 +10,7 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__write_aux import (
     ABBR_MSG,
     ALL_DIM,
-    __escape_xml,
+    __escape_xml_attribute,
     get_structure,
 )
 from pysdmx.io.xml.__write_data_aux import (
@@ -114,28 +114,36 @@ def __write_data_single_dataset(
         The data in SDMX-ML Structure-Specific format, as string.
     """
     outfile = ""
-    structure_urn = get_structure(dataset)
-    id_structure = parse_short_urn(structure_urn).id
-    sdmx_type = parse_short_urn(structure_urn).id
+    reference = parse_short_urn(get_structure(dataset))
     # Remove null values from DataFrame
     stringify_dataset(dataset)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
+    child2 = "\t\t" if prettyprint else ""
 
-    attached_attributes_str = ""
-    for k, v in dataset.attributes.items():
-        attached_attributes_str += f"{k}={str(v)!r} "
-    datascope = ""
-    if not references_30:
-        datascope = f'ss:dataScope="{sdmx_type}" '
+    attributes = "".join(
+        f'{k}="{__escape_xml_attribute(str(v))}" '
+        for k, v in dataset.attributes.items()
+    )
+    if references_30:
+        # SDMX-ML 3.x gives the data set attributes in an Atts element
+        # without a key, as the DataSet has no attributes from the DSD
+        data_set_attributes = ""
+        datascope = ""
+        atts = f"{child2}<Atts {attributes}/>{nl}" if attributes else ""
+    else:
+        data_set_attributes = attributes
+        datascope = f'ss:dataScope="{reference.sdmx_type}" '
+        atts = ""
     # Datasets
     outfile += (
-        f"{nl}{child1}<{ABBR_MSG}:DataSet {attached_attributes_str}"
-        f"ss:structureRef={id_structure!r} "
+        f"{nl}{child1}<{ABBR_MSG}:DataSet {data_set_attributes}"
+        f'ss:structureRef="{reference.id}" '
         f'xsi:type="ns{count}:DataSetType" '
         f"{datascope}"
-        f'action="{dataset.action.value}">{nl}'
+        f'ss:action="{dataset.action.value}">{nl}'
+        f"{atts}"
     )
     data = ""
     if dim == ALL_DIM:
@@ -158,6 +166,7 @@ def __write_data_single_dataset(
                 data=dataset.data,
                 group_codes=group_codes,
                 prettyprint=prettyprint,
+                count=count,
             )
         data += __series_processing(
             data=dataset.data,
@@ -173,22 +182,23 @@ def __write_data_single_dataset(
 
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
-    return outfile.replace("'", '"')
+    return outfile
 
 
 def __group_processing(
     data: pd.DataFrame,
     group_codes: list[Dict[str, Any]],
     prettyprint: bool = True,
+    count: int = 1,
 ) -> str:
     def __format_group_str(data_info: Dict[Any, Any], group_id: str) -> str:
         """Formats the series as key=value pairs."""
         child2 = "\t\t" if prettyprint else ""
         nl = "\n" if prettyprint else ""
 
-        out_element = f"{child2}<Group xsi:type='ns1:{group_id}' "
+        out_element = f'{child2}<Group xsi:type="ns{count}:{group_id}" '
         for k, v in data_info.items():
-            out_element += f"{k}={__escape_xml(v)!r} "
+            out_element += f'{k}="{__escape_xml_attribute(v)}" '
         out_element += f"/>{nl}"
 
         return out_element
@@ -229,7 +239,7 @@ def __obs_processing(data: pd.DataFrame, prettyprint: bool = True) -> str:
 
         for k, v in element.items():
             if not _should_skip_xml_value(v):
-                out += f"{k}={__escape_xml(v)!r} "
+                out += f'{k}="{__escape_xml_attribute(v)}" '
 
         out += f"/>{nl}"
 
@@ -252,7 +262,7 @@ def __format_ser_str(data_info: Dict[Any, Any], prettyprint: bool) -> str:
 
     for k, v in data_info.items():
         if k != "Obs" and not _should_skip_xml_value(v):
-            out_element += f"{k}={__escape_xml(v)!r} "
+            out_element += f'{k}="{__escape_xml_attribute(v)}" '
 
     # Series with no observations
     if not data_info.get("Obs"):
@@ -265,7 +275,7 @@ def __format_ser_str(data_info: Dict[Any, Any], prettyprint: bool) -> str:
 
         for k, v in obs.items():
             if not _should_skip_xml_value(v):
-                out_element += f"{k}={__escape_xml(v)!r} "
+                out_element += f'{k}="{__escape_xml_attribute(v)}" '
 
         out_element += f"/>{nl}"
 

@@ -12,7 +12,7 @@ from pysdmx.io.xml.__write_aux import (
     ABBR_GEN,
     ABBR_MSG,
     ALL_DIM,
-    __escape_xml,
+    __escape_xml_attribute,
     __write_header,
     create_namespaces,
     get_end_message,
@@ -34,7 +34,8 @@ from pysdmx.util import parse_short_urn
 
 def __value(id: str, value: str) -> str:
     """Write a value tag."""
-    return f"<{ABBR_GEN}:Value id={id!r} value={__escape_xml(str(value))!r}/>"
+    value = __escape_xml_attribute(str(value))
+    return f'<{ABBR_GEN}:Value id="{id}" value="{value}"/>'
 
 
 def __generate_obs_structure(
@@ -163,8 +164,8 @@ def __write_data_single_dataset(
     # Datasets
     outfile += (
         f"{nl}{child1}<{ABBR_MSG}:DataSet "
-        f"structureRef={id_structure!r} "
-        f"action={dataset.action.value!r}>{nl}"
+        f'structureRef="{id_structure}" '
+        f'action="{dataset.action.value}">{nl}'
     )
     data = ""
     # Write attached attributes
@@ -219,7 +220,7 @@ def __write_data_single_dataset(
 
     outfile += f"{child1}</{ABBR_MSG}:DataSet>"
 
-    return outfile.replace("'", '"')
+    return outfile
 
 
 def __obs_processing(
@@ -245,9 +246,8 @@ def __obs_processing(
         obs_value_id = obs_structure[1]
         obs_value = element[obs_value_id]
         if not _should_skip_xml_value(obs_value):
-            out += (
-                f"{child3}<{ABBR_GEN}:ObsValue value={str(obs_value)!r}/>{nl}"
-            )
+            obs_value = __escape_xml_attribute(str(obs_value))
+            out += f'{child3}<{ABBR_GEN}:ObsValue value="{obs_value}"/>{nl}'
 
         if len(obs_structure[2]) > 0:
             # Obs Attributes writing
@@ -412,16 +412,17 @@ def __format_ser_str(
         out_element += f"{child3}<{ABBR_GEN}:Obs>{nl}"
 
         # Obs Dimension writing
+        obs_dim_val = __escape_xml_attribute(str(obs_dim_val))
         out_element += (
-            f"{child4}<{ABBR_GEN}:ObsDimension "
-            f"value={str(obs_dim_val)!r}/>{nl}"
+            f'{child4}<{ABBR_GEN}:ObsDimension value="{obs_dim_val}"/>{nl}'
         )
         # Obs Value writing (already transformed)
         obs_value_id = obs_codes[1]
         obs_val = obs[obs_value_id]
         if not _should_skip_xml_value(obs_val):
+            obs_val = __escape_xml_attribute(str(obs_val))
             out_element += (
-                f"{child4}<{ABBR_GEN}:ObsValue value={str(obs_val)!r}/>{nl}"
+                f'{child4}<{ABBR_GEN}:ObsValue value="{obs_val}"/>{nl}'
             )
 
         # Obs Attributes writing

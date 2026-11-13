@@ -39,7 +39,7 @@ from pysdmx.io.xml.__tokens import (
     VTLMAPPING_SCHEMES,
     VTLMAPPINGS,
 )
-from pysdmx.model import Organisation
+from pysdmx.model import Organisation, Reference
 from pysdmx.model.dataset import Dataset
 from pysdmx.model.message import Header
 from pysdmx.util import ensure_tz_aware, parse_short_urn
@@ -377,11 +377,12 @@ def __item(
             stacklevel=2,
         )
 
-    message = f"{nl}{child2}<{ABBR_MSG}:{element} id={org_id!r}"
+    message = f'{nl}{child2}<{ABBR_MSG}:{element} id="{org_id}"'
     if name is not None:
         message += (
             f">"
-            f"{nl}{child3}<{ABBR_COM}:Name>{name}</{ABBR_COM}:Name>"
+            f"{nl}{child3}<{ABBR_COM}:Name>{__escape_xml_text(name)}"
+            f"</{ABBR_COM}:Name>"
             f"{nl}{child2}</{ABBR_MSG}:{element}>"
         )
     else:
@@ -389,9 +390,47 @@ def __item(
     return message
 
 
+def __structure_urn(reference: Reference) -> str:
+    """Returns the URN of a data structure, dataflow or provision agreement.
+
+    Args:
+        reference: The reference to the structure. A type other than
+            DataStructure or Dataflow is taken as a provision agreement.
+
+    Returns:
+        The URN of the structure.
+    """
+    if reference.sdmx_type == DSD:
+        urn_type = URN_DS_BASE
+    elif reference.sdmx_type == DFW:
+        urn_type = URN_DFW
+    else:
+        urn_type = URN_PROVISION
+    return f"{urn_type}{reference.agency}:{reference.id}({reference.version})"
+
+
+def structure_specific_namespace(short_urn: str, dimension: str) -> str:
+    """Returns the namespace of the structure-specific types of a structure.
+
+    The ``xsi:type`` of a structure-specific DataSet refers to it, and the
+    header gives it as the ``namespace`` of the structure.
+
+    Args:
+        short_urn: The short URN of the data structure, dataflow or
+            provision agreement.
+        dimension: The dimension at the observation level.
+
+    Returns:
+        The URN of the structure, followed by ``:ObsLevelDim:`` and the
+        dimension.
+    """
+    urn = __structure_urn(parse_short_urn(short_urn))
+    return f"{urn}:ObsLevelDim:{dimension}"
+
+
 def __reference(
     urn_structure: str,
-    dimension: Optional[str],
+    dimension: str,
     nl: str,
     prettyprint: bool,
     add_namespace_structure: bool,
@@ -404,36 +443,21 @@ def __reference(
     reference = parse_short_urn(urn_structure)
     if reference.sdmx_type == DSD:
         structure_type = STRUCTURE
-        urn_type = URN_DS_BASE
     elif reference.sdmx_type == DFW:
         structure_type = STR_USAGE
-        urn_type = URN_DFW
     else:
         structure_type = PROV_AGREEMENT if references_30 else PROV_AGREMENT
-        urn_type = URN_PROVISION
     if add_namespace_structure:
-        if references_30:
-            namespace = (
-                f"{urn_type}{reference.agency}:{reference.id}"
-                f"({reference.version})"
-            )
-        else:
-            namespace = (
-                f"{urn_type}{reference.agency}:{reference.id}"
-                f"({reference.version})"
-            )
-
-        namespace = f"namespace={namespace!r} "
+        namespace = structure_specific_namespace(urn_structure, dimension)
+        namespace = f'namespace="{namespace}" '
     if references_30:
-        reference_str = (
-            f"{urn_type}{reference.agency}:{reference.id}({reference.version})"
-        )
+        reference_str = __structure_urn(reference)
     else:
         # Then the reference
         reference_str = (
-            f"{nl}{child4}<Ref agencyID={reference.agency!r} "
-            f"id={reference.id!r} version={reference.version!r} "
-            f"class={reference.sdmx_type!r}/>"
+            f'{nl}{child4}<Ref agencyID="{reference.agency}" '
+            f'id="{reference.id}" version="{reference.version}" '
+            f'class="{reference.sdmx_type}"/>'
         )
     if references_30:
         common_structure = (
@@ -451,9 +475,9 @@ def __reference(
     return (
         # First the message structure
         f"{nl}{child2}<{ABBR_MSG}:Structure "
-        f"structureID={reference.id!r} "
+        f'structureID="{reference.id}" '
         f"{namespace}"
-        f"dimensionAtObservation={dimension!r}>"
+        f'dimensionAtObservation="{dimension}">'
         # Then the common structure
         f"{common_structure}"
         # Close the message structure
@@ -521,7 +545,8 @@ def __write_header(
             return ""
         child2 = "\t\t" if prettyprint else ""
         return (
-            f"{nl}{child2}<{ABBR_MSG}:{element}>{value}</{ABBR_MSG}:{element}>"
+            f"{nl}{child2}<{ABBR_MSG}:{element}>{__escape_xml_text(value)}"
+            f"</{ABBR_MSG}:{element}>"
         )
 
     nl = "\n" if prettyprint else ""
@@ -561,7 +586,7 @@ def __write_header(
         f"{__value('DataSetID', header.dataset_id)}"
         f"{__value('Source', header.source)}"
         f"{nl}{child1}</{ABBR_MSG}:Header>"
-    ).replace("'", '"')
+    )
 
 
 # ------------------
@@ -596,6 +621,74 @@ def __escape_xml(value: str) -> str:
     final_value = escape(value)
     final_value = re.sub(r'(?<!\w)"(?!\w)', "&quot;", final_value)
     return final_value
+
+
+# XML 1.0 allows the tab, line feed and carriage return characters, and
+# the characters from U+0020 on, except surrogates, U+FFFE and U+FFFF
+_NOT_XML_CHAR = re.compile(
+    r"[^\t\n\r\x20-\ud7ff\ue000-\ufffd\U00010000-\U0010ffff]"
+)
+# Besides the double quote that delimits the attribute, XML parsers turn
+# the tab, line feed and carriage return in an attribute into spaces,
+# unless they are written as character references
+_ATTRIBUTE_ENTITIES = {
+    '"': "&quot;",
+    "\t": "&#9;",
+    "\n": "&#10;",
+    "\r": "&#13;",
+}
+
+
+def __check_xml_chars(value: str) -> None:
+    """Checks that XML 1.0, and so SDMX-ML, can represent a value.
+
+    Args:
+        value: The value to be written.
+
+    Raises:
+        Invalid: If the value has a character that XML 1.0 does not allow.
+    """
+    match = _NOT_XML_CHAR.search(value)
+    if match is not None:
+        raise Invalid(
+            "Invalid character",
+            f"SDMX-ML cannot represent U+{ord(match.group()):04X}, "
+            f"found in {value!r}.",
+        )
+
+
+def __escape_xml_text(value: str) -> str:
+    """Escapes a value for the content of an XML element.
+
+    Args:
+        value: The value to be written.
+
+    Returns:
+        The value, with ``&``, ``<`` and ``>`` escaped.
+
+    Raises:
+        Invalid: If the value has a character that XML 1.0 does not allow.
+    """
+    __check_xml_chars(value)
+    return escape(value)
+
+
+def __escape_xml_attribute(value: str) -> str:
+    """Escapes a value for an XML attribute delimited by double quotes.
+
+    Args:
+        value: The value to be written.
+
+    Returns:
+        The value, with ``&``, ``<``, ``>`` and the double quote escaped,
+        and the tab, line feed and carriage return characters written as
+        character references.
+
+    Raises:
+        Invalid: If the value has a character that XML 1.0 does not allow.
+    """
+    __check_xml_chars(value)
+    return escape(value, _ATTRIBUTE_ENTITIES)
 
 
 def __escape_xml_vtl(value: str) -> str:
