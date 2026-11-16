@@ -8,10 +8,14 @@ from pysdmx.model import (
     AvailabilityConstraint,
     ConstraintAttachment,
     CubeRegion,
+    ItemReference,
     Organisation,
+    Reference,
     RulesetScheme,
     TransformationScheme,
+    UrlExtraction,
     UserDefinedOperatorScheme,
+    VtlExecution,
 )
 from pysdmx.model.code import Codelist
 from pysdmx.model.concept import ConceptScheme
@@ -422,3 +426,23 @@ def test_header_prepared_is_evaluated_per_instance(monkeypatch):
     monkeypatch.setattr("pysdmx.model.message.datetime", FrozenDatetime)
 
     assert Header().prepared == fixed
+
+
+def test_get_vtl_executions():
+    execution = VtlExecution(
+        id="EXEC",
+        agency="AG",
+        transformation_scheme=Reference(
+            "TransformationScheme", "AG", "TS", "1.0"
+        ),
+        extractions=[
+            UrlExtraction(
+                dataset_mapping=ItemReference(
+                    "VtlDatasetMapping", "AG", "VMS", "1.0", "DS"
+                ),
+                url_template="https://example.org/data",
+            )
+        ],
+    )
+    message = Message(structures=[execution])
+    assert message.get_vtl_executions() == [execution]

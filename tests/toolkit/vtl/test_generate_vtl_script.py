@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from msgspec.structs import replace
 
 from pysdmx.errors import Invalid
 from pysdmx.model import (
@@ -295,3 +296,44 @@ def test_generate_vtl_script_no_model_validation(
 ):
     vtl_script = generate_vtl_script(valid_ts, False)
     assert vtl_script.strip() == generate_vtl_script_sample.strip()
+
+
+@pytest.mark.parametrize("model_validation", [True, False])
+def test_definitions_without_final_semicolon(valid_ts, model_validation):
+    ruleset_scheme = valid_ts.ruleset_schemes[0]
+    ruleset = ruleset_scheme.items[0]
+    udo_scheme = valid_ts.user_defined_operator_schemes[0]
+    udo = udo_scheme.items[0]
+    no_semicolon = replace(
+        valid_ts,
+        ruleset_schemes=[
+            replace(
+                ruleset_scheme,
+                items=[
+                    replace(
+                        ruleset,
+                        ruleset_definition=(
+                            ruleset.ruleset_definition.rstrip(";") + "\n  "
+                        ),
+                    )
+                ],
+            )
+        ],
+        user_defined_operator_schemes=[
+            replace(
+                udo_scheme,
+                items=[
+                    replace(
+                        udo,
+                        operator_definition=(
+                            udo.operator_definition.rstrip(";")
+                        ),
+                    )
+                ],
+            )
+        ],
+    )
+
+    script = generate_vtl_script(no_semicolon, model_validation)
+
+    assert script == generate_vtl_script(valid_ts)

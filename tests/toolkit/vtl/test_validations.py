@@ -363,8 +363,7 @@ def test_invalid_udo_definition():
                 (ds1 dataset, great_cons string default "1",
                  less_cons number default 4.0)
                 returns dataset is ds1
-                [filter Me_1 > great_cons and Me_2 < less_cons]
-                end operator""",
+                [filter Me_1 > great_cons and Me_2 < less_cons]""",
     )
     with pytest.raises(
         Invalid, match="Invalid operator definition: VTL syntax error"

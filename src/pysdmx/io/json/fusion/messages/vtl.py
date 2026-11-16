@@ -223,7 +223,7 @@ class FusionRuleset(Struct, frozen=True):
 
     id: str
     rulesetDefinition: str
-    rulesetType: Literal["datapoint", "hierarchical"]
+    rulesetType: Literal["datapoint", "hierarchical", "viral"]
     rulesetScope: Literal["variable", "valuedomain"]
     names: Sequence[FusionString] = ()
     descriptions: Sequence[FusionString] = ()
