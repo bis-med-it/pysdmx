@@ -24,6 +24,9 @@ from sdmxschemas import (
 )
 
 from pysdmx import errors
+from pysdmx.io._draft_schemas import (
+    SDMX_JSON_22_STRUCTURE_PATH as SCHEMA_PATH_JSON22_STRUCTURE,
+)
 
 # SDMX-JSON schema files by message version then message type. The 2.0 and 2.1
 # schema files share the same file name (only the directory differs), so the
@@ -39,6 +42,10 @@ _SCHEMA_FILES: Mapping[str, Mapping[str, Path]] = {
         "metadata": SCHEMA_PATH_JSON21_METADATA,
         "data": SCHEMA_PATH_JSON21_DATA,
     },
+    # Draft schema, for structure messages only
+    "2.2": {
+        "structure": SCHEMA_PATH_JSON22_STRUCTURE,
+    },
 }
 
 
@@ -48,7 +55,7 @@ def _schema_for(instance: Mapping[str, Any]) -> dict[str, Any]:
     schema_url = instance.get("meta", {}).get("schema") or instance.get(
         "$schema", ""
     )
-    version = "2.1" if "2.1" in schema_url else "2.0"
+    version = next((v for v in ("2.2", "2.1") if v in schema_url), "2.0")
     p = next(
         (p for p in _SCHEMA_FILES[version].values() if p.name in schema_url),
         None,
