@@ -1,4 +1,6 @@
-from typing import Any, Dict, Iterable, Optional, Sequence, Union
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+
+import pandas as pd
 
 from pysdmx.errors import Invalid
 from pysdmx.io._pd_utils import validate_schema_exists
@@ -150,3 +152,71 @@ def _single_non_empty_or_raise(
             f"{sorted(distinct)!r} across rows of the same {context}."
         )
     return next(iter(distinct), "")
+
+
+def get_data_set_attributes(dataset: PandasDataset) -> Dict[str, Any]:
+    """Returns the data set attributes, with those given in columns.
+
+    SDMX-CSV gives the data set attributes in columns of the data. Such
+    an attribute has a single value, which is written for the data set,
+    unless the attributes of the dataset already give it.
+
+    Args:
+        dataset: The dataset, whose data has been converted to strings.
+
+    Returns:
+        The attributes of the dataset, and those of its columns.
+
+    Raises:
+        Invalid: If a data set attribute has conflicting values.
+    """
+    schema = validate_schema_exists(dataset)
+    columns = {
+        att.id: _single_non_empty_or_raise(
+            dataset.data[att.id], att.id, "data set"
+        )
+        for att in schema.components.attributes
+        if att.attachment_level == "D"
+        and att.id in dataset.data.columns
+        and att.id not in dataset.attributes
+    }
+    return {
+        **dataset.attributes,
+        **{k: v for k, v in columns.items() if v != ""},
+    }
+
+
+def group_rows(
+    data: pd.DataFrame, group: Dict[str, Any]
+) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
+    """Returns the key and the attributes of each Group of a type.
+
+    There is one Group per key, with the attributes that have a value for
+    it. A Group without any value is left out.
+
+    Args:
+        data: The data, converted to strings.
+        group: The id, dimensions and attributes of the group type.
+
+    Returns:
+        The values of the dimensions and of the attributes of each Group.
+
+    Raises:
+        Invalid: If an attribute has conflicting values for a key.
+    """
+    dimensions = group["dimensions"]
+    aggregated = data.groupby(by=dimensions, dropna=False, as_index=False)[
+        group["attributes"]
+    ].agg(lambda s: _single_non_empty_or_raise(s, s.name, "group"))
+    rows = []
+    for record in aggregated.to_dict(orient="records"):
+        attributes = {
+            name: record[name]
+            for name in group["attributes"]
+            if not _should_skip_xml_value(record[name])
+        }
+        if attributes:
+            rows.append(
+                ({name: record[name] for name in dimensions}, attributes)
+            )
+    return rows
