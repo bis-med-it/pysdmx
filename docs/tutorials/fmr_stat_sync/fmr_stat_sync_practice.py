@@ -1,18 +1,41 @@
-"""Keep .Stat Suite in sync with an FMR.
+"""Exercise: keep .Stat Suite in sync with an FMR.
 
-This script shows how pysdmx can publish structures to a Fusion Metadata
-Registry (FMR) and from the FMR to .Stat Suite, load data into .Stat, and
-then remove from .Stat the structures the FMR no longer has, using real ECB
-exchange-rate structures and data. It is a closed loop on .Stat: it does
-not touch what was already there, and at the end it removes the data and
-the structures that it has published. The notebook
-fmr_stat_sync_practice.ipynb is the exercise on the same steps, and
-fmr_stat_sync.ipynb explains them.
+Publish real ECB exchange-rate structures to a Fusion Metadata Registry
+(FMR) and from the FMR to .Stat Suite, load data into .Stat, then remove
+from .Stat the structures that the FMR no longer has. The exercise is a
+closed loop on .Stat: it does not touch what was already there, and at the
+end it removes the data and the structures that it has published.
 
-Before running it, set in the environment the identifier of the SDMX Lab
-instance (SDMX_LAB), its user (SDMX_LAB_USER) and its password
-(SDMX_LAB_PASSWORD).
+This script has the same steps as the notebook
+fmr_stat_sync_practice.ipynb. The three uploads (to the FMR, to .Stat and of
+the data) are marked "to complete": their code is to be written below their
+hint. The other steps are already written. The answer is in the solution
+folder, as a script and as a notebook, and fmr_stat_sync.ipynb explains the
+steps.
+
+The script asks for the SDMX Lab instance, its user and its password, unless
+they are set in the environment (SDMX_LAB, SDMX_LAB_USER and
+SDMX_LAB_PASSWORD).
 """
+
+# ruff: noqa: E402, F401, F821
+
+import os
+from getpass import getpass
+
+# Every structure of the tutorial starts with this prefix, which tells them
+# apart from the other structures of the agency. Only letters, digits and
+# underscores are allowed.
+os.environ["PREFIX"] = "PX_SYNC"
+
+# The SDMX Lab instance of the participant, its user and its password are
+# requested, unless they are already set in the environment. The password
+# is not displayed.
+if not os.environ.get("SDMX_LAB"):
+    os.environ["SDMX_LAB"] = input("SDMX Lab instance (<id>.sdmx.solutions): ")
+if not os.environ.get("SDMX_LAB_USER"):
+    os.environ["SDMX_LAB_USER"] = input("User: ")
+    os.environ["SDMX_LAB_PASSWORD"] = getpass("Password: ")
 
 from contextlib import suppress
 from io import BytesIO
@@ -51,8 +74,9 @@ from pysdmx.model import AgencyScheme, Code, Codelist
 # Step 1: Check the connections.
 # Note: check_connections tests the FMR and .Stat with read-only queries. Both
 # services must be connected before going on.
-# Note: If a service fails, restart the kernel and run the cells again, to
-# enter the instance, the user and the password again.
+# Note: If a service fails, start again from the beginning (in a notebook,
+# restart the kernel first), to enter the instance, the user and the password
+# again.
 check_connections()
 
 # Step 2: Read the ECB exchange-rate structures and prepare the structures to
@@ -67,11 +91,12 @@ keep, legacy = build_structures(ecb)
 print("keep:  ", [s.short_urn for s in keep])
 print("legacy:", [s.short_urn for s in legacy])
 
-# Step 3: Upload the structures to keep to the FMR.
+# Step 3 (to complete): Upload the structures to keep to the FMR.
 # Note: Replace overwrites the existing structures, so the step can be run
 # again. legacy is not uploaded.
-fmr_client().put_structures(keep, action=StructureAction.Replace)
-print("uploaded to the FMR:", len(keep), "structures")
+# Hint: `fmr_client()` returns a `RegistryMaintenanceClient`. Call its
+# `put_structures` method with `keep` and `action=StructureAction.Replace`.
+# To be completed
 
 # Step 4: Download the EXR dataflow with all its references from the FMR.
 # Note: The dataflow comes with its DSD, the concept scheme, the codelists and
@@ -100,12 +125,13 @@ from_fmr = [s for s in graph.structures if not isinstance(s, AgencyScheme)]
 to_stat = [s for s in from_fmr if s.short_urn not in before]
 print([s.short_urn for s in to_stat])
 
-# Step 6: Publish them to .Stat.
+# Step 6 (to complete): Publish them to .Stat.
 # Note: The result has success, which must be True, and messages: if .Stat
 # rejects a structure, the reason is in the messages.
-if to_stat:
-    result = stat_uploader().submit_structure(to_stat, STAT_FORMAT)
-    print(result.success, result.messages)
+# Hint: If `to_stat` is not empty, call `stat_uploader().submit_structure` with
+# `to_stat` and `STAT_FORMAT`, and print the `success` and the `messages` of
+# the result.
+# To be completed
 
 # Step 7: Build the dataset of the dataflow.
 # Note: build_dataset(graph) reads monthly ECB reference exchange rates of four
@@ -116,15 +142,14 @@ flow = graph.get_dataflows()[0]
 dataset = build_dataset(graph) if flow.short_urn not in before else None
 print(len(dataset.data) if dataset is not None else 0, "observations to load")
 
-# Step 8: Load the data into the dataflow.
+# Step 8 (to complete): Load the data into the dataflow.
 # Note: The Transfer service processes the data asynchronously: the submission
 # returns the id of the request, and its outcome is requested afterwards.
-if dataset is not None:
-    request = stat_uploader().submit_data(dataset)
-    status = stat_uploader().submission_status(request.request_id, wait=True)
-    print(status.outcome)
-    for log in status.logs:
-        print(log)
+# Hint: If `dataset` is not None, call `stat_uploader().submit_data(dataset)`:
+# the result has a `request_id`. Then call
+# `stat_uploader().submission_status(request_id, wait=True)`, and print the
+# `outcome` and the `logs` of its result.
+# To be completed
 
 # Step 9: Read the data back from .Stat.
 # Note: stat_data queries the data of the dataflow on .Stat.
@@ -229,14 +254,7 @@ print(sorted(list_urns(stat_service()) - before))
 # Bonus: Create another difference and remove it.
 # Note: A codelist that only exists on .Stat is found by the comparison, like
 # the structures in legacy.
-extra_codelist = Codelist(
-    id=f"{PREFIX}_CL_EXTRA",
-    agency=AGENCY,
-    version="1.0",
-    name="A codelist that is not in the FMR",
-    items=[Code(id="A", name="First code"), Code(id="B", name="Second code")],
-)
-stat_uploader().submit_structure([extra_codelist], STAT_FORMAT)
-extras = list_urns(stat_service()) - before - fmr_urns
-print(sorted(extras))
-stat_uploader().delete_structure(sorted(extras))
+# Hint: Build a `Codelist` with `agency=AGENCY`, an id that starts with
+# `PREFIX` and an underscore, a name and two `Code` items, each with an id and
+# a name. Submit it to .Stat only, and repeat the comparison and the deletion.
+# To be completed

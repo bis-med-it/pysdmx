@@ -1,14 +1,20 @@
-"""Define a VTL program with SDMX 3.2 artefacts and run it.
+"""Exercise: define a VTL program with SDMX 3.2 and run it.
 
-This script shows how pysdmx can define a VTL program (Eurostat's GDP
-check) with the VTL artefacts of SDMX 3.2, exchange the definitions and,
-with vtlengine, run the program on real data. The notebook
-sdmx_vtl_practice.ipynb is the exercise on the same steps, and
-sdmx_vtl.ipynb explains them.
+Define Eurostat's GDP check with the VTL artefacts of SDMX 3.2, exchange
+the definitions and run the program on real data, with pysdmx and
+vtlengine.
+
+This script has the same steps as the notebook sdmx_vtl_practice.ipynb.
+Five steps are marked "to complete": their code is to be written below
+their hint. The other steps are already written, and two bonus steps reuse
+and change the program. The answer is in the solution folder, as a script
+and as a notebook, and sdmx_vtl.ipynb explains the steps.
 
 SDMX 3.2 is a draft: the script needs pysdmx 1.24.0rc1, with the all
 extras, and access to the Internet.
 """
+
+# ruff: noqa: F401, F821
 
 import json
 
@@ -68,25 +74,18 @@ gdp_mapping = VtlDatasetMapping(
     is_input=True,
 )
 
-# Step 3: Define the mapping of the output and the VTL Mapping Scheme.
+# Step 3 (to complete): Define the mapping of the output and the VTL Mapping
+# Scheme.
 # Note: The output, with the alias gdp_check, is the Dataflow
 # ESTAT:ES_NAMA_10_GDP(1.0), which is not defined beforehand: its data
 # structure is derived from the program, so a Reference to it is enough.
-check_mapping = VtlDatasetMapping(
-    id="GDP_CHECK",
-    name="Validation results",
-    vtl_alias="gdp_check",
-    sdmx_artefact=Reference("Dataflow", "ESTAT", "ES_NAMA_10_GDP", "1.0"),
-    is_input=False,
-)
-mappings = VtlMappingScheme(
-    id="VTL_MAP_GDP",
-    agency="ESTAT",
-    name="VTL mappings of the GDP check",
-    items=[gdp_mapping, check_mapping],
-)
-for m in mappings.items:
-    print(m.vtl_alias, m.sdmx_urn, m.is_input)
+# Hint: Create a `VtlDatasetMapping` like the one of Step 2, with the id
+# `GDP_CHECK`, a name, the alias `gdp_check`, `is_input=False` and
+# `sdmx_artefact=Reference("Dataflow", "ESTAT", "ES_NAMA_10_GDP", "1.0")`. Then
+# create a `VtlMappingScheme` with the id `VTL_MAP_GDP`, the agency `ESTAT`, a
+# name and the two mappings as `items`.
+# Result: `check_mapping` and `mappings`.
+# To be completed
 
 # Step 4: Define the Transformation of the annual growth of GDP.
 # Note: The Transformation Scheme is the VTL program. Its first Transformation
@@ -100,25 +99,19 @@ growth_transformation = Transformation(
     expression="(gdp / timeshift(gdp, 1) - 1) * 100",
 )
 
-# Step 5: Define the Transformation of the check and the Transformation Scheme.
+# Step 5 (to complete): Define the Transformation of the check and the
+# Transformation Scheme.
 # Note: The second Transformation keeps the data points whose growth is above
 # 20% in absolute value, as the result gdp_check. It is persistent: it is the
 # output of the program.
-check_transformation = Transformation(
-    id="GDP_CHECK",
-    name="Growth of GDP within 20%",
-    result="gdp_check",
-    is_persistent=True,
-    expression='check(abs(growth) <= 20 errorcode "GDP_GROWTH" invalid)',
-)
-ts = TransformationScheme(
-    id="TS_GDP_CHECK",
-    agency="ESTAT",
-    name="GDP check",
-    vtl_version="2.2",
-    vtl_mapping_scheme=mappings,
-    items=[growth_transformation, check_transformation],
-)
+# Hint: Create a `Transformation` like the one of Step 4, with the id
+# `GDP_CHECK`, a name, the result `gdp_check`, `is_persistent=True` and the
+# expression `check(abs(growth) <= 20 errorcode "GDP_GROWTH" invalid)`. Then
+# create a `TransformationScheme` with the id `TS_GDP_CHECK`, the agency
+# `ESTAT`, a name, `vtl_version="2.2"`, `vtl_mapping_scheme=mappings` and the
+# two Transformations as `items`.
+# Result: `check_transformation` and `ts`.
+# To be completed
 
 # Part 3: Execution model: where the input data come from
 
@@ -159,18 +152,19 @@ execution = gdp_check_execution("ESTAT", EUROSTAT, "A.CP_MEUR.B1GQ.*")
 
 # Part 4: Checking and exchanging the definitions
 
-# Step 7: Check the definitions and write them in SDMX-ML 3.2.
+# Step 7 (to complete): Check the definitions and write them in SDMX-ML 3.2.
 # Note: model_validations checks the rules that involve several artefacts (e.g.
 # the outputs are persistent results, the extractions apply to inputs). It
 # raises an error when a rule is not met.
 # Note: In the SDMX-ML message, the VtlExecution has the reference to the
 # Transformation Scheme, and the query extraction with its entry point and its
 # parameters.
-vtl_artefacts = [mappings, ts, execution]
-for artefact in vtl_artefacts:
-    model_validations(artefact, [df_gdp, *vtl_artefacts])
-sdmx_ml = write_sdmx(vtl_artefacts, Format.STRUCTURE_SDMX_ML_3_2)
-print(sdmx_ml)
+# Hint: Call `model_validations(artefact, artefacts)` for `mappings`, `ts` and
+# `execution`, where `artefacts` is the list of the Dataflow and the three VTL
+# artefacts. Then call `write_sdmx` with the three VTL artefacts and
+# `Format.STRUCTURE_SDMX_ML_3_2`: it returns the message as a string, to be
+# printed.
+# To be completed
 
 # Part 5: At run time
 
@@ -223,31 +217,30 @@ def input_dataset(execution, values):
 gdp = input_dataset(execution, {"c[TIME_PERIOD]": "ge:2015"})
 print(len(gdp.data), "observations of", gdp.data["geo"].nunique(), "areas")
 
-# Step 10: Execute the program.
+# Step 10 (to complete): Execute the program.
 # Note: The SDMX data set is converted into a VTL Data Set, named after its
 # alias, and the engine runs the script on it.
 # Note: The result growth is not persistent, so the engine only returns it when
 # all the results are requested.
-gdp_vtl = convert_dataset_to_vtl(gdp, gdp_mapping.vtl_alias)
-results = run(
-    script=script,
-    data_structures=json.loads(gdp_vtl.to_json_datastructure()),
-    datapoints={gdp_vtl.name: gdp_vtl.data},
-    return_only_persistent=False,
-)
-growth = results["growth"].data
-print(growth.loc[growth["OBS_VALUE"].abs().nlargest(5).index].round(1))
+# Hint: `convert_dataset_to_vtl(gdp, "gdp")` returns the VTL Data Set. Call
+# `run` with `script=script`,
+# `data_structures=json.loads(gdp_vtl.to_json_datastructure())`,
+# `datapoints={gdp_vtl.name: gdp_vtl.data}` and `return_only_persistent=False`.
+# It returns the results by name, and the data of each result are a DataFrame
+# in its `data` attribute, e.g. `results["growth"].data`.
+# Result: `gdp_vtl` and `results`.
+# To be completed
 
-# Step 11: Store the result.
+# Step 11 (to complete): Store the result.
 # Note: The persistent result gdp_check is the output of the program: its data
 # are converted into SDMX, as data of the Dataflow ESTAT:ES_NAMA_10_GDP(1.0).
 # The conversion checks that its data structure is the one obtained in Step 8.
 # Note: The output has the data points whose growth is above 20% in absolute
 # value, with their error code.
-checked = convert_dataset_to_sdmx(
-    results[check_mapping.vtl_alias], schema=schema_check
-)
-print(write_sdmx(checked, Format.DATA_SDMX_CSV_2_0_0))
+# Hint: `convert_dataset_to_sdmx(results["gdp_check"], schema=schema_check)`
+# returns the SDMX data set. Write it with `write_sdmx` and
+# `Format.DATA_SDMX_CSV_2_0_0`, and print the result.
+# To be completed
 
 # Bonus: Reuse and change the program
 
@@ -256,49 +249,18 @@ print(write_sdmx(checked, Format.DATA_SDMX_CSV_2_0_0))
 # execution, which only queries the data of its country. The program and its
 # mappings do not change.
 # Note: An empty output means that every data point passes the check.
-other_execution = gdp_check_execution("CSO", EUROSTAT, "A.CP_MEUR.B1GQ.IE")
-model_validations(other_execution, [df_gdp, mappings, ts, other_execution])
-
-other_gdp = convert_dataset_to_vtl(
-    input_dataset(other_execution, {"c[TIME_PERIOD]": "ge:2000"}),
-    gdp_mapping.vtl_alias,
-)
-other_results = run(
-    script=script,
-    data_structures=json.loads(other_gdp.to_json_datastructure()),
-    datapoints={other_gdp.name: other_gdp.data},
-)
-other_checked = convert_dataset_to_sdmx(
-    other_results[check_mapping.vtl_alias], schema=schema_check
-)
-print(write_sdmx(other_checked, Format.DATA_SDMX_CSV_2_0_0))
+# Hint: Call `gdp_check_execution` with another agency (e.g. `CSO`), `EUROSTAT`
+# as the entry point and the key of one area of the Dataflow (e.g.
+# `A.CP_MEUR.B1GQ.IE`). Call `input_dataset` with this execution and another
+# period (e.g. `{"c[TIME_PERIOD]": "ge:2000"}`). Then repeat Steps 10 and 11
+# with these data.
+# To be completed
 
 # Bonus 2: Change the threshold of the check.
 # Note: A stricter check is another program: a Transformation Scheme with the
 # same mappings and another expression.
-strict = replace(
-    ts,
-    id="TS_GDP_CHECK_10",
-    name="GDP check (10%)",
-    items=[
-        growth_transformation,
-        replace(
-            check_transformation,
-            name="Growth of GDP within 10%",
-            expression=(
-                'check(abs(growth) <= 10 errorcode "GDP_GROWTH" invalid)'
-            ),
-        ),
-    ],
-)
-strict_results = run(
-    script=generate_vtl_script(strict, model_validation=True),
-    data_structures=json.loads(gdp_vtl.to_json_datastructure()),
-    datapoints={gdp_vtl.name: gdp_vtl.data},
-)
-print(
-    len(results["gdp_check"].data),
-    "data points do not pass the check of 20%, and",
-    len(strict_results["gdp_check"].data),
-    "the check of 10%",
-)
+# Hint: `replace(check_transformation, expression=...)` returns a copy of the
+# Transformation with another expression, and `replace(ts, id=...,
+# items=[...])` a copy of the Transformation Scheme with other Transformations.
+# Generate the script of the new program and run it on the data of Step 10.
+# To be completed

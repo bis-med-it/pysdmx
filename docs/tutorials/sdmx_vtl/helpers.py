@@ -1,8 +1,8 @@
-"""Helpers for the SDMX-VTL exercise: from a data extraction to its data.
+"""Helpers for the SDMX-VTL tutorial: from a data extraction to its data.
 
-They are the functions of Step 3 of "At run time" in the course notebook
-(sdmx_vtl.ipynb), shared by the exercise (sdmx_vtl_practice.ipynb) and its
-answer (sdmx_vtl_practice.py).
+They are used by the course notebook (sdmx_vtl.ipynb, Step 3 of "At run
+time"), the exercise (sdmx_vtl_practice.ipynb and sdmx_vtl_practice.py) and
+its answer (in the solution folder).
 """
 
 from pysdmx.api.dc.query import Operator, TextFilter

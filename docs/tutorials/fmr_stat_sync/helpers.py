@@ -1,7 +1,8 @@
 """Configuration and helpers for the FMR and .Stat Suite tutorial.
 
 They are shared by the course notebook (fmr_stat_sync.ipynb), the exercise
-(fmr_stat_sync_practice.ipynb) and its answer (fmr_stat_sync_practice.py).
+(fmr_stat_sync_practice.ipynb and fmr_stat_sync_practice.py) and its answer
+(in the solution folder).
 The settings are read from environment variables when this module is
 imported.
 """
