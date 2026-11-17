@@ -7,14 +7,9 @@ imported.
 """
 
 import base64
-import json
 import os
-import re
-import time
-from contextlib import suppress
 from functools import lru_cache
 from io import BytesIO
-from pathlib import Path
 
 from msgspec.structs import replace
 from pysdmx.api.stat.authentication import KeycloakAuthentication
@@ -47,28 +42,27 @@ from pysdmx.model.__base import DataType
 # Settings
 # --------------------------------------------------------------------------
 
-# The identifier of the SDMX Lab instance of the participant.
+# The SDMX Lab instance of the participant (the first part of its address,
+# <id>.sdmx.solutions), its user and its password.
 SDMX_LAB = os.environ.get("SDMX_LAB", "")
+LAB_USER = os.environ.get("SDMX_LAB_USER", "")
+LAB_PASSWORD = os.environ.get("SDMX_LAB_PASSWORD", "")
 
-# The FMR: its web service, and a user and a password, or a bearer token.
+# The addresses of the services are derived from the instance.
+DOTSTAT = f"https://{SDMX_LAB}-dotstat-dlm.sdmx.solutions/dotstat"
+# The FMR: its web service.
 FMR_ENDPOINT = os.environ.get(
     "FMR_ENDPOINT", f"https://{SDMX_LAB}.sdmx.solutions/fmr/sdmx/v2"
 )
-FMR_USER = os.environ.get("FMR_USER")
-FMR_PASSWORD = os.environ.get("FMR_PASSWORD")
-FMR_TOKEN = os.environ.get("FMR_TOKEN")
-
-# .Stat Suite: the NSI web service, the Transfer service and the dataspace.
-NSI = os.environ.get("NSI", "https://nsi-demo-stable.siscc.org")
-TRANSFER = os.environ.get("TRANSFER", "https://transfer-demo.siscc.org/3")
-SPACE = os.environ.get("SPACE", "staging:SIS-CC-stable")
-# The .Stat token is requested from Keycloak with a user and a password or,
-# without them, read from a file.
-KEYCLOAK = os.environ.get("KEYCLOAK", "https://keycloak.siscc.org/realms/OECD")
-STAT_USER = os.environ.get("STAT_USER")
-STAT_PASSWORD = os.environ.get("STAT_PASSWORD")
-STAT_CLIENT_ID = os.environ.get("STAT_CLIENT_ID", "app")
-DOTSTAT_TOKEN_FILE = os.environ.get("DOTSTAT_TOKEN_FILE", "dotstat.token")
+# .Stat Suite: the dataspace, its NSI web service and the Transfer service.
+SPACE = os.environ.get("SPACE", "demo-design")
+NSI = os.environ.get("NSI", f"{DOTSTAT}/nsi-design")
+TRANSFER = os.environ.get("TRANSFER", f"{DOTSTAT}/transfer/1.2")
+# The Keycloak realm and client that issue the .Stat tokens.
+KEYCLOAK = os.environ.get(
+    "KEYCLOAK", f"https://{SDMX_LAB}-dotstat-aai.sdmx.solutions/realms/demo"
+)
+STAT_CLIENT_ID = os.environ.get("STAT_CLIENT_ID", "stat-suite")
 # Structures are read and submitted to .Stat as SDMX-ML 2.1.
 STAT_FORMAT = Format.STRUCTURE_SDMX_ML_2_1
 
@@ -116,67 +110,42 @@ def sdmx_service(base, token=None):
 
 
 def fmr_service():
-    """Return a reader of the FMR, with HTTP Basic when FMR_USER is set."""
-    svc = sdmx_service(FMR_ENDPOINT, FMR_TOKEN)
-    if FMR_USER and not FMR_TOKEN:
-        pair = f"{FMR_USER}:{FMR_PASSWORD}".encode()
-        # RestService only sends bearer tokens, so set the header directly.
-        svc._headers["Authorization"] = (
-            f"Basic {base64.b64encode(pair).decode()}"
-        )
+    """Return a reader of the FMR, with HTTP Basic authentication."""
+    svc = sdmx_service(FMR_ENDPOINT)
+    pair = f"{LAB_USER}:{LAB_PASSWORD}".encode()
+    # RestService only sends bearer tokens, so set the header directly.
+    svc._headers["Authorization"] = f"Basic {base64.b64encode(pair).decode()}"
     return svc
 
 
 def fmr_client():
     """Return a client of the FMR with write access."""
-    if FMR_TOKEN:
-        return RegistryMaintenanceClient(FMR_ENDPOINT, access_token=FMR_TOKEN)
     return RegistryMaintenanceClient(
-        FMR_ENDPOINT, user=FMR_USER, password=FMR_PASSWORD
+        FMR_ENDPOINT, user=LAB_USER, password=LAB_PASSWORD
     )
 
 
 @lru_cache(maxsize=1)
-def _keycloak():
-    """Return the Keycloak authentication of the .Stat user."""
+def keycloak():
+    """Return the Keycloak authentication of the user of the instance."""
     return KeycloakAuthentication(
         KEYCLOAK,
-        user=STAT_USER,
-        password=STAT_PASSWORD,
+        user=LAB_USER,
+        password=LAB_PASSWORD,
         client_id=STAT_CLIENT_ID,
     )
 
 
 def stat_token():
-    """Return a .Stat bearer token.
-
-    With STAT_USER and STAT_PASSWORD, the token is requested from Keycloak
-    and renewed when it expires. Otherwise, it is read from the
-    DOTSTAT_TOKEN_FILE file.
+    """Return a .Stat bearer token, renewed when it expires.
 
     Raises:
-        RuntimeError: If there is no token.
+        RuntimeError: If Keycloak does not issue a token.
     """
-    if STAT_USER:
-        token = _keycloak().get_token()
-        if not token:
-            raise RuntimeError(f"No .Stat token. {_keycloak().init_status}")
-        return token
-    if not Path(DOTSTAT_TOKEN_FILE).exists():
-        raise RuntimeError(
-            "No .Stat token: set STAT_USER and STAT_PASSWORD, or save a "
-            f"token to the file {DOTSTAT_TOKEN_FILE!r}."
-        )
-    raw = Path(DOTSTAT_TOKEN_FILE).read_text()
-    return re.sub(r"[^A-Za-z0-9._-]", "", raw)
-
-
-def minutes_left(token):
-    """Return the minutes until a token expires (no checks are made)."""
-    payload = token.split(".")[1]
-    payload += "=" * (-len(payload) % 4)
-    claims = json.loads(base64.urlsafe_b64decode(payload))
-    return (claims["exp"] - time.time()) / 60
+    token = keycloak().get_token()
+    if not token:
+        raise RuntimeError(f"No .Stat token. {keycloak().init_status}")
+    return token
 
 
 def stat_service():
@@ -195,14 +164,17 @@ def stat_uploader():
 
 
 def _check(name, service):
-    """Print whether a service answers and has AGENCY in its agencies."""
+    """Print whether a service answers a read-only query."""
     roster = StructureQuery(StructureType.AGENCY_SCHEME, "SDMX", "AGENCIES")
     try:
         msg = read_sdmx(BytesIO(service().structure(roster)), validate=False)
         agencies = {agency.id for agency in msg.structures[0].items}
+    except NotFound:
+        print(f"{name}: connected. It has no agency scheme.")
+        return
     except Exception as error:
         print(
-            f"{name}: FAILED. Check its address and its credentials "
+            f"{name}: FAILED. Check the instance, the user and the password "
             f"({type(error).__name__}: {error})"
         )
         return
@@ -215,8 +187,6 @@ def check_connections():
     print(f"Agency {AGENCY}, prefix {PREFIX}")
     _check(f"FMR   ({FMR_ENDPOINT})", fmr_service)
     _check(f".Stat ({NSI})", stat_service)
-    with suppress(Exception):
-        print(f".Stat token valid for {minutes_left(stat_token()):.1f} min")
 
 
 # --------------------------------------------------------------------------

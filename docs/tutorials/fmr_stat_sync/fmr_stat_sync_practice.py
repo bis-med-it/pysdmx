@@ -7,9 +7,8 @@ structures. The notebook fmr_stat_sync_practice.ipynb is the exercise on
 the same steps, and fmr_stat_sync.ipynb explains them.
 
 Before running it, set in the environment the identifier of the SDMX Lab
-instance (SDMX_LAB) and the credentials of the FMR (FMR_USER and
-FMR_PASSWORD, or FMR_TOKEN) and of .Stat (STAT_USER and STAT_PASSWORD, or a
-token in the DOTSTAT_TOKEN_FILE file).
+instance (SDMX_LAB), its user (SDMX_LAB_USER) and its password
+(SDMX_LAB_PASSWORD).
 """
 
 from contextlib import suppress
@@ -45,10 +44,9 @@ from pysdmx.model import AgencyScheme, Code, Codelist
 
 # Step 1: Check the connections.
 # Note: check_connections tests the FMR and .Stat with read-only queries. Both
-# services must be connected, and the agency must be registered in both, before
-# going on.
-# Note: If a service fails, correct its settings, restart the kernel and run
-# the cells again.
+# services must be connected before going on.
+# Note: If a service fails, restart the kernel and run the cells again, to
+# enter the instance, the user and the password again.
 check_connections()
 
 # Step 2: Read the ECB exchange-rate structures and prepare the structures to
@@ -95,8 +93,8 @@ for artefact in [*reversed(legacy), *reversed(keep)]:
         stat.delete_structure(artefact)
 
 # Step 6: Publish the download to .Stat.
-# Note: The SDMX:AGENCIES agency scheme is left out, so that it does not
-# overwrite the one on .Stat.
+# Note: The SDMX:AGENCIES agency scheme is left out: the agency scheme is not
+# maintained by this process.
 # Note: The result has success, which must be True, and messages: if .Stat
 # rejects a structure, the reason is in the messages.
 # Note: To run the step again, run Step 5 first: .Stat rejects the structures
@@ -120,7 +118,7 @@ print(result.success, result.messages)
 # stops in that case.
 fmr_urns = list_urns(fmr_service())
 if not fmr_urns:
-    raise RuntimeError("The FMR list is empty: check the FMR credentials.")
+    raise RuntimeError("The FMR list is empty: check the user and password.")
 stat_urns = list_urns(stat_service())
 print("FMR:  ", sorted(fmr_urns))
 print(".Stat:", sorted(stat_urns))
