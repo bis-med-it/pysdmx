@@ -17,16 +17,19 @@ from pysdmx.api.stat.authentication import KeycloakAuthentication
 from pysdmx.api.fmr.maintenance import RegistryMaintenanceClient
 from pysdmx.api.qb import (
     ApiVersion,
+    DataFormat,
     RestService,
     StructureDetail,
     StructureFormat,
     StructureQuery,
     StructureType,
 )
+from pysdmx.api.qb.data import DataContext, DataQuery
 from pysdmx.api.stat import StatUploader
 from pysdmx.errors import Invalid, NotFound
 from pysdmx.io import read_sdmx
 from pysdmx.io.format import Format
+from pysdmx.io.pd import PandasDataset
 from pysdmx.model import (
     Codelist,
     Component,
@@ -49,7 +52,9 @@ LAB_USER = os.environ.get("SDMX_LAB_USER", "")
 LAB_PASSWORD = os.environ.get("SDMX_LAB_PASSWORD", "")
 
 # The addresses of the services are derived from the instance.
-DOTSTAT = f"https://{SDMX_LAB}-dotstat-dlm.sdmx.solutions/dotstat"
+# The Data Lifecycle Manager of .Stat, where its content can be seen.
+DLM = f"https://{SDMX_LAB}-dotstat-dlm.sdmx.solutions"
+DOTSTAT = f"{DLM}/dotstat"
 # The FMR: its web service.
 FMR_ENDPOINT = os.environ.get(
     "FMR_ENDPOINT", f"https://{SDMX_LAB}.sdmx.solutions/fmr/sdmx/v2"
@@ -75,13 +80,17 @@ ECB_STRUCTURES = (
     "https://data-api.ecb.europa.eu/service/"
     "dataflow/ECB/EXR/latest?references=descendants"
 )
+# Monthly ECB reference exchange rates of four currencies, from 2024.
+ECB_DATA = (
+    "https://data-api.ecb.europa.eu/service/"
+    "data/EXR/M.USD+GBP+JPY+CHF.EUR.SP00.A?startPeriod=2024-01"
+)
 # The types of the structures that are compared between the FMR and .Stat.
 TYPES = (
     StructureType.CODELIST,
     StructureType.CONCEPT_SCHEME,
     StructureType.DATA_STRUCTURE,
     StructureType.DATAFLOW,
-    StructureType.DATA_CONSTRAINT,
 )
 # The position of each type in a deletion: the dependents come first.
 DELETION_ORDER = {
@@ -151,6 +160,24 @@ def stat_token():
 def stat_service():
     """Return a reader of .Stat, with the current token."""
     return sdmx_service(f"{NSI}/rest/v2", stat_token())
+
+
+def stat_data(flow):
+    """Return the data of a dataflow on .Stat, as a pandas DataFrame."""
+    service = RestService(
+        api_endpoint=f"{NSI}/rest/v2",
+        api_version=ApiVersion.V2_0_0,
+        data_format=DataFormat.SDMX_CSV_2_0_0,
+        token=stat_token(),
+        timeout=120,
+    )
+    query = DataQuery(
+        context=DataContext.DATAFLOW,
+        agency_id=flow.agency,
+        resource_id=flow.id,
+        version=flow.version,
+    )
+    return read_sdmx(service.data(query).decode()).data[0].data
 
 
 def stat_uploader():
@@ -225,6 +252,27 @@ def list_urns(service):
             if s.id.startswith(f"{PREFIX}_")
         }
     return urns
+
+
+def build_dataset(graph):
+    """Return ECB exchange rates as a dataset of the dataflow of ``graph``.
+
+    The data are read from the ECB and bound to the dataflow, because .Stat
+    only accepts the data of a dataflow. Only the components of its DSD are
+    kept.
+    """
+    dsd = graph.get_data_structure_definitions()[0]
+    flow = graph.get_dataflows()[0]
+    data = read_sdmx(ECB_DATA).data[0].data
+    return PandasDataset(
+        structure=replace(
+            dsd.to_schema(),
+            context="dataflow",
+            id=flow.id,
+            version=flow.version,
+        ),
+        data=data[[component.id for component in dsd.components]],
+    )
 
 
 URN = "urn:sdmx:org.sdmx.infomodel"
