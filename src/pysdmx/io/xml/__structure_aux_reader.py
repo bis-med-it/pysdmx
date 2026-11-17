@@ -1554,11 +1554,15 @@ class StructureParser(Struct):
             if KEY_VALUE in k:
                 kv_list = add_list(k[KEY_VALUE])
                 for kv in kv_list:
-                    v = kv[VALUE]
-                    value_text = v if isinstance(v, str) else v.get("#text", v)
-
+                    # SDMX-ML 3.1 allows several values per key value
+                    texts = [
+                        v if isinstance(v, str) else v.get("#text", v)
+                        for v in add_list(kv[VALUE])
+                    ]
                     keys_values.append(
-                        DataKeyValue(id=kv[ID], value=value_text)
+                        DataKeyValue(id=kv[ID], value=texts[0])
+                        if len(texts) == 1
+                        else DataKeyValue(id=kv[ID], values=tuple(texts))
                     )
 
             keys.append(DataKey(keys_values=tuple(keys_values)))

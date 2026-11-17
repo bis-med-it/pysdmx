@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_1/common">
+  <mes:Header>
+    <mes:ID>EXAMPLE</mes:ID>
+    <mes:Test>false</mes:Test>
+    <mes:Prepared>2026-10-19T00:00:00Z</mes:Prepared>
+    <mes:Sender id="ECB"/>
+  </mes:Header>
+  <mes:Structures>
+    <str:DataConstraints>
+      <str:DataConstraint id="EXR_CONSTRAINT" agencyID="ECB" version="1.0">
+        <com:Name xml:lang="en">Exchange rates constraint</com:Name>
+        <str:ConstraintAttachment>
+          <str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0)</str:Dataflow>
+        </str:ConstraintAttachment>
+        <str:DataKeySet isIncluded="true">
+          <str:Key>
+            <str:KeyValue id="FREQ"><str:Value>M</str:Value><str:Value>Q</str:Value></str:KeyValue>
+            <str:KeyValue id="CURRENCY"><str:Value>USD</str:Value></str:KeyValue>
+          </str:Key>
+        </str:DataKeySet>
+      </str:DataConstraint>
+    </str:DataConstraints>
+  </mes:Structures>
+</mes:Structure>

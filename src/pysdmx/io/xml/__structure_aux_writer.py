@@ -1714,9 +1714,17 @@ def __write_cube_region(
 
 
 def __write_key_set(
-    key_set: KeySet, indent: str, references_30: bool = False
+    key_set: KeySet,
+    indent: str,
+    references_30: bool = False,
+    references_31: bool = False,
 ) -> str:
-    """Writes a DataKeySet to the XML file."""
+    """Writes a DataKeySet to the XML file.
+
+    Only SDMX-ML 3.1 allows several values per key value. For earlier
+    versions, keys listing several values are written as one key per
+    combination of values.
+    """
     include_attr = INCLUDED
     include_val = "true" if key_set.is_included else "false"
 
@@ -1728,17 +1736,23 @@ def __write_key_set(
     kv_prefix = ABBR_STR if references_30 else ABBR_COM
     val_prefix = ABBR_STR if references_30 else ABBR_COM
 
-    for key in key_set.keys:
+    keys = (
+        key_set.keys
+        if references_31
+        else [e for k in key_set.keys for e in k.expand()]
+    )
+    for key in keys:
         outfile += f"{add_indent(indent)}<{ABBR_STR}:{KEY}>"
 
         for key_value in key.keys_values:
             outfile += f"{add_indent(add_indent(indent))}"
             outfile += f"<{kv_prefix}:{KEY_VALUE} {ID}={key_value.id!r}>"
-            value_tag = f"{add_indent(add_indent(add_indent(indent)))}"
-            value_tag += f"<{val_prefix}:{VALUE}>"
-            value_tag += __escape_xml(str(key_value.value))
-            value_tag += f"</{val_prefix}:{VALUE}>"
-            outfile += value_tag
+            for value in key_value.values or (key_value.value,):
+                value_tag = f"{add_indent(add_indent(add_indent(indent)))}"
+                value_tag += f"<{val_prefix}:{VALUE}>"
+                value_tag += __escape_xml(str(value))
+                value_tag += f"</{val_prefix}:{VALUE}>"
+                outfile += value_tag
             outfile += (
                 f"{add_indent(add_indent(indent))}</{kv_prefix}:{KEY_VALUE}>"
             )
@@ -1853,7 +1867,7 @@ def __write_data_constraint(
     if constraint.key_sets:
         for key_set in constraint.key_sets:
             outfile += __write_key_set(
-                key_set, add_indent(indent), references_30
+                key_set, add_indent(indent), references_30, references_31
             )
 
     outfile += f"{indent}</{label}>"

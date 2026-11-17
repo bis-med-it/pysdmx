@@ -310,7 +310,9 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             # schema rejects as empty).
             constraints = tuple(
                 [
-                    JsonDataConstraint.from_model(c, with_role=False)
+                    JsonDataConstraint.from_model(
+                        c, with_role=False, multiple_values=True
+                    )
                     for c in msg.get_data_constraints()
                 ]
             )

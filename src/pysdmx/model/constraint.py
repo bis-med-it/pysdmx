@@ -1,7 +1,8 @@
 """Model for SDMX Data Constraints."""
 
 from datetime import datetime
-from typing import Optional, Sequence
+from itertools import product
+from typing import Optional, Sequence, cast
 
 from msgspec import Struct
 
@@ -106,18 +107,68 @@ class ConstraintAttachment(Struct, frozen=True, omit_defaults=True):
 
 
 class DataKeyValue(Struct, frozen=True, omit_defaults=True):
-    """A key value, i.e. a component of the key (e.g. FREQ=M)."""
+    """A key value, i.e. a component of the key (e.g. FREQ=M).
+
+    Since SDMX 3.1, a key value may list several values for its
+    component (e.g. FREQ=M or Q). A key value therefore holds either a
+    single ``value`` or several ``values``, but not both.
+
+    Attributes:
+        id: The referenced component (i.e. a dimension).
+        value: The single value of the component (e.g. M).
+        values: The values of the component, when the key lists
+            several of them (e.g. M and Q, SDMX 3.1 only).
+
+    Raises:
+        Invalid: If neither or both of value and values are set.
+    """
 
     id: str
-    value: str
+    value: Optional[str] = None
+    values: Sequence[str] = ()
+
+    def __post_init__(self) -> None:
+        """Checks exactly one of value and values is set."""
+        if (self.value is None) == (not self.values):
+            raise Invalid(
+                "Invalid data key value",
+                f"The data key value for {self.id} must have either a "
+                "value or a list of values, but not both.",
+            )
 
 
 class DataKey(Struct, frozen=True, omit_defaults=True):
-    """A data key, i.e. one value per dimension in the data key."""
+    """A data key, i.e. the value(s) of each dimension in the data key."""
 
     keys_values: Sequence[DataKeyValue]
     valid_from: Optional[datetime] = None
     valid_to: Optional[datetime] = None
+
+    def expand(self) -> Sequence["DataKey"]:
+        """Expands the key into one key per combination of values.
+
+        A key listing several values for a dimension (e.g. FREQ=M or Q
+        and CURRENCY=USD) is equivalent to the set of keys with a
+        single value per dimension ({M, USD} and {Q, USD}). This is
+        how such keys are written to formats that allow one value per
+        dimension only (SDMX-ML 2.1/3.0 and SDMX-JSON 2.0).
+
+        Returns:
+            The keys with a single value per dimension, each keeping
+            the validity period of this key.
+        """
+        ids = [kv.id for kv in self.keys_values]
+        options = [
+            kv.values or (cast(str, kv.value),) for kv in self.keys_values
+        ]
+        return tuple(
+            DataKey(
+                tuple(DataKeyValue(i, v) for i, v in zip(ids, combination)),
+                self.valid_from,
+                self.valid_to,
+            )
+            for combination in product(*options)
+        )
 
 
 class KeySet(Struct, frozen=True, omit_defaults=True):

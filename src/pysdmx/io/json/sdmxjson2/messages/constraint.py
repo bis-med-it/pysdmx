@@ -222,17 +222,14 @@ class JsonDataKeyValue(Struct, frozen=True, omit_defaults=True):
     def to_model(self) -> DataKeyValue:
         """Converts a JsonDataKeyValue to a DataKeyValue.
 
+        A single value (whether in ``value`` or ``values``) is mapped
+        to ``value``, and several values to ``values``.
+
         Raises:
-            NotImplemented: If several values are listed, as a
-                DataKeyValue holds a single value.
             Invalid: If no value is given.
         """
         if len(self.values) > 1:
-            raise errors.NotImplemented(
-                "Unsupported data key value",
-                f"The data key value for {self.id} lists several values "
-                f"({', '.join(self.values)}), which is not supported yet.",
-            )
+            return DataKeyValue(self.id, values=tuple(self.values))
         value = self.values[0] if self.values else self.value
         if value is None:
             raise errors.Invalid(
@@ -244,7 +241,7 @@ class JsonDataKeyValue(Struct, frozen=True, omit_defaults=True):
     @classmethod
     def from_model(self, kv: DataKeyValue) -> "JsonDataKeyValue":
         """Converts a pysdmx key value to an SDMX-JSON one."""
-        return JsonDataKeyValue(kv.id, kv.value)
+        return JsonDataKeyValue(kv.id, kv.value, tuple(kv.values))
 
 
 class JsonDataKey(Struct, frozen=True, omit_defaults=True):
@@ -285,10 +282,25 @@ class JsonKeySet(Struct, frozen=True, omit_defaults=True):
         )
 
     @classmethod
-    def from_model(self, ks: KeySet) -> "JsonKeySet":
-        """Converts a pysdmx key set constraint to an SDMX-JSON one."""
+    def from_model(
+        self, ks: KeySet, multiple_values: bool = False
+    ) -> "JsonKeySet":
+        """Converts a pysdmx key set constraint to an SDMX-JSON one.
+
+        Args:
+            ks: The key set to be converted.
+            multiple_values: Whether a key value may list several
+                values (SDMX-JSON 2.1). If not (SDMX-JSON 2.0), keys
+                listing several values are written as one key per
+                combination of values.
+        """
+        keys = (
+            ks.keys
+            if multiple_values
+            else [e for k in ks.keys for e in k.expand()]
+        )
         return JsonKeySet(
-            [JsonDataKey.from_model(k) for k in ks.keys], ks.is_included
+            [JsonDataKey.from_model(k) for k in keys], ks.is_included
         )
 
 
@@ -436,7 +448,10 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
 
     @classmethod
     def from_model(
-        self, cons: DataConstraint, with_role: bool = True
+        self,
+        cons: DataConstraint,
+        with_role: bool = True,
+        multiple_values: bool = False,
     ) -> "JsonDataConstraint":
         """Converts a pysdmx constraint to an SDMX-JSON one.
 
@@ -447,6 +462,11 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
                 with role ``"Actual"`` are represented as
                 AvailabilityConstraint instead). SDMX-JSON 2.1 removed
                 the field, so pass ``False`` when writing 2.1.
+            multiple_values: Whether the key values of data keys may
+                list several values. SDMX-JSON 2.1 allows it, so pass
+                ``True`` when writing 2.1. Otherwise, keys listing
+                several values are written as one key per combination
+                of values.
         """
         crs = (
             [JsonCubeRegion.from_model(r) for r in cons.cube_regions]
@@ -454,7 +474,7 @@ class JsonDataConstraint(MaintainableType, frozen=True, omit_defaults=True):
             else None
         )
         dks = (
-            [JsonKeySet.from_model(s) for s in cons.key_sets]
+            [JsonKeySet.from_model(s, multiple_values) for s in cons.key_sets]
             if cons.key_sets
             else None
         )

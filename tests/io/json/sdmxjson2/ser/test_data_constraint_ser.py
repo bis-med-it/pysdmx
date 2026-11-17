@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timezone
 
 import msgspec
@@ -8,6 +9,13 @@ from pysdmx.io.json.sdmxjson2.messages.constraint import (
     JsonAvailabilityConstraint,
     JsonDataConstraint,
 )
+from pysdmx.io.json.sdmxjson2.reader.structure import read
+from pysdmx.io.json.sdmxjson2.writer.v2_0.structure import (
+    write as write_20,
+)
+from pysdmx.io.json.sdmxjson2.writer.v2_1.structure import (
+    write as write_21,
+)
 from pysdmx.model import (
     Annotation,
     AvailabilityConstraint,
@@ -17,6 +25,9 @@ from pysdmx.model import (
     CubeTimeRange,
     CubeValue,
     DataConstraint,
+    DataKey,
+    DataKeyValue,
+    KeySet,
     TimePeriodBoundary,
 )
 
@@ -192,6 +203,82 @@ def test_data_constraint_ser_without_role_for_2_1():
         _make_data_constraint(), with_role=False
     )
     assert ser.role is None
+
+
+def _make_multi_value_keyset_constraint():
+    return DataConstraint(
+        id="CONS",
+        name="Constraint",
+        agency="TEST_AGENCY",
+        version="1.0",
+        constraint_attachment=ConstraintAttachment(
+            data_provider=None,
+            dataflows=(
+                "urn:sdmx:org.sdmx.infomodel.datastructure."
+                "Dataflow=TEST_AGENCY:DF_TEST(1.0)",
+            ),
+        ),
+        key_sets=(
+            KeySet(
+                keys=(
+                    DataKey(
+                        (
+                            DataKeyValue("FREQ", values=("M", "Q")),
+                            DataKeyValue("CURRENCY", "USD"),
+                        )
+                    ),
+                ),
+                is_included=True,
+            ),
+        ),
+    )
+
+
+def _key_sets(out):
+    return json.loads(out)["data"]["dataConstraints"][0]["dataKeySets"]
+
+
+def test_keyset_several_values_written_as_values_in_2_1():
+    cons = _make_multi_value_keyset_constraint()
+
+    out = write_21([cons])
+
+    assert _key_sets(out)[0]["keys"] == [
+        {
+            "keyValues": [
+                {"id": "FREQ", "values": ["M", "Q"]},
+                {"id": "CURRENCY", "value": "USD"},
+            ]
+        }
+    ]
+    msg = read(out, validate=True)
+    assert msg.get_data_constraints()[0].key_sets == cons.key_sets
+
+
+def test_keyset_several_values_expanded_in_2_0():
+    cons = _make_multi_value_keyset_constraint()
+
+    out = write_20([cons])
+
+    assert _key_sets(out)[0]["keys"] == [
+        {
+            "keyValues": [
+                {"id": "FREQ", "value": "M"},
+                {"id": "CURRENCY", "value": "USD"},
+            ]
+        },
+        {
+            "keyValues": [
+                {"id": "FREQ", "value": "Q"},
+                {"id": "CURRENCY", "value": "USD"},
+            ]
+        },
+    ]
+    msg = read(out, validate=True)
+    assert msg.get_data_constraints()[0].key_sets[0].keys == (
+        DataKey((DataKeyValue("FREQ", "M"), DataKeyValue("CURRENCY", "USD"))),
+        DataKey((DataKeyValue("FREQ", "Q"), DataKeyValue("CURRENCY", "USD"))),
+    )
 
 
 def test_availability_as_legacy_data_constraint():

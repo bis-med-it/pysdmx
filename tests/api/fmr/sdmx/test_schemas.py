@@ -1,5 +1,6 @@
 import json
 
+import httpx
 import pytest
 
 import tests.api.fmr.schema_checks as checks
@@ -172,6 +173,28 @@ def test_returns_inclusive_keyset_from_values(
         json.dumps(data).encode(),
         no_hca_body,
     )
+
+
+def test_returns_inclusive_keyset_with_several_values(
+    respx_mock, fmr, query, no_hca_query, keyset_body, no_hca_body
+):
+    """get_schema() should join several values of a dimension with +."""
+    data = json.loads(keyset_body)
+    key = data["data"]["dataConstraints"][0]["dataKeySets"][0]["keys"][0]
+    key["keyValues"][2] = {"id": "L_INSTR", "values": ["A", "G"]}
+    respx_mock.get(no_hca_query).mock(
+        return_value=httpx.Response(200, content=no_hca_body)
+    )
+    respx_mock.get(query).mock(
+        return_value=httpx.Response(200, content=json.dumps(data).encode())
+    )
+
+    schema = fmr.get_schema("dataflow", "BIS.CBS", "CBS", "1.0")
+
+    assert sorted(schema.keys) == [
+        "*.*.*.*.F.L.A+G.A.TO1.A.*",
+        "*.*.*.*.F.L.G.A.TO1.A.*",
+    ]
 
 
 def test_returns_exclusive_keyset(
