@@ -10,7 +10,11 @@ import pytest
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import input_processor
 from pysdmx.io.format import Format
-from pysdmx.io.input_processor import process_string_to_read, stream_sdmx
+from pysdmx.io.input_processor import (
+    process_string_to_read,
+    sdmx_csv_separator,
+    stream_sdmx,
+)
 from pysdmx.io.reader import read_sdmx
 from tests.io.byte_chunks import ByteChunks, split
 
@@ -197,6 +201,59 @@ def test_process_string_to_read_single_line_one_comma():
     # not enough to be considered SDMX-CSV
     with pytest.raises(Invalid, match=r"Cannot parse input as SDMX\.$"):
         process_string_to_read('"a","b"')
+
+
+@pytest.mark.parametrize(
+    ("text", "separator"),
+    [
+        ("DATAFLOW,FREQ\nECB:EXR(1.0),M", ","),
+        ("DATAFLOW;FREQ\nECB:EXR(1.0);M", ";"),
+        ("DATAFLOW\tFREQ", "\t"),
+        ("STRUCTURE,STRUCTURE_ID", ","),
+        ("STRUCTURE;STRUCTURE_ID", ";"),
+        ("STRUCTURE[|];STRUCTURE_ID", ";"),
+        ("STRUCTURE[;],STRUCTURE_ID", ","),
+        # Not starting with the fixed first column header term
+        ("FREQ;DATAFLOW", ","),
+        ('"DATAFLOW";FREQ', ","),
+        ("STRUCTURE_ID;STRUCTURE", ","),
+        ("STRUCTURE[;STRUCTURE_ID", ","),
+        ("DATAFLOW\nECB:EXR(1.0)", ","),
+        ("DATAFLOW", ","),
+        ("", ","),
+    ],
+)
+def test_sdmx_csv_separator(text, separator):
+    assert sdmx_csv_separator(text) == separator
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        (
+            "DATAFLOW;FREQ;OBS_VALUE\nECB:EXR(1.0);M;1.5\n",
+            Format.DATA_SDMX_CSV_1_0_0,
+        ),
+        (
+            "STRUCTURE;STRUCTURE_ID;FREQ;OBS_VALUE\n"
+            "dataflow;ECB:EXR(1.0);M;1.5\n",
+            Format.DATA_SDMX_CSV_2_1_0,
+        ),
+    ],
+)
+def test_process_semicolon_csv(text, expected):
+    # SDMX-CSV accepts other separators than the comma, such as the
+    # semicolon used in some locales
+    assert process_string_to_read(text) == (text, expected)
+
+    chunks, read_format = stream_sdmx(text)
+    assert read_format == expected
+    assert "".join(chunks) == text
+
+
+def test_process_string_to_read_single_line_one_semicolon():
+    with pytest.raises(Invalid, match=r"Cannot parse input as SDMX\.$"):
+        process_string_to_read("DATAFLOW;FREQ")
 
 
 def test_process_large_csv(large_csv_1, large_csv_2):
