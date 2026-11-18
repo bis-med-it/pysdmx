@@ -207,6 +207,7 @@ from pysdmx.model.__base import (
     VersionableArtefact,
 )
 from pysdmx.model.dataflow import (
+    ArrayBoundaries,
     Component,
     Dataflow,
     DataStructureDefinition,
@@ -927,13 +928,31 @@ def __write_representation(
             item.local_dtype, item.local_facets, type_, indent
         )
 
-    representation += f"{indent}<{ABBR_STR}:{LOCAL_REP}>"
+    # SDMX-ML 3.x sets the number of values of attributes and measures on
+    # their LocalRepresentation. SDMX-ML 2.1 cannot express it.
+    occurs = ""
+    if (
+        references_30
+        and item.role != Role.DIMENSION
+        and item.array_def is not None
+    ):
+        occurs = __write_occurs(item.array_def)
+
+    representation += f"{indent}<{ABBR_STR}:{LOCAL_REP}{occurs}>"
     if len(local_representation) == 0:
         representation += f"{add_indent(indent)}<{ABBR_STR}:{TEXT_FORMAT}/>"
     representation += local_representation
     representation += f"{indent}</{ABBR_STR}:{LOCAL_REP}>"
 
     return representation
+
+
+def __write_occurs(array_def: ArrayBoundaries) -> str:
+    """Writes the minOccurs and maxOccurs XML attributes of an array."""
+    max_occurs = (
+        "unbounded" if array_def.max_size is None else str(array_def.max_size)
+    )
+    return f' {MIN_OCCURS}="{array_def.min_size}" {MAX_OCCURS}="{max_occurs}"'
 
 
 def __write_text_format(
@@ -1126,13 +1145,7 @@ def __write_metadata_attribute(
     label = f"{ABBR_STR}:{METADATA_ATT}"
     attrs = f" {ID}={component.id!r}"
     if component.array_def is not None:
-        min_occurs = component.array_def.min_size
-        if component.array_def.max_size is None:
-            max_occurs = "unbounded"
-        else:
-            max_occurs = str(component.array_def.max_size)
-        attrs += f" {MIN_OCCURS}={str(min_occurs)!r}"
-        attrs += f" {MAX_OCCURS}={max_occurs!r}"
+        attrs += __write_occurs(component.array_def)
     if component.is_presentational:
         attrs += f" {IS_PRESENTATIONAL}={'true'!r}"
     attrs = attrs.replace("'", '"')
