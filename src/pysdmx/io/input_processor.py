@@ -40,6 +40,32 @@ def __check_xml(input_str: str) -> bool:
     return input_str[:5] == "<?xml"
 
 
+def sdmx_csv_separator(input_str: str) -> str:
+    """Returns the field separator of an SDMX-CSV message.
+
+    SDMX-CSV uses the comma by default, but accepts other separators,
+    such as the semicolon. The separator is the character that follows
+    the fixed first column header term: DATAFLOW in SDMX-CSV 1.0, and
+    STRUCTURE (which may be extended by a squared bracket term) in
+    SDMX-CSV 2.0 and 2.1.
+
+    Args:
+        input_str: The message, or its start.
+
+    Returns:
+        The separator, or the comma if the message does not start with
+        one of these terms.
+    """
+    for term in ("DATAFLOW", "STRUCTURE"):
+        if input_str.startswith(term):
+            rest = input_str[len(term) :]
+            if term == "STRUCTURE" and rest.startswith("["):
+                rest = rest[rest.find("]") + 1 :]
+            if rest and not (rest[0].isalnum() or rest[0] in '_["\r\n'):
+                return rest[0]
+    return ","
+
+
 def __check_csv(input_str: str) -> bool:
     # JSON ({ or [) and XML (<) documents are never SDMX-CSV, but a
     # one-line document has enough commas and quotes to fool the sniffer.
@@ -53,12 +79,15 @@ def __check_csv(input_str: str) -> bool:
         max_lines = 1
         sample = "\n".join(lines[:max_lines])
 
-        dialect = csv.Sniffer().sniff(sample)
+        separator = sdmx_csv_separator(input_str)
+        dialect = csv.Sniffer().sniff(sample, delimiters=separator)
         control_csv_format = (
-            dialect.delimiter == "," and dialect.quotechar == '"'
+            dialect.delimiter == separator and dialect.quotechar == '"'
         )
         # Check we can access the data and it is not empty
-        if (len(lines) > 1 or lines[0].count(",") > 1) and control_csv_format:
+        if (
+            len(lines) > 1 or lines[0].count(separator) > 1
+        ) and control_csv_format:
             return True
     except Exception:
         return False
@@ -140,7 +169,8 @@ def __get_sdmx_ml_flavour(input_str: str) -> Tuple[str, Format]:
 
 
 def __get_sdmx_csv_flavour(input_str: str) -> Tuple[str, Format]:
-    headers = csv.reader(StringIO(input_str)).__next__()
+    separator = sdmx_csv_separator(input_str)
+    headers = csv.reader(StringIO(input_str), delimiter=separator).__next__()
     if "DATAFLOW" in headers:
         return input_str, Format.DATA_SDMX_CSV_1_0_0
     elif "STRUCTURE" in headers and "STRUCTURE_ID" in headers:

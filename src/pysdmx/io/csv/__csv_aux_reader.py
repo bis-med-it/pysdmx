@@ -1,10 +1,12 @@
 import io
 import sys
+from itertools import chain
 from typing import Iterable, Optional
 
 import pandas as pd
 
 from pysdmx.errors import Invalid
+from pysdmx.io.input_processor import head_and_rest, sdmx_csv_separator
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model.dataset import ActionType
 
@@ -61,7 +63,9 @@ class _TextChunks(io.TextIOBase):
 def read_csv_chunks(chunks: Iterable[str]) -> pd.DataFrame:
     """Reads SDMX-CSV text, given in chunks, into a DataFrame.
 
-    pandas reads the text as it needs it, as from a file.
+    pandas reads the text as it needs it, as from a file. The field
+    separator is taken from the start of the text (see
+    sdmx_csv_separator).
 
     Args:
         chunks: The text, in chunks.
@@ -69,8 +73,12 @@ def read_csv_chunks(chunks: Iterable[str]) -> pd.DataFrame:
     Returns:
         The DataFrame, with the types pandas infers.
     """
+    head, rest = head_and_rest(iter(chunks))
     return pd.read_csv(
-        _TextChunks(chunks), keep_default_na=False, na_values=[]
+        _TextChunks(chain([head], rest)),
+        sep=sdmx_csv_separator(head),
+        keep_default_na=False,
+        na_values=[],
     )
 
 

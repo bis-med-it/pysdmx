@@ -1,4 +1,5 @@
-from io import BytesIO
+import csv
+from io import BytesIO, StringIO
 from pathlib import Path
 
 import httpx
@@ -105,3 +106,45 @@ def test_read_sdmx_invalid_csv_closes_the_url_stream(respx_mock):
 
     assert stream.yielded < len(chunks)
     assert stream.closed
+
+
+def _with_semicolons(text):
+    out = StringIO()
+    rows = csv.reader(StringIO(text))
+    csv.writer(out, delimiter=";", lineterminator="\n").writerows(rows)
+    return out.getvalue()
+
+
+@pytest.mark.parametrize(
+    ("reader", "path"),
+    [(reader_10, DATA_V1), (reader_20, DATA_V2), (reader_21, DATA_V21)],
+)
+def test_read_stream_semicolon_separator(reader, path):
+    # SDMX-CSV accepts other separators than the comma, such as the
+    # semicolon used in some locales. The separator is read from the
+    # first chunks, even when they are small.
+    text = path.read_text(encoding="utf-8")
+    semicolon_text = _with_semicolons(text)
+    assert semicolon_text.split("\n", 1)[0].count(";") > 1
+
+    datasets = reader.read_stream(split(semicolon_text, 7))
+
+    _assert_same_datasets(datasets, reader.read(text))
+
+
+@pytest.mark.parametrize("kind", ["text", "bytes"])
+@pytest.mark.parametrize(
+    ("reader", "path"), [(reader_10, DATA_V1), (reader_21, DATA_V21)]
+)
+def test_read_sdmx_csv_semicolon_separator(reader, path, kind):
+    text = path.read_text(encoding="utf-8")
+    semicolon_text = _with_semicolons(text)
+    source = (
+        semicolon_text
+        if kind == "text"
+        else BytesIO(semicolon_text.encode("utf-8"))
+    )
+
+    message = read_sdmx(source)
+
+    _assert_same_datasets(message.data, reader.read(text))
