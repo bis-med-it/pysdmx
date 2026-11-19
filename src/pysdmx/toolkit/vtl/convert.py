@@ -37,8 +37,9 @@ from pysdmx.model.dataflow import Role, Schema
 
 # SDMX data type given to a component of each VTL type in a generated
 # schema. The defaults are those of "Mapping VTL basic scalar types to SDMX
-# data types" in the SDMX technical notes, except for Number: Float has
-# 32 bits, so it would alter the digits of a VTL number.
+# data types" in the SDMX technical notes, with two exceptions. A VTL number
+# is a Double: Float has 32 bits, so it would alter its digits. A VTL time
+# is a TimeRange: StandardTimePeriod cannot hold an interval.
 VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
     String: DataType.STRING,
     Integer: DataType.INTEGER,
@@ -46,14 +47,17 @@ VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
     Boolean: DataType.BOOLEAN,
     Date: DataType.DATE_TIME,
     TimePeriod: DataType.REP_TIME_PERIOD,
-    TimeInterval: DataType.STD_TIME_PERIOD,
+    TimeInterval: DataType.TIME_RANGE,
     Duration: DataType.DURATION,
 }
 
-# SDMX data types that a schema may give to a component of each VTL type,
-# following "Mapping SDMX data types to VTL basic scalar types" in the SDMX
-# technical notes. GregorianYear, GregorianYearMonth and Month are left
-# out: a VTL date is a full date, and pysdmx holds a Month as an integer.
+# SDMX data types that a schema may give to a component of each VTL type:
+# the ones that can hold its values. They are the data types converted to
+# that VTL type by "Mapping SDMX data types to VTL basic scalar types" in the
+# SDMX technical notes, with these differences: a VTL date is a full date, so
+# GregorianYear and GregorianYearMonth cannot hold it but StandardTimePeriod
+# and ObservationalTimePeriod can; a VTL time is an interval, which
+# StandardTimePeriod cannot hold; and pysdmx holds a Month as an integer.
 SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
     String: frozenset(
         {
@@ -93,6 +97,8 @@ SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
             DataType.DATE_TIME,
             DataType.BASIC_TIME_PERIOD,
             DataType.GREGORIAN_TIME_PERIOD,
+            DataType.STD_TIME_PERIOD,
+            DataType.PERIOD,
         }
     ),
     TimePeriod: frozenset(
@@ -109,13 +115,7 @@ SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
             DataType.PERIOD,
         }
     ),
-    TimeInterval: frozenset(
-        {
-            DataType.TIME_RANGE,
-            DataType.STD_TIME_PERIOD,
-            DataType.PERIOD,
-        }
-    ),
+    TimeInterval: frozenset({DataType.TIME_RANGE, DataType.PERIOD}),
     Duration: frozenset({DataType.DURATION}),
 }
 
@@ -207,10 +207,11 @@ def convert_dataset_to_sdmx(
 
     The data types follow the mappings between SDMX data types and VTL basic
     scalar types of the SDMX technical notes. A `schema` may give a component
-    any SDMX data type mapped to its VTL type (e.g. `Double`, `Decimal` or
-    `Float` for a VTL number). A generated schema uses the default SDMX data
-    type of each VTL type (e.g. `DateTime` for a VTL date), except for a VTL
-    number, which is a `Double`.
+    any SDMX data type that can hold the values of its VTL type (e.g.
+    `Double`, `Decimal` or `Float` for a VTL number). A generated schema uses
+    the default SDMX data type of each VTL type (e.g. `DateTime` for a VTL
+    date), except for a VTL number, which is a `Double`, and a VTL time,
+    which is a `TimeRange`.
 
     A dataset without data (e.g. a result of the semantic analysis of
     vtlengine, which only has the components) is converted too: the

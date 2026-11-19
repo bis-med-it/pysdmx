@@ -528,7 +528,7 @@ def test_convert_to_sdmx_type_mappings(
     assert components_dict["DATE_ATTR"].dtype == DataType.DATE_TIME
     assert components_dict["PERIOD_DIM"].dtype == DataType.REP_TIME_PERIOD
     assert components_dict["DURATION_ATTR"].dtype == DataType.DURATION
-    assert components_dict["TIME_ATTR"].dtype == DataType.STD_TIME_PERIOD
+    assert components_dict["TIME_ATTR"].dtype == DataType.TIME_RANGE
 
     # Attributes should have attachment_level "O"
     assert components_dict["BOOLEAN_ATTR"].attachment_level == "O"
@@ -795,6 +795,7 @@ def _one_measure(
         (Integer, DataType.LONG, 1),
         (Number, DataType.DECIMAL, 1.5),
         (Date, DataType.DATE_TIME, "2025-12-19"),
+        (Date, DataType.STD_TIME_PERIOD, "2025-12-19"),
         (TimePeriod, DataType.REP_TIME_PERIOD, "2025-Q1"),
         (TimeInterval, DataType.TIME_RANGE, "2025-01-01/2025-12-31"),
     ],
@@ -810,9 +811,16 @@ def test_convert_to_sdmx_schema_with_compatible_type(
     assert pandas_dataset.structure == schema
 
 
-def test_convert_to_sdmx_schema_time_of_day_for_vtl_time() -> None:
-    """The SDMX Time is a time of day, not a VTL time (an interval)."""
-    dataset, schema = _one_measure(TimeInterval, DataType.TIME, "12:00:00")
+@pytest.mark.parametrize(
+    "sdmx_type", [DataType.TIME, DataType.STD_TIME_PERIOD]
+)
+def test_convert_to_sdmx_schema_type_without_intervals_for_vtl_time(
+    sdmx_type: DataType,
+) -> None:
+    """A VTL time is an interval, which these SDMX types cannot hold."""
+    dataset, schema = _one_measure(
+        TimeInterval, sdmx_type, "2025-01-01/2025-12-31"
+    )
 
     with pytest.raises(
         Invalid,
