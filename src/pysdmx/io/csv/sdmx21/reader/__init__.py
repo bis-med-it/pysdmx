@@ -42,8 +42,8 @@ def read_stream(chunks: Iterable[str]) -> List[PandasDataset]:
             "Check the docs for the proper structure on content.",
         )
 
-    # Convert all columns to strings
-    df_csv = df_csv.astype(str).replace({"nan": "NaN", "<NA>": "NaN"})
+    # Normalise the nan and <NA> markers to NaN
+    df_csv = df_csv.replace({"nan": "NaN", "<NA>": "NaN"})
     df_csv = drop_labels(df_csv)
 
     # Grouping columns to separate datasets
