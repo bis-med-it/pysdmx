@@ -4,6 +4,7 @@ from typing import Dict, List, Literal, Optional, Sequence, Tuple
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
+    data_set_attributes,
     transform_dataframe_for_writing,
     validate_schema_exists,
 )
@@ -228,7 +229,7 @@ def _write_csv_2_aux(
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         # Add additional attributes to the dataset
-        for k, v in dataset.attributes.items():
+        for k, v in data_set_attributes(dataset).items():
             df[k] = v
 
         if partial_keys:

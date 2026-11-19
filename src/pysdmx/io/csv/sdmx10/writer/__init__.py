@@ -7,6 +7,7 @@ from typing import Literal, Optional, Sequence, Union
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
+    data_set_attributes,
     transform_dataframe_for_writing,
     validate_schema_exists,
 )
@@ -58,7 +59,7 @@ def write(
         df = transform_dataframe_for_writing(df, schema)
 
         # Add additional attributes to the dataset
-        for k, v in dataset.attributes.items():
+        for k, v in data_set_attributes(dataset).items():
             df[k] = v
         structure_id = dataset.short_urn.split("=")[1]
         if time_format is not None and time_format != "original":
