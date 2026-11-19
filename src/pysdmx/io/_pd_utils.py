@@ -1,5 +1,5 @@
 from copy import copy
-from typing import Any, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -165,33 +165,121 @@ def typed_values(values: Dict[str, Any], schema: Schema) -> pd.DataFrame:
     return PandasDataset(structure=schema, data=data).data
 
 
-def first_value_to_write(values: pd.Series) -> Optional[str]:
-    """Give the text to write of the first value of a column.
+def attribute_text(value: Any) -> Optional[str]:
+    """Give the text of the value of a data set attribute.
+
+    NaN is a value, the marker of a number that is not one: only a null
+    or an empty string is no value.
 
     Args:
-        values: The values of a column, with at least one.
+        value: The value of the attribute.
 
     Returns:
-        The text of the value, as ``format_value`` gives it, or None if
-        it is null or empty.
+        The text of the value, as ``format_value`` gives it, ``NaN`` for
+        NaN and None if the attribute has no value.
     """
-    value = values_to_write(values.iloc[:1]).iloc[0]
+    if isinstance(value, (float, np.floating)) and np.isnan(value):
+        return "NaN"
     return _get_value_to_write(value, required=False)
 
 
-def data_set_attributes(dataset: PandasDataset) -> Dict[str, Optional[str]]:
+def sdmx_csv_text(values: pd.Series) -> Optional[str]:
+    """Give the text that the SDMX-CSV writers write for a value.
+
+    Args:
+        values: A column with the value.
+
+    Returns:
+        The text of the value, or None if it is null or empty.
+    """
+    value = values_to_write(values).iloc[0]
+    return _get_value_to_write(value, required=False)
+
+
+def sdmx_ml_text(values: pd.Series) -> Optional[str]:
+    """Give the text that the SDMX-ML writers write for a value.
+
+    Args:
+        values: A column with the value.
+
+    Returns:
+        The text of the value, or None if it is null or empty.
+    """
+    text = str(stringify_dataframe(values.to_frame()).iloc[0, 0])
+    return text or None
+
+
+def first_value_to_write(
+    values: pd.Series,
+    to_text: Callable[[pd.Series], Optional[str]] = sdmx_csv_text,
+) -> Optional[str]:
+    """Give the text to write of the first value of a column.
+
+    The text is the one that a writer gives a value of the column, so
+    that a float is ``100.0`` or ``1e-07`` for the SDMX-CSV writers and
+    ``100`` or ``1e-7`` for the SDMX-ML ones. NaN is ``NaN`` for both:
+    it is a value, unlike a null.
+
+    Args:
+        values: The values of a column, with at least one.
+        to_text: The text that the writer gives the value of a column.
+
+    Returns:
+        The text of the value, or None if it is null or empty.
+    """
+    first = values.iloc[:1]
+    value = first.iloc[0]
+    if isinstance(value, float) and np.isnan(value):
+        return "NaN"
+    return to_text(first)
+
+
+def data_set_attribute_ids(schema: Schema) -> List[str]:
+    """Give the ids of the data set attributes of a schema."""
+    return [
+        attribute.id
+        for attribute in schema.components.attributes
+        if attribute.attachment_level == "D"
+    ]
+
+
+def data_set_attributes(
+    dataset: PandasDataset,
+    to_text: Callable[[pd.Series], Optional[str]] = sdmx_csv_text,
+) -> Dict[str, Optional[str]]:
     """Give the data set attributes of a dataset as the text to write.
+
+    A data set attribute of the schema gets the text that the writer
+    gives a value of the type of its component in a column, for a value
+    to read the same at every level of a message. The other attributes
+    get the text of ``format_value``.
 
     Args:
         dataset: The dataset.
+        to_text: The text that the writer gives the value of a column.
 
     Returns:
-        The text of the value of each attribute, as ``format_value``
-        gives it, or None if the attribute has no value.
+        The text of the value of each attribute, or None if the
+        attribute has no value.
+
+    Raises:
+        Invalid: If a data set attribute does not fit the type of its
+            component.
     """
-    return {
-        name: _get_value_to_write(value, required=False)
+    schema = validate_schema_exists(dataset)
+    given = {
+        name: attribute_text(value)
         for name, value in dataset.attributes.items()
+    }
+    names = data_set_attribute_ids(schema)
+    typed = typed_values(
+        {name: given[name] for name in names if name in given}, schema
+    )
+    return {
+        name: first_value_to_write(typed[name], to_text)
+        if name in typed.columns
+        else text
+        for name, text in given.items()
     }
 
 
@@ -213,7 +301,7 @@ def text_dataset(dataset: PandasDataset) -> PandasDataset:
     result.data = stringify_dataframe(dataset.data)
     result.attributes = {
         name: value
-        for name, value in data_set_attributes(dataset).items()
+        for name, value in data_set_attributes(dataset, sdmx_ml_text).items()
         if value is not None
     }
     return result

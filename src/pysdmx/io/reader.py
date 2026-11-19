@@ -292,14 +292,14 @@ def __manage_dataset_level_attributes(dataset: Dataset) -> None:
             type of its component.
     """
     # This function requires the dataset to have a structure defined.
-    from pysdmx.io._pd_utils import first_value_to_write, typed_values
+    from pysdmx.io._pd_utils import (
+        data_set_attribute_ids,
+        first_value_to_write,
+        typed_values,
+    )
 
     schema = cast(Schema, dataset.structure)
-    names = [
-        att.id
-        for att in schema.components.attributes
-        if att.attachment_level == "D"
-    ]
+    names = data_set_attribute_ids(schema)
     given = dataset.attributes
     if len(given) > 0:
         values = typed_values(
