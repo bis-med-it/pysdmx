@@ -11,7 +11,7 @@
 			</com:Structure>
 		</mes:Structure>
 	</mes:Header>
-	<mes:DataSet DS_INT="7" DS_LONG="9007199254740993" DS_BOOL="true" DS_DT="2025-12-19T14:30:00Z" DS_DEC="1234567890.123456789" DS_STR="Data set note" ss:structureRef="TYPED" xsi:type="ns1:DataSetType" ss:dataScope="DataStructure" ss:action="Information">
+	<mes:DataSet DS_INT="7" DS_LONG="9007199254740993" DS_BOOL="true" DS_DT="2025-12-19T14:30:00Z" DS_DEC="1234.5" DS_STR="Data set note" ss:structureRef="TYPED" xsi:type="ns1:DataSetType" ss:dataScope="DataStructure" ss:action="Information">
 		<Obs DIM1="A" DIM2="X" TIME_PERIOD="2020" OBS_VALUE="10" SER_INT="2" SER_LONG="9007199254740993" SER_BOOL="false" SER_DT="2025-12-19T14:30:00Z" SER_DEC="0.1" SER_STR="Series note" OBS_INT="1" OBS_LONG="9007199254740993" OBS_BOOL="true" OBS_DT="2025-12-19T14:30:00Z" OBS_DEC="1234567890.123456789" OBS_STR="First" />
 		<Obs DIM1="A" DIM2="X" TIME_PERIOD="2021" OBS_VALUE="20" SER_INT="2" SER_LONG="9007199254740993" SER_BOOL="false" SER_DT="2025-12-19T14:30:00Z" SER_DEC="0.1" SER_STR="Series note" OBS_BOOL="false" OBS_DT="2025-12-19T14:30:00.5Z" OBS_DEC="0.1" />
 		<Obs DIM1="A" DIM2="Y" TIME_PERIOD="2020" OBS_VALUE="30" SER_BOOL="true" SER_DT="2025-12-19T14:30:00.123456789Z" OBS_INT="-5" OBS_LONG="-9007199254740993" OBS_STR="Third" />

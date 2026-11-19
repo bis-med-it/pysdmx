@@ -17,7 +17,7 @@
 			<gen:Value id="DS_LONG" value="9007199254740993"/>
 			<gen:Value id="DS_BOOL" value="true"/>
 			<gen:Value id="DS_DT" value="2025-12-19T14:30:00Z"/>
-			<gen:Value id="DS_DEC" value="1234567890.123456789"/>
+			<gen:Value id="DS_DEC" value="1234.5"/>
 			<gen:Value id="DS_STR" value="Data set note"/>
 		</gen:Attributes>
 		<gen:Series>

@@ -141,6 +141,10 @@ def to_pyarrow_type(comp: Component) -> pd.ArrowDtype:
     For non-enumerated components, maps the SDMX data type to the
     corresponding PyArrow type. All types are nullable by default.
 
+    ``DECIMAL`` components are mapped to ``double``. A ``PandasDataset``
+    casts them to ``decimal128`` instead when float64 cannot hold one of
+    their values, which depends on the data.
+
     Args:
         comp: The SDMX component for which to determine the dtype.
 

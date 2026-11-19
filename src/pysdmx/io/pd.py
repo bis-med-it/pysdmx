@@ -1,7 +1,8 @@
 """Pandas SDMX Dataset."""
 
 from datetime import datetime, timezone
-from typing import Any, Dict
+from decimal import Decimal
+from typing import Any, Collection, Dict, cast
 
 from pysdmx.__extras_check import __check_data_extra
 from pysdmx.model.dataset import Dataset
@@ -11,10 +12,14 @@ __check_data_extra()
 # E402 is needed here to ensure a clear message is used on missing import
 import pandas as pd  # noqa: E402
 import pyarrow as pa  # noqa: E402
-from pandas.api.types import is_datetime64_any_dtype  # noqa: E402
+import pyarrow.compute as pc  # noqa: E402
+from pandas.api.types import (  # noqa: E402
+    is_datetime64_any_dtype,
+    is_float_dtype,
+)
 
 from pysdmx.errors import Invalid  # noqa: E402
-from pysdmx.model import Schema  # noqa: E402
+from pysdmx.model import DataType, Schema  # noqa: E402
 from pysdmx.toolkit.pd import to_pyarrow_schema  # noqa: E402
 
 
@@ -25,8 +30,9 @@ def format_value(value: Any) -> str:
     value. Booleans are written as ``true`` or ``false``. Date times are
     written in UTC, in the ISO 8601 form ``2025-12-19T14:30:00Z``, with
     fractional seconds only when the value has them; a date time without
-    a time zone is taken as UTC. Any other value is written as ``str``
-    gives it.
+    a time zone is taken as UTC. Decimals are written without an
+    exponent and without trailing zeros (``0.1``, ``100``). Any other
+    value is written as ``str`` gives it.
 
     Args:
         value: The value to write. It must not be null.
@@ -43,7 +49,16 @@ def format_value(value: Any) -> str:
         if "." in text:
             text = text.rstrip("0")
         return f"{text}Z"
+    if isinstance(value, Decimal):
+        return format(value.normalize(), "f")
     return str(value)
+
+
+def _is_decimal(dtype: Any) -> bool:
+    """Whether a dtype is a PyArrow decimal."""
+    return isinstance(dtype, pd.ArrowDtype) and pa.types.is_decimal(
+        dtype.pyarrow_dtype
+    )
 
 
 def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -51,8 +66,8 @@ def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     Casts all columns to ``string[pyarrow]`` so that null values become
     ``pd.NA``, fills nulls with empty strings, and converts to plain
-    Python strings. Date times are first given the text that
-    :func:`format_value` gives them, as the cast gives another one.
+    Python strings. Date times and decimals are first given the text
+    that :func:`format_value` gives them, as the cast gives another one.
 
     Args:
         df: The DataFrame to convert.
@@ -64,12 +79,12 @@ def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         return df
     str_dtype = pd.ArrowDtype(pa.string())
     conversion = dict.fromkeys(df.columns, str_dtype)
-    date_times = {
+    formatted = {
         col: df[col].astype(object).map(format_value, na_action="ignore")
         for col in df.columns
-        if is_datetime64_any_dtype(df[col].dtype)
+        if is_datetime64_any_dtype(df[col].dtype) or _is_decimal(df[col].dtype)
     }
-    return df.assign(**date_times).astype(conversion).fillna("").astype(str)
+    return df.assign(**formatted).astype(conversion).fillna("").astype(str)
 
 
 # A date time with a time zone: Z or an offset after the time
@@ -109,10 +124,73 @@ def _to_utc(values: pd.Series) -> pd.Series:
     return with_zone.fillna(without_zone)
 
 
+# A decimal number without an exponent
+_PLAIN = r"^[+-]?(\d+\.?\d*|\.\d+)$"
+# The text before the fractional digits of a number, and its trailing zeros
+_NOT_FRACTION = r"^[^.]*\.?|0+$"
+# float64 holds any number of up to these digits
+_FLOAT64_DIGITS = 15
+_DECIMAL_PRECISION = 38
+
+
+def _to_decimal(values: pd.Series) -> pd.Series:
+    """Convert to decimals the numbers that float64 cannot hold.
+
+    float64 holds a number when the shortest text of its float64 is the
+    same number, as for ``0.10``, ``1.5`` or ``1234.5``. When it holds
+    all the numbers, they are returned as text, to be cast to float64.
+    When it alters at least one of them (``1234567890.123456789``), they
+    are returned as ``decimal128(38, scale)``, the scale being the
+    largest number of fractional digits of a number, trailing zeros
+    apart.
+
+    NaN, the infinities and the numbers with an exponent are not looked
+    at to choose the type: float64 keeps having them. A decimal column
+    has no NaN, and has a number with an exponent only if it fits the
+    scale.
+
+    Args:
+        values: The numbers, as text or as numbers of any type.
+
+    Returns:
+        The numbers as they were given if they are floats, as text if
+        float64 holds them and as decimals if it does not.
+
+    Raises:
+        ArrowInvalid: If a value is not a number that a decimal of 38
+            digits holds, when decimals are needed.
+    """
+    if is_float_dtype(values.dtype):
+        return values
+    if _is_decimal(values.dtype) or values.dtype == object:
+        # Numbers that are not text yet, such as Decimal objects
+        values = values.astype(object).map(format_value, na_action="ignore")
+    values = values.astype(pd.ArrowDtype(pa.string()))
+    text: Any = pa.array(values)
+    if (pc.max(pc.utf8_length(text)).as_py() or 0) <= _FLOAT64_DIGITS:
+        return values
+    plain = pc.if_else(
+        pc.match_substring_regex(text, _PLAIN),
+        text,
+        pa.scalar(None, pa.string()),
+    )
+    fraction = pc.replace_substring_regex(plain, _NOT_FRACTION, "")
+    scale = pc.max(pc.utf8_length(fraction)).as_py() or 0
+    decimal = pa.decimal128(_DECIMAL_PRECISION, scale)
+    shortest = plain.cast(pa.float64()).cast(pa.string())
+    held = pc.equal(plain.cast(decimal), shortest.cast(decimal))
+    if pc.all(held, min_count=0).as_py():
+        return values
+    return pd.Series(
+        pd.arrays.ArrowExtensionArray(text.cast(decimal)), index=values.index
+    )
+
+
 def _prepare_columns(
     data: pd.DataFrame,
     conversion: Dict[str, pd.ArrowDtype],
     str_dtype: pd.ArrowDtype,
+    decimals: Collection[str] = (),
 ) -> None:
     """Prepare DataFrame columns for PyArrow type conversion.
 
@@ -120,24 +198,33 @@ def _prepare_columns(
     so that the conversion succeeds. For timestamp target dtypes,
     converts the values to UTC first, because PyArrow accepts neither
     a mix of values with and without a time zone nor, for a time zone
-    aware type, a value without one. For string target
+    aware type, a value without one. For decimal columns, converts the
+    values to decimals when float64 cannot hold them, and the target
+    dtype becomes theirs. For string target
     dtypes with mixed-type object columns, converts values to Python
     str first because PyArrow cannot infer the string type from a
     column containing both integers and strings.
 
     Args:
         data: The DataFrame to modify in place.
-        conversion: Mapping of column names to target ArrowDtype.
+        conversion: Mapping of column names to target ArrowDtype, which
+            gets the dtype of the columns converted to decimals.
         str_dtype: The PyArrow string dtype for comparison.
+        decimals: The columns of DECIMAL components.
 
     Raises:
-        ValueError: If a value of a timestamp column is not a date time.
+        ValueError: If a value of a timestamp column is not a date time,
+            or a value of a decimal column is not a number.
     """
     for col, dtype in conversion.items():
         if dtype != str_dtype:
             data[col] = data[col].replace("", None)
             if pa.types.is_timestamp(dtype.pyarrow_dtype):
                 data[col] = _to_utc(data[col])
+            elif col in decimals:
+                data[col] = _to_decimal(data[col])
+                if _is_decimal(data[col].dtype):
+                    conversion[col] = cast("pd.ArrowDtype", data[col].dtype)
         elif data[col].dtype == object:
             mask = data[col].notna()
             data.loc[mask, col] = data.loc[mask, col].astype(str)
@@ -154,6 +241,13 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
     ``DATE_TIME`` components are cast to ``timestamp[ns, tz=UTC]``: a
     value with ``Z`` or an offset is converted to UTC and a value without
     a time zone is taken as UTC.
+
+    ``DECIMAL`` components are cast to ``double`` when float64 holds all
+    their values as they are given (``0.10``, ``1.5``, ``1234.5``). If
+    it would alter one of them (``1234567890.123456789``), the column is
+    cast to ``decimal128(38, scale)`` instead, the scale being the
+    largest number of fractional digits of its values. A value of more
+    than 38 digits raises ``Invalid``.
 
     Args:
         data: Pandas Dataframe to contain SDMX data.
@@ -188,8 +282,13 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
                 col: schema_dtypes.get(col, str_dtype)
                 for col in self.data.columns
             }
+            decimals = {
+                component.id
+                for component in self.structure.components
+                if component.dtype == DataType.DECIMAL
+            }
             try:
-                _prepare_columns(self.data, conversion, str_dtype)
+                _prepare_columns(self.data, conversion, str_dtype, decimals)
                 self.data = self.data.astype(conversion)
             except (ValueError, TypeError, pa.ArrowInvalid) as e:
                 raise Invalid(
