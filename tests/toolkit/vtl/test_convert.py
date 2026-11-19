@@ -378,7 +378,11 @@ def vtl_all_types_dataset() -> VTLengineDataset:
             "DATE_ATTR": ["2025-01-01", "2025-01-02", "2025-01-03"],
             "PERIOD_DIM": ["2025", "2025-01", "2025-Q1"],
             "DURATION_ATTR": ["P1Y", "P1M", "P1D"],
-            "TIME_ATTR": ["12:00:00", "13:30:00", "14:45:00"],
+            "TIME_ATTR": [
+                "2025-01-01/2025-12-31",
+                "2025-01-01/2025-03-31",
+                "2025-01-01/2025-01-01",
+            ],
         }
     )
     return VTLengineDataset(
@@ -826,6 +830,43 @@ def test_convert_to_sdmx_schema_type_without_intervals_for_vtl_time(
         Invalid,
         match="Component mismatch between VTL Dataset and Schema",
     ):
+        convert_dataset_to_sdmx(dataset, schema=schema)
+
+
+def test_time_ranges_are_converted_to_vtl_times_and_back() -> None:
+    """A TimeRange has a duration, a VTL time has the last day."""
+    _, schema = _one_measure(TimeInterval, DataType.TIME_RANGE, None)
+    ranges = ["2025-01-01/P1Y", "2025-01-31/P1M1D", "2025-03-10/P14D", None]
+    data = pd.DataFrame({"DIM": ["A", "B", "C", "D"], "ME": ranges})
+    dataset = PandasDataset(structure=schema, data=data)
+
+    vtl_dataset = convert_dataset_to_vtl(dataset, "DS")
+    back = convert_dataset_to_sdmx(vtl_dataset, schema=schema)
+
+    assert vtl_dataset.data["ME"].tolist()[:3] == [
+        "2025-01-01/2025-12-31",
+        "2025-01-31/2025-02-28",
+        "2025-03-10/2025-03-23",
+    ]
+    pd.testing.assert_frame_equal(back.data, dataset.data)
+
+
+def test_time_range_that_is_not_a_vtl_time() -> None:
+    """Vtlengine holds a time as two dates, so a time of day is refused."""
+    _, schema = _one_measure(TimeInterval, DataType.TIME_RANGE, None)
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["2025-01-01T12:00:00/PT6H"]})
+    dataset = PandasDataset(structure=schema, data=data)
+
+    with pytest.raises(Invalid, match="cannot be converted to a VTL time"):
+        convert_dataset_to_vtl(dataset, "DS")
+
+
+def test_vtl_time_that_is_not_an_interval() -> None:
+    dataset, schema = _one_measure(
+        TimeInterval, DataType.TIME_RANGE, "12:00:00"
+    )
+
+    with pytest.raises(Invalid, match="is not a VTL time"):
         convert_dataset_to_sdmx(dataset, schema=schema)
 
 

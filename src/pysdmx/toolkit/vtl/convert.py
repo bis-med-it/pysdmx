@@ -1,6 +1,15 @@
 """Conversions between pysdmx SDMX objects and vtlengine VTL objects."""
 
-from typing import Dict, FrozenSet, Optional, Type, Union
+import re
+from typing import (
+    Callable,
+    Dict,
+    FrozenSet,
+    Optional,
+    Sequence,
+    Type,
+    Union,
+)
 
 import pandas as pd
 from vtlengine.API import (  # type: ignore[attr-defined]
@@ -131,6 +140,15 @@ VTL_TO_SDMX_ROLE_MAP: Dict[VTLRole, Role] = {
 
 VALID_SDMX_TYPES = {"DataStructure", "Dataflow", "ProvisionAgreement"}
 
+# An SDMX TimeRange that a VTL time can hold: a date and a duration in days
+_TIME_RANGE = re.compile(
+    r"(\d{4}-\d{2}-\d{2})"
+    r"/P(?=\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?"
+)
+# A VTL time, as vtlengine holds it: the first and the last day
+_VTL_TIME = re.compile(r"(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})")
+_ONE_DAY = pd.Timedelta(days=1)
+
 
 def convert_dataset_to_vtl(
     dataset: PandasDataset, vtl_dataset_name: str
@@ -141,8 +159,12 @@ def convert_dataset_to_vtl(
     structure (Schema), into a vtlengine Dataset. It uses vtlengine's
     conversion functions to handle the Schema to VTL structure mapping.
 
+    The values of the `TimeRange` components, which are a start and a
+    duration (`2025-01-01/P1Y`), are given as VTL times, which are the first
+    and the last day (`2025-01-01/2025-12-31`).
+
     It raises an Invalid exception if the dataset structure is not a
-    Schema object.
+    Schema object, or if a `TimeRange` has a time of day.
 
     Args:
         dataset: The PandasDataset to convert.
@@ -164,6 +186,16 @@ def convert_dataset_to_vtl(
 
     schema = dataset.structure
     pd_dataset = dataset.data
+    time_ranges = [
+        c.id for c in schema.components if c.dtype == DataType.TIME_RANGE
+    ]
+    if time_ranges:
+        pd_dataset = pd_dataset.assign(
+            **{
+                c: _convert_values(pd_dataset[c], _time_range_to_vtl_time)
+                for c in time_ranges
+            }
+        )
 
     # Use vtlengine's built-in conversion function to convert Schema to VTL
     vtl_json = to_vtl_json(schema, vtl_dataset_name)
@@ -178,11 +210,102 @@ def convert_dataset_to_vtl(
     return vtl_dataset
 
 
+def _convert_values(
+    values: pd.Series, convert: Callable[[str], str]
+) -> pd.Series:
+    """Converts the values of a column, each distinct value once."""
+    converted = {value: convert(value) for value in values.dropna().unique()}
+    return values.map(converted).astype(values.dtype)
+
+
+def _dates(texts: Sequence[str]) -> pd.DatetimeIndex:
+    """Gives the dates of some texts, with a null if a text is not a date."""
+    return pd.to_datetime(list(texts), format="%Y-%m-%d", errors="coerce")
+
+
+def _time_range_to_vtl_time(value: str) -> str:
+    """Gives an SDMX TimeRange as a VTL time.
+
+    A TimeRange is a start and a duration (`2025-01-01/P1Y`). A VTL time is
+    the first and the last day (`2025-01-01/2025-12-31`).
+
+    Args:
+        value: The TimeRange.
+
+    Returns:
+        The VTL time.
+
+    Raises:
+        Invalid: If the TimeRange is not a date and a duration in years,
+            months, weeks or days, which is all that a VTL time can hold.
+    """
+    match = _TIME_RANGE.fullmatch(value)
+    dates = _dates(match.groups()[:1] if match else ())
+    if match is None or dates.hasnans:
+        raise Invalid(
+            "Validation Error",
+            f"The TimeRange '{value}' cannot be converted to a VTL time: it "
+            "must be a date and a duration in years, months, weeks or days.",
+        )
+    start = dates[0]
+    years, months, weeks, days = (int(n or 0) for n in match.groups()[1:])
+    duration = pd.DateOffset(years=years, months=months, days=7 * weeks + days)
+    return f"{match[1]}/{(start + duration - _ONE_DAY).date()}"
+
+
+def _vtl_time_to_time_range(value: str) -> str:
+    """Gives a VTL time as an SDMX TimeRange.
+
+    A VTL time is the first and the last day (`2025-01-01/2025-12-31`). A
+    TimeRange is a start and a duration (`2025-01-01/P1Y`), given here in
+    years, months and days.
+
+    Args:
+        value: The VTL time.
+
+    Returns:
+        The TimeRange.
+
+    Raises:
+        Invalid: If the value is not a VTL time.
+    """
+    match = _VTL_TIME.fullmatch(value)
+    dates = _dates(match.groups() if match else ())
+    if match is None or dates.hasnans:
+        raise Invalid(
+            "Validation Error",
+            f"'{value}' is not a VTL time (YYYY-MM-DD/YYYY-MM-DD).",
+        )
+    first, last = dates
+    end = last + _ONE_DAY
+    months = (end.year - first.year) * 12 + end.month - first.month
+    months -= end.day < first.day
+    days = (end - (first + pd.DateOffset(months=months))).days
+    parts = zip((months // 12, months % 12, days), "YMD")
+    return f"{match[1]}/P{''.join(f'{n}{unit}' for n, unit in parts if n)}"
+
+
 def _data(dataset: VTLengineDataset) -> pd.DataFrame:
-    """Returns the data of a VTL dataset, without rows if it has no data."""
+    """Returns the data of a VTL dataset, as SDMX holds them.
+
+    The data have no rows if the dataset has no data, and the VTL times are
+    given as SDMX TimeRanges.
+    """
     if dataset.data is None:
         return pd.DataFrame(columns=list(dataset.components))
-    return dataset.data
+    times = [
+        name
+        for name, component in dataset.components.items()
+        if _vtl_dtype_class(component.data_type) is TimeInterval
+    ]
+    if not times:
+        return dataset.data
+    return dataset.data.assign(
+        **{
+            name: _convert_values(dataset.data[name], _vtl_time_to_time_range)
+            for name in times
+        }
+    )
 
 
 def convert_dataset_to_sdmx(
@@ -212,6 +335,10 @@ def convert_dataset_to_sdmx(
     the default SDMX data type of each VTL type (e.g. `DateTime` for a VTL
     date), except for a VTL number, which is a `Double`, and a VTL time,
     which is a `TimeRange`.
+
+    The values of the VTL times, which are the first and the last day
+    (`2025-01-01/2025-12-31`), are given as SDMX `TimeRange` values, which
+    are a start and a duration (`2025-01-01/P1Y`).
 
     A dataset without data (e.g. a result of the semantic analysis of
     vtlengine, which only has the components) is converted too: the
