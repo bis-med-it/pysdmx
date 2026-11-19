@@ -1,9 +1,11 @@
+from datetime import date, datetime, timedelta, timezone
+
 import pandas as pd
 import pyarrow as pa
 import pytest
 
 from pysdmx.errors import Invalid
-from pysdmx.io.pd import PandasDataset
+from pysdmx.io.pd import PandasDataset, format_value
 from pysdmx.model import (
     Component,
     Components,
@@ -194,6 +196,37 @@ def test_stringify_dataframe():
     # version (object in pandas 2, str in pandas 3)
     plain_str = pd.Series(dtype=str).dtype
     assert all(result[c].dtype == plain_str for c in result.columns)
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (True, "true"),
+        (False, "false"),
+        (1, "1"),
+        (9007199254740993, "9007199254740993"),
+        ("text", "text"),
+        (date(2020, 1, 5), "2020-01-05"),
+        (datetime(2025, 12, 19, 14, 30), "2025-12-19T14:30:00Z"),
+        (
+            datetime(2025, 12, 19, 14, 30, 0, 500000),
+            "2025-12-19T14:30:00.5Z",
+        ),
+        (
+            datetime(
+                2025, 12, 19, 14, 30, tzinfo=timezone(timedelta(hours=2))
+            ),
+            "2025-12-19T12:30:00Z",
+        ),
+        (pd.Timestamp("2025-12-19T14:30:10"), "2025-12-19T14:30:10Z"),
+        (
+            pd.Timestamp("2025-12-19T14:30:00.123456789+02:00"),
+            "2025-12-19T12:30:00.123456789Z",
+        ),
+    ],
+)
+def test_format_value(value, expected):
+    assert format_value(value) == expected
 
 
 def test_stringify_dataframe_empty():

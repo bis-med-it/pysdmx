@@ -116,6 +116,10 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
     on the component data types. When the structure is a URN string,
     all columns are cast to ``string[pyarrow]``.
 
+    ``DATE_TIME`` components are cast to ``timestamp[ns, tz=UTC]``: a
+    value with ``Z`` or an offset is converted to UTC and a value without
+    a time zone is taken as UTC.
+
     Args:
         data: Pandas Dataframe to contain SDMX data.
     """
