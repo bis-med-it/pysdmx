@@ -278,9 +278,12 @@ def test_get_token_reacquires_when_no_token(respx_mock):
 
 
 def test_get_token_reacquires_when_expired(respx_mock):
-    respx_mock.post(TOKEN_URL).mock(side_effect=[_ok("AT1"), _ok("AT2")])
+    respx_mock.post(TOKEN_URL).mock(
+        side_effect=[_ok("AT1", expires_in=60), _ok("AT2")]
+    )
 
     auth = ClientCredentialsAuthentication(AUTHORITY, "cid", "secret")
+    # a lifetime within the renewal margin does not expire the token at once
     assert auth.get_token() == "AT1"
 
     auth._expiration_time = time.time() - 10  # force the cache to expire
