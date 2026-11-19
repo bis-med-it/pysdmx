@@ -5,6 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import httpx
+import pandas as pd
 import pytest
 
 from pysdmx.api.qb import lenient
@@ -561,6 +562,19 @@ def test_get_datasets_csv_v1(data_csv_v1_path):
     assert isinstance(dataset.structure, str)
     assert dataset.data is not None
     assert len(dataset.data) == 1000
+
+
+@pytest.mark.parametrize(
+    "csv_file", ["csv_numeric_text_10.csv", "csv_numeric_text_20.csv"]
+)
+def test_read_csv_keeps_values_as_written(samples_folder, csv_file):
+    # Codes such as 01, decimals such as 1.50 and booleans are read as
+    # they are written, as from the same data in SDMX-ML.
+    expected = read_sdmx(samples_folder / "dataset_numeric_text.xml").data[0]
+
+    dataset = read_sdmx(samples_folder / csv_file).data[0]
+
+    pd.testing.assert_frame_equal(dataset.data, expected.data, check_like=True)
 
 
 def test_get_datasets_dataflow_children(data_dataflow, dataflow_children):
