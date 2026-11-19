@@ -1,6 +1,6 @@
 """Conversions between pysdmx SDMX objects and vtlengine VTL objects."""
 
-from typing import Dict, Optional, Type, Union
+from typing import Dict, FrozenSet, Optional, Type, Union
 
 import pandas as pd
 from vtlengine.API import (  # type: ignore[attr-defined]
@@ -35,16 +35,88 @@ from pysdmx.model import (
 )
 from pysdmx.model.dataflow import Role, Schema
 
-# VTL to SDMX type mapping
+# SDMX data type given to a component of each VTL type in a generated
+# schema. The defaults are those of "Mapping VTL basic scalar types to SDMX
+# data types" in the SDMX technical notes, except for Number: Float has
+# 32 bits, so it would alter the digits of a VTL number.
 VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
     String: DataType.STRING,
     Integer: DataType.INTEGER,
     Number: DataType.DOUBLE,
     Boolean: DataType.BOOLEAN,
-    Date: DataType.DATE,
-    TimePeriod: DataType.PERIOD,
-    TimeInterval: DataType.TIME,
+    Date: DataType.DATE_TIME,
+    TimePeriod: DataType.REP_TIME_PERIOD,
+    TimeInterval: DataType.STD_TIME_PERIOD,
     Duration: DataType.DURATION,
+}
+
+# SDMX data types that a schema may give to a component of each VTL type,
+# following "Mapping SDMX data types to VTL basic scalar types" in the SDMX
+# technical notes. GregorianYear, GregorianYearMonth and Month are left
+# out: a VTL date is a full date, and pysdmx holds a Month as an integer.
+SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
+    String: frozenset(
+        {
+            DataType.STRING,
+            DataType.ALPHA,
+            DataType.ALPHA_NUM,
+            DataType.NUMERIC,
+            DataType.URI,
+            DataType.MONTH_DAY,
+            DataType.DAY,
+            DataType.TIME,
+        }
+    ),
+    Integer: frozenset(
+        {
+            DataType.INTEGER,
+            DataType.LONG,
+            DataType.SHORT,
+            DataType.COUNT,
+            DataType.BIG_INTEGER,
+        }
+    ),
+    Number: frozenset(
+        {
+            DataType.DOUBLE,
+            DataType.DECIMAL,
+            DataType.FLOAT,
+            DataType.INC_VAL_RANGE,
+            DataType.EXC_VAL_RANGE,
+            DataType.INCREMENTAL,
+        }
+    ),
+    Boolean: frozenset({DataType.BOOLEAN}),
+    Date: frozenset(
+        {
+            DataType.DATE,
+            DataType.DATE_TIME,
+            DataType.BASIC_TIME_PERIOD,
+            DataType.GREGORIAN_TIME_PERIOD,
+        }
+    ),
+    TimePeriod: frozenset(
+        {
+            DataType.REP_TIME_PERIOD,
+            DataType.REP_YEAR,
+            DataType.REP_SEMESTER,
+            DataType.REP_TRIMESTER,
+            DataType.REP_QUARTER,
+            DataType.REP_MONTH,
+            DataType.REP_WEEK,
+            DataType.REP_DAY,
+            DataType.STD_TIME_PERIOD,
+            DataType.PERIOD,
+        }
+    ),
+    TimeInterval: frozenset(
+        {
+            DataType.TIME_RANGE,
+            DataType.STD_TIME_PERIOD,
+            DataType.PERIOD,
+        }
+    ),
+    Duration: frozenset({DataType.DURATION}),
 }
 
 # Role mapping
@@ -132,6 +204,13 @@ def convert_dataset_to_sdmx(
     schema. If no `schema` is provided, a `reference` must be given so a new
     SDMX structure (with components, roles, and data types mapped from the
     VTL dataset) can be created.
+
+    The data types follow the mappings between SDMX data types and VTL basic
+    scalar types of the SDMX technical notes. A `schema` may give a component
+    any SDMX data type mapped to its VTL type (e.g. `Double`, `Decimal` or
+    `Float` for a VTL number). A generated schema uses the default SDMX data
+    type of each VTL type (e.g. `DateTime` for a VTL date), except for a VTL
+    number, which is a `Double`.
 
     A dataset without data (e.g. a result of the semantic analysis of
     vtlengine, which only has the components) is converted too: the
@@ -227,6 +306,15 @@ def convert_dataset_to_sdmx(
     return pandas_dataset
 
 
+def _vtl_dtype_class(
+    vtl_dtype_value: Union[ScalarType, Type[ScalarType]],
+) -> Type[ScalarType]:
+    """Return the class of a VTL scalar type, given as a class or instance."""
+    if isinstance(vtl_dtype_value, type):
+        return vtl_dtype_value
+    return type(vtl_dtype_value)
+
+
 def _map_vtl_dtype_to_sdmx(
     vtl_dtype_value: Union[ScalarType, Type[ScalarType]],
 ) -> DataType:
@@ -241,10 +329,7 @@ def _map_vtl_dtype_to_sdmx(
     Raises:
         Invalid: If the VTL DataType cannot be mapped to an SDMX DataType.
     """
-    if isinstance(vtl_dtype_value, type):
-        vtl_dtype_class: type[ScalarType] = vtl_dtype_value
-    else:
-        vtl_dtype_class = type(vtl_dtype_value)
+    vtl_dtype_class = _vtl_dtype_class(vtl_dtype_value)
 
     if vtl_dtype_class not in VTL_TO_SDMX_TYPE_MAP:
         supported = ", ".join(str(t.__name__) for t in VTL_TO_SDMX_TYPE_MAP)
@@ -320,13 +405,15 @@ def _validate_vtl_dataset_against_schema(
         comp_id = str(component.id)
         vtl_comp = dataset.components[comp_id]
 
-        # Validate data type using helper
-        expected_sdmx_dtype = _map_vtl_dtype_to_sdmx(vtl_comp.data_type)
-        if component.dtype != expected_sdmx_dtype:
+        # Validate the data type: the VTL type must be supported, and the
+        # SDMX type of the schema must be one mapped to it
+        _map_vtl_dtype_to_sdmx(vtl_comp.data_type)
+        vtl_dtype_class = _vtl_dtype_class(vtl_comp.data_type)
+        if component.dtype not in SDMX_TYPES_BY_VTL_TYPE[vtl_dtype_class]:
             raise Invalid(
                 "Validation Error",
                 "Component mismatch between VTL Dataset and Schema. "
-                f"Component '{comp_id}' has type {expected_sdmx_dtype} "
+                f"Component '{comp_id}' has type {vtl_dtype_class.__name__} "
                 f"in VTL but {component.dtype} in Schema",
             )
 
