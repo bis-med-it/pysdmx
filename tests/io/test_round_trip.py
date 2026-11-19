@@ -7,6 +7,10 @@ offset, with `Z` and without a time zone, and decimals with trailing
 zeros; the other files give the values as every data writer must write
 them. The `groups` files have an attribute attached to a group that only
 some series belong to.
+
+The decimal that float64 cannot hold is in columns with an empty value:
+the SDMX-CSV readers read a column of numbers without one through
+float64 (#776), which is why the data set attribute has none.
 """
 
 from datetime import datetime, timezone
