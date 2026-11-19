@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-import pysdmx.io.input_processor as m
+from pysdmx.api.qb import lenient
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io import read_sdmx
 from pysdmx.io.reader import get_datasets
@@ -236,7 +236,7 @@ def mock_ssl_context(monkeypatch):
         seen["verify"] = verify
         return "CTX"
 
-    monkeypatch.setattr(m, "create_ssl_context", mock_create_ssl_context)
+    monkeypatch.setattr(httpx, "create_ssl_context", mock_create_ssl_context)
     return seen
 
 
@@ -249,7 +249,7 @@ def mock_http_client(monkeypatch, structures_path):
         text=xml_text,
         raise_for_status=lambda: None,
         encoding="utf-8",
-        iter_bytes=lambda: iter([xml_text.encode("utf-8")]),
+        iter_bytes=lambda chunk_size=None: iter([xml_text.encode("utf-8")]),
         request=None,
     )
 
@@ -260,13 +260,13 @@ def mock_http_client(monkeypatch, structures_path):
         def __enter__(self):
             return self
 
-        def stream(self, method, u, timeout=60):
+        def stream(self, method, u, headers=None, timeout=60):
             return contextlib.nullcontext(mock_response)
 
         def __exit__(self, *a):
             return False
 
-    monkeypatch.setattr(m, "httpx_Client", DummyClient)
+    monkeypatch.setattr(httpx, "Client", DummyClient)
     return last
 
 
@@ -324,6 +324,114 @@ def test_read_url_valid(respx_mock, data_csv_v1_str):
     )
     result = read_sdmx(url)
     assert result.data is not None
+
+
+@pytest.mark.data
+def test_read_url_timeout(respx_mock, data_csv_v1_str):
+    url = "http://validurl.com"
+    route = respx_mock.get(url).mock(
+        return_value=httpx.Response(200, content=data_csv_v1_str)
+    )
+
+    read_sdmx(url, timeout=12.0)
+
+    assert route.calls[0].request.extensions["timeout"]["read"] == 12.0
+
+
+@pytest.mark.data
+def test_read_url_default_timeout(respx_mock, data_csv_v1_str):
+    url = "http://validurl.com"
+    route = respx_mock.get(url).mock(
+        return_value=httpx.Response(200, content=data_csv_v1_str)
+    )
+
+    read_sdmx(url)
+
+    assert route.calls[0].request.extensions["timeout"]["read"] == 600.0
+
+
+def test_get_datasets_url_timeout(respx_mock, data_path, structures_path):
+    data_url = "http://validurl.com/data"
+    structure_url = "http://validurl.com/structure"
+    routes = [
+        respx_mock.get(url).mock(
+            return_value=httpx.Response(200, content=Path(path).read_bytes())
+        )
+        for url, path in (
+            (data_url, data_path),
+            (structure_url, structures_path),
+        )
+    ]
+
+    get_datasets(data_url, structure_url, timeout=12.0)
+
+    for route in routes:
+        assert route.calls[0].request.extensions["timeout"]["read"] == 12.0
+
+
+# Eurostat's SDMX API queues a large data query as an asynchronous
+# extraction, and answers with its id instead of the data
+EXTRACTION = "423abd6b-c7b0-4530-b249-7216bf78c785"
+EUROSTAT = "https://ec.europa.eu/eurostat/api/dissemination"
+EUROSTAT_URL = f"{EUROSTAT}/sdmx/2.1/data/nrg_bal_c/A....DE"
+
+
+def eurostat_soap(body: str) -> httpx.Response:
+    return httpx.Response(
+        200,
+        content=(
+            '<?xml version="1.0" encoding="UTF-8" ?>\n<env:Envelope xmlns:env='
+            '"http://schemas.xmlsoap.org/soap/envelope/"><env:Header/>'
+            f"<env:Body>{body}</env:Body></env:Envelope>"
+        ),
+    )
+
+
+def mock_queued_extraction(respx_mock, *statuses: str):
+    respx_mock.get(EUROSTAT_URL).mock(
+        return_value=eurostat_soap(
+            "<ns0:syncResponse xmlns:ns0="
+            '"http://estat.ec.europa.eu/disschain/soap/extraction">'
+            "<processingTime>96</processingTime><queued>"
+            f"<id>{EXTRACTION}</id><status>SUBMITTED</status>"
+            "</queued></ns0:syncResponse>"
+        )
+    )
+    respx_mock.get(f"{EUROSTAT}/1.0/async/status/{EXTRACTION}").mock(
+        side_effect=[
+            eurostat_soap(
+                "<ns0:asyncResponse xmlns:ns0="
+                '"http://estat.ec.europa.eu/disschain/soap/asynchronous" '
+                'xmlns:ns1="http://estat.ec.europa.eu/disschain/asynchronous">'
+                f"<ns1:status><ns1:key>{EXTRACTION}</ns1:key>"
+                f"<ns1:status>{status}</ns1:status></ns1:status>"
+                "</ns0:asyncResponse>"
+            )
+            for status in statuses
+        ]
+    )
+
+
+def test_read_url_queued_extraction(respx_mock, monkeypatch, data_path):
+    monkeypatch.setattr(lenient, "_POLL_EVERY", 0.0)
+    mock_queued_extraction(respx_mock, "AVAILABLE")
+    respx_mock.get(f"{EUROSTAT}/1.0/async/data/{EXTRACTION}").mock(
+        return_value=httpx.Response(200, content=Path(data_path).read_bytes())
+    )
+
+    result = read_sdmx(EUROSTAT_URL)
+
+    assert result.data[0].data.equals(read_sdmx(data_path).data[0].data)
+
+
+def test_read_url_extraction_not_available_in_time(respx_mock, monkeypatch):
+    # The timeout also limits the wait for the extraction to be available
+    monkeypatch.setattr(lenient, "_POLL_EVERY", 0.05)
+    # Limited checks, so that the test ends if the timeout is ignored
+    mock_queued_extraction(respx_mock, *["PROCESSING"] * 100)
+
+    with pytest.raises(Invalid, match="not available after 0.2 seconds"):
+        read_sdmx(EUROSTAT_URL, timeout=0.2)
 
 
 @pytest.mark.data
