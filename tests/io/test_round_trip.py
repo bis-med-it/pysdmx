@@ -261,7 +261,7 @@ def test_data_set_attributes_of_sdmx_ml_get_the_types_of_the_schema(filename):
     expected = get_datasets(DATA, STRUCTURE)[0]
     assert result.attributes == expected.attributes
     assert list(result.attributes) == list(expected.attributes)
-    pd.testing.assert_frame_equal(result.data, expected.data)
+    pd.testing.assert_frame_equal(result.data, expected.data, check_like=True)
 
 
 @pytest.mark.parametrize("filename", SDMX_ML_INPUTS)

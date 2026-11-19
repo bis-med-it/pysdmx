@@ -143,6 +143,42 @@ def _get_value_to_write(
     return format_value(value)
 
 
+def typed_values(values: Dict[str, Any], schema: Schema) -> pd.DataFrame:
+    """Give values the types of their components, as one row of data.
+
+    The values get their types as the columns of a dataset do, for them
+    to be the same wherever they come from: the data set attributes of
+    SDMX-ML are given apart from the data, and those of SDMX-CSV in its
+    columns.
+
+    Args:
+        values: The values, by the id of their component.
+        schema: The schema with the components.
+
+    Returns:
+        The row, with a column for each value.
+
+    Raises:
+        Invalid: If a value does not fit the type of its component.
+    """
+    data = pd.DataFrame({name: [value] for name, value in values.items()})
+    return PandasDataset(structure=schema, data=data).data
+
+
+def first_value_to_write(values: pd.Series) -> Optional[str]:
+    """Give the text to write of the first value of a column.
+
+    Args:
+        values: The values of a column, with at least one.
+
+    Returns:
+        The text of the value, as ``format_value`` gives it, or None if
+        it is null or empty.
+    """
+    value = values_to_write(values.iloc[:1]).iloc[0]
+    return _get_value_to_write(value, required=False)
+
+
 def data_set_attributes(dataset: PandasDataset) -> Dict[str, Optional[str]]:
     """Give the data set attributes of a dataset as the text to write.
 
