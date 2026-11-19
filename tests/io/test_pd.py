@@ -113,6 +113,17 @@ def test_schema_conversion_failure_raises_invalid():
         PandasDataset(structure=schema, data=df)
 
 
+def test_schema_date_time_conversion_failure_raises_invalid():
+    schema = _make_schema(
+        _dim("ID"),
+        _att("UPDATED", DataType.DATE_TIME),
+    )
+    df = pd.DataFrame({"ID": ["A"], "UPDATED": ["not_a_date_time"]})
+
+    with pytest.raises(Invalid, match="Type conversion failed"):
+        PandasDataset(structure=schema, data=df)
+
+
 # --- URN-based tests ---
 
 
@@ -148,6 +159,24 @@ def test_reassign_structure_updates_dtypes():
     ds.structure = schema
 
     assert ds.data["VALUE"].dtype == pd.ArrowDtype(pa.float64())
+
+
+def test_reassign_structure_keeps_date_times_in_utc():
+    schema = _make_schema(
+        _dim("ID"),
+        _att("UPDATED", DataType.DATE_TIME),
+    )
+    df = pd.DataFrame(
+        {"ID": ["A", "B"], "UPDATED": ["2025-12-19T14:30:00+02:00", None]}
+    )
+    ds = PandasDataset(structure=schema, data=df)
+
+    ds.structure = schema
+
+    utc = pd.ArrowDtype(pa.timestamp("ns", tz="UTC"))
+    assert ds.data["UPDATED"].dtype == utc
+    assert ds.data["UPDATED"].iloc[0] == pd.Timestamp("2025-12-19T12:30:00Z")
+    assert pd.isna(ds.data["UPDATED"].iloc[1])
 
 
 # --- Regression tests ---

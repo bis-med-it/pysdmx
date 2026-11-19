@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+  <mes:Header>
+    <mes:ID>ID</mes:ID>
+    <mes:Test>true</mes:Test>
+    <mes:Prepared>2021-01-01T00:00:00</mes:Prepared>
+    <mes:Sender id="ZZZ"/>
+    <mes:Receiver id="Not_Supplied"/>
+  </mes:Header>
+  <mes:Structures>
+    <str:Dataflows>
+      <str:Dataflow id="TYPED" agencyID="MD" version="1.0">
+        <com:Name xml:lang="en">Typed values</com:Name>
+        <str:Structure>
+          <Ref id="TYPED" agencyID="MD" version="1.0" class="DataStructure" package="datastructure"/>
+        </str:Structure>
+      </str:Dataflow>
+    </str:Dataflows>
+    <str:Concepts>
+      <str:ConceptScheme id="TYPED_CONCEPTS" agencyID="MD" version="1.0">
+        <com:Name xml:lang="en">Concepts of the typed values samples</com:Name>
+        <str:Concept id="DIM1">
+          <com:Name xml:lang="en">DIM1</com:Name>
+        </str:Concept>
+        <str:Concept id="DIM2">
+          <com:Name xml:lang="en">DIM2</com:Name>
+        </str:Concept>
+        <str:Concept id="TIME_PERIOD">
+          <com:Name xml:lang="en">TIME_PERIOD</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_VALUE">
+          <com:Name xml:lang="en">OBS_VALUE</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_INT">
+          <com:Name xml:lang="en">DS_INT</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_LONG">
+          <com:Name xml:lang="en">DS_LONG</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_BOOL">
+          <com:Name xml:lang="en">DS_BOOL</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_DT">
+          <com:Name xml:lang="en">DS_DT</com:Name>
+        </str:Concept>
+        <str:Concept id="SER_INT">
+          <com:Name xml:lang="en">SER_INT</com:Name>
+        </str:Concept>
+        <str:Concept id="SER_LONG">
+          <com:Name xml:lang="en">SER_LONG</com:Name>
+        </str:Concept>
+        <str:Concept id="SER_BOOL">
+          <com:Name xml:lang="en">SER_BOOL</com:Name>
+        </str:Concept>
+        <str:Concept id="SER_DT">
+          <com:Name xml:lang="en">SER_DT</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_INT">
+          <com:Name xml:lang="en">OBS_INT</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_LONG">
+          <com:Name xml:lang="en">OBS_LONG</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_BOOL">
+          <com:Name xml:lang="en">OBS_BOOL</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_DT">
+          <com:Name xml:lang="en">OBS_DT</com:Name>
+        </str:Concept>
+      </str:ConceptScheme>
+    </str:Concepts>
+    <str:DataStructures>
+      <str:DataStructure id="TYPED" agencyID="MD" version="1.0">
+        <com:Name xml:lang="en">Typed values at data set, series and observation level</com:Name>
+        <str:DataStructureComponents>
+          <str:DimensionList id="DimensionDescriptor">
+            <str:Dimension id="DIM1" position="1">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DIM1" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="String"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:Dimension id="DIM2" position="2">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DIM2" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="String"/>
+              </str:LocalRepresentation>
+            </str:Dimension>
+            <str:TimeDimension id="TIME_PERIOD" position="3">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="TIME_PERIOD" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="ObservationalTimePeriod"/>
+              </str:LocalRepresentation>
+            </str:TimeDimension>
+          </str:DimensionList>
+          <str:AttributeList id="AttributeDescriptor">
+            <str:Attribute id="DS_INT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_INT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Integer"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_LONG" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_LONG" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Long"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_BOOL" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_BOOL" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Boolean"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_DT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_DT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="DateTime"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="SER_INT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="SER_INT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Integer"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>
+                  <Ref id="DIM1"/>
+                </str:Dimension>
+                <str:Dimension>
+                  <Ref id="DIM2"/>
+                </str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="SER_LONG" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="SER_LONG" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Long"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>
+                  <Ref id="DIM1"/>
+                </str:Dimension>
+                <str:Dimension>
+                  <Ref id="DIM2"/>
+                </str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="SER_BOOL" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="SER_BOOL" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Boolean"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>
+                  <Ref id="DIM1"/>
+                </str:Dimension>
+                <str:Dimension>
+                  <Ref id="DIM2"/>
+                </str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="SER_DT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="SER_DT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="DateTime"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>
+                  <Ref id="DIM1"/>
+                </str:Dimension>
+                <str:Dimension>
+                  <Ref id="DIM2"/>
+                </str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="OBS_INT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_INT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Integer"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:PrimaryMeasure>
+                  <Ref id="OBS_VALUE"/>
+                </str:PrimaryMeasure>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="OBS_LONG" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_LONG" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Long"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:PrimaryMeasure>
+                  <Ref id="OBS_VALUE"/>
+                </str:PrimaryMeasure>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="OBS_BOOL" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_BOOL" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Boolean"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:PrimaryMeasure>
+                  <Ref id="OBS_VALUE"/>
+                </str:PrimaryMeasure>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="OBS_DT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_DT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="DateTime"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:PrimaryMeasure>
+                  <Ref id="OBS_VALUE"/>
+                </str:PrimaryMeasure>
+              </str:AttributeRelationship>
+            </str:Attribute>
+          </str:AttributeList>
+          <str:MeasureList id="MeasureDescriptor">
+            <str:PrimaryMeasure id="OBS_VALUE">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_VALUE" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Integer"/>
+              </str:LocalRepresentation>
+            </str:PrimaryMeasure>
+          </str:MeasureList>
+        </str:DataStructureComponents>
+      </str:DataStructure>
+    </str:DataStructures>
+  </mes:Structures>
+</mes:Structure>

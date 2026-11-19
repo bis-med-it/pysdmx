@@ -31,7 +31,7 @@ from pysdmx.toolkit.pd import to_pyarrow_schema, to_pyarrow_type
         (DataType.BOOLEAN, pa.bool_()),
         (DataType.MONTH, pa.int8()),
         (DataType.DATE, pa.date32()),
-        (DataType.DATE_TIME, pa.timestamp("ns")),
+        (DataType.DATE_TIME, pa.timestamp("ns", tz="UTC")),
     ],
 )
 def test_typed_components(dt: DataType, expected_pa_type):
