@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:StructureSpecificData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message" xmlns:ss="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/data/structurespecific" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/common" xmlns:ns1="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:TEST(1.0):ObsLevelDim:AllDimensions" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_0/message https://registry.sdmx.org/schemas/v3_0/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>numeric_text</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2026-11-19T10:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="TEST" namespace="urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:TEST(1.0)" dimensionAtObservation="AllDimensions">
+			<com:Structure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=MD:TEST(1.0)</com:Structure>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet ss:structureRef="TEST" xsi:type="ns1:DataSetType" action="Information">
+		<Obs SECTOR="01" TIME_PERIOD="2020" OBS_VALUE="1.50" ADJUSTED="true" />
+		<Obs SECTOR="02" TIME_PERIOD="2021" OBS_VALUE="2" ADJUSTED="false" />
+	</mes:DataSet>
+</mes:StructureSpecificData>
