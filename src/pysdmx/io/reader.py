@@ -19,7 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 from pysdmx.errors import Invalid
 from pysdmx.io.format import Format
-from pysdmx.io.input_processor import stream_sdmx
+from pysdmx.io.input_processor import URL_TIMEOUT, stream_sdmx
 from pysdmx.model import AvailabilityConstraint, Schema
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.dataset import Dataset
@@ -34,6 +34,7 @@ def read_sdmx(  # noqa: C901
     sdmx_document: Union[str, Path, BytesIO],
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
+    timeout: float = URL_TIMEOUT,
 ) -> Message:
     """Reads any SDMX message and extracts its content.
 
@@ -47,6 +48,16 @@ def read_sdmx(  # noqa: C901
     A message compressed with gzip (e.g. a ``.gz`` file, or a response of
     Eurostat's SDMX API) is detected from its first bytes and decompressed
     while it is read.
+
+    When reading from a URL, if the server has not started to send the
+    message after 60 seconds, a ``UserWarning`` is emitted, and another one
+    every 10 seconds while it keeps waiting.
+
+    A data query that Eurostat's SDMX API queues as an asynchronous
+    extraction, answering with the id of the extraction instead of the
+    data, is followed: the status of the extraction is checked every 10
+    seconds, until it is available or the timeout has passed, and its data
+    are then read.
 
     .. important::
         When reading a SDMX-JSON structure message, you can read it
@@ -64,6 +75,11 @@ def read_sdmx(  # noqa: C901
           a certificate created by an unknown certificate
           authority, you can pass a PEM file for this
           authority using this parameter.
+        timeout: When using a URL, the seconds to wait for each network
+          operation, such as the server starting to send the message or
+          sending its next part. It does not limit the whole download, but
+          it limits the wait for an asynchronous extraction of Eurostat's
+          SDMX API to be available. Defaults to 600 seconds.
 
     Returns:
         A Message with the content of the SDMX document. A message without
@@ -81,7 +97,7 @@ def read_sdmx(  # noqa: C901
         NotImplemented:
             If the SDMX flavour is detected but not supported yet.
     """
-    chunks, read_format = stream_sdmx(sdmx_document, pem=pem)
+    chunks, read_format = stream_sdmx(sdmx_document, pem=pem, timeout=timeout)
     with contextlib.closing(chunks):
         # A data message without any DataSet is valid SDMX as well (it is
         # how a service answers a query matching nothing), so it is
@@ -305,6 +321,7 @@ def get_datasets(  # pragma: no cover
     structure: None = None,
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
+    timeout: float = URL_TIMEOUT,
 ) -> "Sequence[PandasDataset]": ...
 
 
@@ -314,6 +331,7 @@ def get_datasets(  # pragma: no cover
     structure: Union[str, Path, BytesIO] = ...,
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
+    timeout: float = URL_TIMEOUT,
 ) -> "Sequence[PandasDataset]": ...
 
 
@@ -322,6 +340,7 @@ def get_datasets(
     structure: Optional[Union[str, Path, BytesIO]] = None,
     validate: bool = True,
     pem: Optional[Union[str, Path]] = None,
+    timeout: float = URL_TIMEOUT,
 ) -> "Sequence[PandasDataset]":
     """Reads a data message and a structure message and returns a dataset.
 
@@ -357,6 +376,8 @@ def get_datasets(
             a certificate created by an unknown certificate
             authority, you can pass a PEM file for this
             authority using this parameter.
+        timeout: When using a URL, the seconds to wait for each network
+            operation, as in :func:`read_sdmx`. Defaults to 600 seconds.
 
     Raises:
         Invalid:
@@ -366,13 +387,15 @@ def get_datasets(
             If the related data structure (or dataflow with its children)
             is not found.
     """
-    data_msg = read_sdmx(data, validate=validate, pem=pem)
+    data_msg = read_sdmx(data, validate=validate, pem=pem, timeout=timeout)
     if not data_msg.data:
         raise Invalid("No data found in the data message")
 
     if structure is None:
         return cast("Sequence[PandasDataset]", data_msg.data)
-    structure_msg = read_sdmx(structure, validate=validate, pem=pem)
+    structure_msg = read_sdmx(
+        structure, validate=validate, pem=pem, timeout=timeout
+    )
     if structure_msg.structures is None:
         raise Invalid("No structure found in the structure message")
 
