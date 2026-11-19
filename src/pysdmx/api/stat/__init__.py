@@ -244,7 +244,7 @@ class StatConnector(RegistryClient, BasicConnector):
     (:class:`~pysdmx.api.dc.BasicConnector`) that the FMR client does not
     offer -- :meth:`dataflows`, :meth:`dataflow` and :meth:`data` -- with
     the same signatures as the generic ``SdmxConnector``. Reads are
-    anonymous.
+    anonymous unless a bearer ``token`` is supplied.
 
     Obtain the ``agency``, ``id`` and ``version`` of a dataflow from the
     OECD Data Explorer (https://data-explorer.oecd.org) via its
@@ -256,6 +256,7 @@ class StatConnector(RegistryClient, BasicConnector):
         api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
         timeout: float = 20.0,
+        token: Optional[str] = None,
     ) -> None:
         """Instantiate a .Stat Suite read connector.
 
@@ -265,6 +266,10 @@ class StatConnector(RegistryClient, BasicConnector):
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
+            token: An optional OAuth2 bearer token, for access-controlled
+                deployments; obtain one via a flow in
+                :mod:`pysdmx.api.stat.authentication`. Reads are
+                anonymous when omitted.
         """
         super().__init__(
             api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
@@ -281,6 +286,7 @@ class StatConnector(RegistryClient, BasicConnector):
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
+            token=token,
         )
 
     def _structures(self, query: StructureQuery) -> Sequence[Any]:
@@ -583,7 +589,8 @@ class AsyncStatConnector(AsyncRegistryClient):
     2.1 and parses it with :func:`~pysdmx.io.read_sdmx`, and raises
     :class:`~pysdmx.errors.Invalid` for endpoints .Stat does not serve.
     Adds the async data-discovery-and-retrieval profile: :meth:`dataflows`,
-    :meth:`dataflow` and :meth:`data`.
+    :meth:`dataflow` and :meth:`data`. Reads are anonymous unless a bearer
+    ``token`` is supplied.
     """
 
     def __init__(
@@ -591,6 +598,7 @@ class AsyncStatConnector(AsyncRegistryClient):
         api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
         timeout: float = 20.0,
+        token: Optional[str] = None,
     ) -> None:
         """Instantiate an async .Stat Suite read connector.
 
@@ -600,6 +608,10 @@ class AsyncStatConnector(AsyncRegistryClient):
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
+            token: An optional OAuth2 bearer token, for access-controlled
+                deployments; obtain one via a flow in
+                :mod:`pysdmx.api.stat.authentication`. Reads are
+                anonymous when omitted.
         """
         super().__init__(
             api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
@@ -616,6 +628,7 @@ class AsyncStatConnector(AsyncRegistryClient):
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
+            token=token,
         )
 
     async def _structures(self, query: StructureQuery) -> Sequence[Any]:
@@ -930,7 +943,7 @@ class StatUploader:
     This class is standalone (it does not inherit
     :class:`pysdmx.api.dc.rest.SdmxConnector`): submission needs
     authenticated ``POST`` requests, whereas the connector's
-    ``RestService`` only performs anonymous ``GET`` requests.
+    ``RestService`` only performs ``GET`` requests.
 
     It is the .Stat counterpart of the FMR's
     ``RegistryMaintenanceClient`` but is **not interchangeable** with it.

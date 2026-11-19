@@ -46,6 +46,17 @@ Suite deployments are available via the ``StatEndpoints`` enum:
     conn = StatConnector()                    # OECD (default)
     # conn = StatConnector(StatEndpoints.ILO) # or another deployment
 
+Reads are anonymous by default. For an access-controlled deployment,
+pass a bearer ``token`` (see `Uploading`_ for the flows that obtain
+one):
+
+.. code-block:: python
+
+    conn = StatConnector(
+        api_endpoint="https://nsi.example.org/rest/v2",
+        token=auth.get_token(),
+    )
+
 You can find the ``agency``, ``id`` and ``version`` of a dataflow in
 the `OECD Data Explorer <https://data-explorer.oecd.org>`_ via its
 "Developer API" button.
