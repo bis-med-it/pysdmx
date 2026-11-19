@@ -882,10 +882,11 @@ def test_convert_to_vtl_time_range_of_a_time_period_is_its_period() -> None:
         "2025-12-15/P7D": "2025-W51",
         "2025-12-19/P1D": "2025-12-19",
         "2025-12-01-05:00/P1M": "2025-12",
+        "2025-01-01T00:00:00/P3M": "2025-Q1",
         "2025-Q4-05:00": "2025-Q4",
         "2025-Q1": "2025-Q1",
     }
-    data = pd.DataFrame({"DIM": list("ABCDEFGHI"), "ME": list(periods)})
+    data = pd.DataFrame({"DIM": list("ABCDEFGHIJ"), "ME": list(periods)})
 
     vtl_dataset = convert_dataset_to_vtl(
         PandasDataset(structure=schema, data=data), "DS"

@@ -181,9 +181,10 @@ VTL_TO_SDMX_ROLE_MAP: Dict[VTLRole, Role] = {
 
 VALID_SDMX_TYPES = {"DataStructure", "Dataflow", "ProvisionAgreement"}
 
-# An SDMX TimeRange that a VTL time can hold: a date and a duration in days
+# An SDMX TimeRange that a VTL time can hold: a date, also at midnight, and
+# a duration in days
 _TIME_RANGE = re.compile(
-    r"(\d{4}-\d{2}-\d{2})"
+    r"(\d{4}-\d{2}-\d{2})(?:T00:00:00(?:\.0+)?)?"
     r"/P(?=\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?"
 )
 # A date with a time
