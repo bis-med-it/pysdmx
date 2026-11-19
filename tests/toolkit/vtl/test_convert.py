@@ -1,5 +1,7 @@
 """Tests for VTL and SDMX conversion functions."""
 
+from typing import Any, Tuple
+
 import pandas as pd
 import pytest
 from vtlengine import semantic_analysis
@@ -523,10 +525,10 @@ def test_convert_to_sdmx_type_mappings(
     assert components_dict["INTEGER_MEASURE"].dtype == DataType.INTEGER
     assert components_dict["DOUBLE_MEASURE"].dtype == DataType.DOUBLE
     assert components_dict["BOOLEAN_ATTR"].dtype == DataType.BOOLEAN
-    assert components_dict["DATE_ATTR"].dtype == DataType.DATE
-    assert components_dict["PERIOD_DIM"].dtype == DataType.PERIOD
+    assert components_dict["DATE_ATTR"].dtype == DataType.DATE_TIME
+    assert components_dict["PERIOD_DIM"].dtype == DataType.REP_TIME_PERIOD
     assert components_dict["DURATION_ATTR"].dtype == DataType.DURATION
-    assert components_dict["TIME_ATTR"].dtype == DataType.TIME
+    assert components_dict["TIME_ATTR"].dtype == DataType.STD_TIME_PERIOD
 
     # Attributes should have attachment_level "O"
     assert components_dict["BOOLEAN_ATTR"].attachment_level == "O"
@@ -737,6 +739,86 @@ def test_convert_to_sdmx_schema_mismatch_wrong_type(
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(vtl_basic_dataset, schema=schema)
+
+
+def _one_measure(
+    vtl_type: Any, sdmx_type: DataType, value: Any
+) -> Tuple[VTLengineDataset, Schema]:
+    """A VTL dataset and a schema with a measure of the given types."""
+    dataset = VTLengineDataset(
+        name="DS",
+        components={
+            "DIM": VTLComponent(
+                name="DIM",
+                data_type=String(),
+                role=VTLRole.IDENTIFIER,
+                nullable=False,
+            ),
+            "ME": VTLComponent(
+                name="ME",
+                data_type=vtl_type(),
+                role=VTLRole.MEASURE,
+                nullable=True,
+            ),
+        },
+        data=pd.DataFrame({"DIM": ["A"], "ME": [value]}),
+    )
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DSD",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("DIM", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="ME",
+                    required=False,
+                    role=Role.MEASURE,
+                    concept=Concept("ME", dtype=sdmx_type),
+                ),
+            ]
+        ),
+    )
+    return dataset, schema
+
+
+@pytest.mark.parametrize(
+    ("vtl_type", "sdmx_type", "value"),
+    [
+        (String, DataType.URI, "x"),
+        (Integer, DataType.LONG, 1),
+        (Number, DataType.DECIMAL, 1.5),
+        (Date, DataType.DATE_TIME, "2025-12-19"),
+        (TimePeriod, DataType.REP_TIME_PERIOD, "2025-Q1"),
+        (TimeInterval, DataType.TIME_RANGE, "2025-01-01/2025-12-31"),
+    ],
+)
+def test_convert_to_sdmx_schema_with_compatible_type(
+    vtl_type: Any, sdmx_type: DataType, value: Any
+) -> None:
+    """A schema may use any SDMX type mapped to the VTL type."""
+    dataset, schema = _one_measure(vtl_type, sdmx_type, value)
+
+    pandas_dataset = convert_dataset_to_sdmx(dataset, schema=schema)
+
+    assert pandas_dataset.structure == schema
+
+
+def test_convert_to_sdmx_schema_time_of_day_for_vtl_time() -> None:
+    """The SDMX Time is a time of day, not a VTL time (an interval)."""
+    dataset, schema = _one_measure(TimeInterval, DataType.TIME, "12:00:00")
+
+    with pytest.raises(
+        Invalid,
+        match="Component mismatch between VTL Dataset and Schema",
+    ):
+        convert_dataset_to_sdmx(dataset, schema=schema)
 
 
 def test_convert_to_sdmx_schema_mismatch_wrong_role(
