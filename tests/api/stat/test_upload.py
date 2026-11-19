@@ -660,7 +660,9 @@ def test_parse_structure_response_success_and_failure():
     )
     assert bad.success is False
 
-    assert _structure_result("").success is True  # e.g. 204 empty body
+    # nothing reported: a success only for a deletion (e.g. 204 empty body)
+    assert _structure_result("").success is False
+    assert _structure_result("", empty_ok=True).success is True
 
 
 def test_submission_result_is_frozen():

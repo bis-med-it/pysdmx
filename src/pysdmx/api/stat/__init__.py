@@ -113,9 +113,9 @@ class StructureSubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
     """Outcome of a .Stat structure submission or deletion.
 
     Attributes:
-        success: True when every reported artefact code is 200/201, and
-            also when the service accepted the request (HTTP 2xx)
-            without reporting any.
+        success: True when every reported artefact code is 200/201. A
+            submission reporting no artefact is not a success; a
+            deletion is, as its HTTP status alone confirms it.
         messages: The per-artefact messages the service returned.
     """
 
@@ -166,19 +166,21 @@ def _submission_from_status(text: str) -> SubmissionResult:
     )
 
 
-def _structure_result(text: str) -> StructureSubmissionResult:
+def _structure_result(
+    text: str, empty_ok: bool = False
+) -> StructureSubmissionResult:
     """Parse an NSIWS ``SubmitStructureResponse`` error envelope.
 
-    Only called with the body of an HTTP 2xx response (an HTTP error is
-    raised before), so the per-artefact codes can only downgrade that
-    success: a body reporting none -- e.g. the empty body of a 204 answer
-    to a deletion -- leaves it as a success.
+    A body reporting no artefact is not a success, unless ``empty_ok``:
+    a deletion is confirmed by its HTTP status alone (an HTTP error is
+    raised before) and may have no body (204).
     """
     pairs = re.findall(
         r'code="(\d+)"[^>]*>\s*<[^>]*Text[^>]*>(.*?)</', text, re.DOTALL
     )
+    codes = [c in {"200", "201"} for c, _ in pairs]
     return StructureSubmissionResult(
-        success=all(c in {"200", "201"} for c, _ in pairs),
+        success=all(codes) if codes else empty_ok,
         messages=tuple(t.strip() for _, t in pairs),
     )
 
@@ -1117,8 +1119,9 @@ class StatUploader:
 
         Returns:
             A :class:`StructureSubmissionResult` parsed from the NSI
-            ``SubmitStructureResponse`` body. A per-artefact failure
-            surfaces as ``success=False`` (with the service messages),
+            ``SubmitStructureResponse`` body. A per-artefact failure, or
+            a body reporting no artefact at all, surfaces as
+            ``success=False`` (with the service messages),
             not as an exception: the service can report a failure inside
             the body even on an HTTP 200 response. The NSI may instead
             reject a submission with an HTTP error (e.g. 422 carrying an
@@ -1360,7 +1363,8 @@ class StatUploader:
                 f"{self._nsi}/rest/{ref.sdmx_type.lower()}"
                 f"/{ref.agency}/{ref.id}/{ref.version}"
             )
-            responses.append(_structure_result(self._send("DELETE", url).text))
+            r = self._send("DELETE", url)
+            responses.append(_structure_result(r.text, empty_ok=True))
         return responses
 
     def cleanup_dsd(
