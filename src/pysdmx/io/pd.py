@@ -72,6 +72,43 @@ def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df.assign(**date_times).astype(conversion).fillna("").astype(str)
 
 
+# A date time with a time zone: Z or an offset after the time
+_ZONED = r"[T ].*[Z+-]"
+_UTC = pd.DatetimeTZDtype("ns", "UTC")
+
+
+def _to_utc(values: pd.Series) -> pd.Series:
+    """Convert date times to UTC, taking those without a time zone as UTC.
+
+    The values with a time zone are read apart from those without one:
+    when they are read together, pandas 2 gives a value without a time
+    zone the offset of the value before it.
+
+    Args:
+        values: The date times, as ISO 8601 text or as date times.
+
+    Returns:
+        The date times in UTC.
+
+    Raises:
+        ValueError: If a value is not a date time.
+    """
+    values = values.infer_objects()
+    if is_datetime64_any_dtype(values.dtype):
+        return pd.to_datetime(values, utc=True)
+    text = values.astype(pd.ArrowDtype(pa.string()))
+    # pandas takes words such as now, today or nan as date times
+    words = text[text.str.match(r"\D", na=False).to_numpy(dtype=bool)]
+    if len(words) > 0:
+        raise ValueError(f"'{words.iloc[0]}' is not an ISO 8601 date time")
+    zoned = text.str.contains(_ZONED, na=False).to_numpy(dtype=bool)
+    with_zone, without_zone = (
+        pd.to_datetime(part, utc=True, format="ISO8601").astype(_UTC)
+        for part in (text.where(zoned), text.where(~zoned))
+    )
+    return with_zone.fillna(without_zone)
+
+
 def _prepare_columns(
     data: pd.DataFrame,
     conversion: Dict[str, pd.ArrowDtype],
@@ -81,9 +118,9 @@ def _prepare_columns(
 
     For non-string target dtypes, replaces empty strings with None
     so that the conversion succeeds. For timestamp target dtypes,
-    converts the values to UTC, taking those without a time zone as
-    UTC, because PyArrow accepts neither a mix of both nor, for a
-    time zone aware type, a value without an offset. For string target
+    converts the values to UTC first, because PyArrow accepts neither
+    a mix of values with and without a time zone nor, for a time zone
+    aware type, a value without one. For string target
     dtypes with mixed-type object columns, converts values to Python
     str first because PyArrow cannot infer the string type from a
     column containing both integers and strings.
@@ -100,9 +137,7 @@ def _prepare_columns(
         if dtype != str_dtype:
             data[col] = data[col].replace("", None)
             if pa.types.is_timestamp(dtype.pyarrow_dtype):
-                data[col] = pd.to_datetime(
-                    data[col], utc=True, format="ISO8601"
-                )
+                data[col] = _to_utc(data[col])
         elif data[col].dtype == object:
             mask = data[col].notna()
             data.loc[mask, col] = data.loc[mask, col].astype(str)

@@ -90,7 +90,7 @@
 				<gen:ObsValue value="50"/>
 				<gen:Attributes>
 					<gen:Value id="OBS_BOOL" value="false"/>
-					<gen:Value id="OBS_DT" value="2025-12-19T19:30:00.123456789Z"/>
+					<gen:Value id="OBS_DT" value="2026-01-01T04:30:00.123456789Z"/>
 				</gen:Attributes>
 			</gen:Obs>
 			<gen:Obs>
@@ -100,7 +100,7 @@
 					<gen:Value id="OBS_INT" value="6"/>
 					<gen:Value id="OBS_LONG" value="6"/>
 					<gen:Value id="OBS_BOOL" value="true"/>
-					<gen:Value id="OBS_DT" value="2026-01-01T00:30:00Z"/>
+					<gen:Value id="OBS_DT" value="2025-12-19T23:59:59Z"/>
 				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>

@@ -115,12 +115,18 @@ def test_schema_conversion_failure_raises_invalid():
         PandasDataset(structure=schema, data=df)
 
 
-def test_schema_date_time_conversion_failure_raises_invalid():
+@pytest.mark.parametrize(
+    "value",
+    ["not_a_date_time", "now", "today", "nan", "NaT", "2025-13-45T00:00:00"],
+)
+def test_schema_date_time_conversion_failure_raises_invalid(value):
     schema = _make_schema(
         _dim("ID"),
         _att("UPDATED", DataType.DATE_TIME),
     )
-    df = pd.DataFrame({"ID": ["A"], "UPDATED": ["not_a_date_time"]})
+    df = pd.DataFrame(
+        {"ID": ["A", "B"], "UPDATED": ["2025-12-19T14:30:00Z", value]}
+    )
 
     with pytest.raises(Invalid, match="Type conversion failed"):
         PandasDataset(structure=schema, data=df)
