@@ -1,0 +1,106 @@
+{
+    "meta": {
+        "id": "IREF909102",
+        "test": false,
+        "schema": "https://raw.githubusercontent.com/sdmx-twg/sdmx-json/develop/structure-message/tools/schemas/2.0.0/sdmx-json-structure-schema.json",
+        "prepared": "2023-07-31T08:08:32Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        }
+    },
+    "data": {
+        "dataConstraints": [
+            {
+                "links": [
+                    {
+                        "rel": "self",
+                        "type": "dataconstraint",
+                        "uri": "https://json.sdmx.org/2.0.0/sdmx-json-structure-schema.json",
+                        "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:AL(1.0)"
+                    }
+                ],
+                "id": "AL",
+                "name": "Constraints for the CBS Assets and Liabilities dataflow",
+                "names": {
+                    "en": "Constraints for the CBS Assets and Liabilities dataflow"
+                },
+                "version": "1.0",
+                "agencyID": "BIS.CBS",
+                "isExternalReference": false,
+                "validFrom": "2013-10-01T00:00:00",
+                "role": "Allowed",
+                "constraintAttachment": {
+                    "dataflows": [
+                        "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS_AL(1.0)"
+                    ]
+                },
+                "dataKeySets": [
+                    {
+                        "isIncluded": true,
+                        "keys": [
+                            {
+                                "keyValues": [
+                                    {
+                                        "id": "CBS_BASIS",
+                                        "value": "F"
+                                    },
+                                    {
+                                        "id": "L_POSITION",
+                                        "value": "L"
+                                    },
+                                    {
+                                        "id": "L_INSTR",
+                                        "value": "A"
+                                    },
+                                    {
+                                        "id": "REM_MATURITY",
+                                        "value": "A"
+                                    },
+                                    {
+                                        "id": "CURR_TYPE_BOOK",
+                                        "value": "TO1"
+                                    },
+                                    {
+                                        "id": "L_CP_SECTOR",
+                                        "value": "A"
+                                    }
+                                ]
+                            },
+                            {
+                                "keyValues": [
+                                    {
+                                        "id": "CBS_BASIS",
+                                        "value": "F"
+                                    },
+                                    {
+                                        "id": "L_POSITION",
+                                        "value": "L"
+                                    },
+                                    {
+                                        "id": "L_INSTR",
+                                        "value": "G"
+                                    },
+                                    {
+                                        "id": "REM_MATURITY",
+                                        "value": "A"
+                                    },
+                                    {
+                                        "id": "CURR_TYPE_BOOK",
+                                        "value": "TO1"
+                                    },
+                                    {
+                                        "id": "L_CP_SECTOR",
+                                        "value": "A"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

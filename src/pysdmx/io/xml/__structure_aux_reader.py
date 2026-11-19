@@ -1755,8 +1755,9 @@ class StructureParser(Struct):
         # User Defined Operator Handling
         _format_lower_key("OperatorDefinition", json_vtl)
         # Dataflow Mapping
+        # (an element with no attributes nor children is parsed as None)
         if "ToVtlMapping" in json_vtl:
-            to_vtl = json_vtl.pop("ToVtlMapping")
+            to_vtl = json_vtl.pop("ToVtlMapping") or {}
             if "ToVtlSubSpace" in to_vtl:
                 to_vtl["to_vtl_sub_space"] = tuple(
                     add_list(to_vtl["ToVtlSubSpace"]["Key"])
@@ -1764,7 +1765,7 @@ class StructureParser(Struct):
                 del to_vtl["ToVtlSubSpace"]
             json_vtl["to_vtl_mapping_method"] = ToVtlMapping(**to_vtl)
         if "FromVtlMapping" in json_vtl:
-            from_vtl = json_vtl.pop("FromVtlMapping")
+            from_vtl = json_vtl.pop("FromVtlMapping") or {}
             if "FromVtlSuperSpace" in from_vtl:
                 from_vtl["from_vtl_sub_space"] = tuple(
                     add_list(from_vtl["FromVtlSuperSpace"]["Key"])

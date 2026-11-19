@@ -1,0 +1,63 @@
+{
+    "meta": {
+        "id": "IREF909102",
+        "test": false,
+        "prepared": "2023-07-31T08:08:32Z",
+        "contentLanguages": [
+            "en"
+        ],
+        "sender": {
+            "id": "FusionRegistry"
+        }
+    },
+    "DataConstraint": [
+        {
+            "id": "AL",
+            "urn": "urn:sdmx:org.sdmx.infomodel.registry.DataConstraint=BIS.CBS:AL(1.0)",
+            "names": [
+                {
+                    "locale": "en",
+                    "value": "Constraints for the CBS Assets and Liabilities dataflow"
+                }
+            ],
+            "agencyId": "BIS.CBS",
+            "version": "1.0",
+            "isFinal": false,
+            "startDate": 1380585600000,
+            "definingDataPresent": false,
+            "type": "SeriesConstraint",
+            "attachments": [
+                "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=BIS.CBS:CBS_AL(1.0)"
+            ],
+            "includeSeries": {
+                "dims": [
+                    "CBS_BASIS",
+                    "L_POSITION",
+                    "L_INSTR",
+                    "REM_MATURITY",
+                    "CURR_TYPE_BOOK",
+                    "L_CP_SECTOR"
+                ],
+                "comps": [],
+                "rows": [
+                    [
+                        "F",
+                        "L",
+                        "A",
+                        "A",
+                        "TO1",
+                        "A"
+                    ],
+                    [
+                        "F",
+                        "L",
+                        "G",
+                        "A",
+                        "TO1",
+                        "A"
+                    ]
+                ]
+            }
+        }
+    ]
+}
