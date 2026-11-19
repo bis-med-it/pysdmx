@@ -19,8 +19,9 @@
 			<gen:Value id="DS_DT" value="2025-12-19T14:30:00Z"/>
 			<gen:Value id="DS_DEC" value="1234.5"/>
 			<gen:Value id="DS_STR" value="Data set note"/>
-			<gen:Value id="DS_FLT" value="0.1"/>
-			<gen:Value id="DS_DBL" value="100.0"/>
+			<gen:Value id="DS_FLT" value="1e-7"/>
+			<gen:Value id="DS_DBL" value="100"/>
+			<gen:Value id="DS_NAN" value="NaN"/>
 		</gen:Attributes>
 		<gen:Obs>
 			<gen:ObsKey>

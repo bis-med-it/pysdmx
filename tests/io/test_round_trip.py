@@ -4,10 +4,13 @@ The samples have an integer, a long, a boolean, a date time, a decimal,
 a string, a float and a double attribute at data set, series and
 observation level, some of them without a value, and two data set
 attributes without one: `DS_EMPTY`, whose column has no values, and
-`DS_ABSENT`, which has no column. `input.csv` gives the date times with
-an offset, with `Z` and without a time zone, and decimals with trailing
-zeros; the other files give the values as every data writer must write
-them. The `input_*.xml` files are SDMX-ML messages with the data set
+`DS_ABSENT`, which has no column. `DS_NAN` is a double data set
+attribute given as `NaN`, which is a value. `input.csv` gives the date
+times with an offset, with `Z` and without a time zone, and decimals
+with trailing zeros; the other files give the values as every data
+writer must write them, each with its own text for floats and doubles
+(`1e-07` and `100.0` in SDMX-CSV, `1e-7` and `100` in SDMX-ML). The
+`input_*.xml` files are SDMX-ML messages with the data set
 attributes as a provider may give them: a date time with an offset, `1`
 for a boolean, an integer with a leading zero and an attribute without a
 value. The `groups` files have an attribute attached to a group that only
@@ -243,8 +246,9 @@ def test_data_set_attributes_given_as_python_values(
         "DS_DT": datetime(2025, 12, 19, 16, 30, tzinfo=offset),
         "DS_DEC": Decimal("1234.50"),
         "DS_STR": "Data set note",
-        "DS_FLT": 0.1,
+        "DS_FLT": 1e-07,
         "DS_DBL": 100.0,
+        "DS_NAN": float("nan"),
         "DS_EMPTY": None,
         "DS_ABSENT": "",
     }

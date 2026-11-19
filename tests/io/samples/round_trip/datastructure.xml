@@ -55,6 +55,9 @@
         <str:Concept id="DS_DBL">
           <com:Name xml:lang="en">Data set double</com:Name>
         </str:Concept>
+        <str:Concept id="DS_NAN">
+          <com:Name xml:lang="en">Data set attribute that is not a number</com:Name>
+        </str:Concept>
         <str:Concept id="DS_EMPTY">
           <com:Name xml:lang="en">Data set attribute without a value</com:Name>
         </str:Concept>
@@ -222,6 +225,17 @@
             <str:Attribute id="DS_DBL" assignmentStatus="Conditional">
               <str:ConceptIdentity>
                 <Ref agencyID="MD" class="Concept" id="DS_DBL" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Double"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_NAN" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_NAN" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
               </str:ConceptIdentity>
               <str:LocalRepresentation>
                 <str:TextFormat textType="Double"/>
