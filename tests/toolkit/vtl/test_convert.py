@@ -801,6 +801,7 @@ def _one_measure(
         (Date, DataType.DATE_TIME, "2025-12-19"),
         (Date, DataType.STD_TIME_PERIOD, "2025-12-19"),
         (TimePeriod, DataType.REP_TIME_PERIOD, "2025-Q1"),
+        (TimePeriod, DataType.YEAR, "2025"),
         (TimeInterval, DataType.TIME_RANGE, "2025-01-01/2025-12-31"),
     ],
 )
@@ -831,6 +832,24 @@ def test_convert_to_sdmx_schema_type_without_intervals_for_vtl_time(
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(dataset, schema=schema)
+
+
+@pytest.mark.parametrize(
+    "sdmx_type",
+    [DataType.YEAR, DataType.YEAR_MONTH, DataType.GREGORIAN_TIME_PERIOD],
+)
+def test_convert_to_vtl_gregorian_periods_are_time_periods(
+    sdmx_type: DataType,
+) -> None:
+    """A year or a month is a VTL time period, not a VTL date (a full date)."""
+    _, schema = _one_measure(TimePeriod, sdmx_type, None)
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["2025"]})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+
+    assert vtl_dataset.components["ME"].data_type is TimePeriod
 
 
 def test_time_ranges_are_converted_to_vtl_times_and_back() -> None:
