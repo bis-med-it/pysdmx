@@ -113,7 +113,9 @@ class StructureSubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
     """Outcome of a .Stat structure submission or deletion.
 
     Attributes:
-        success: True when every reported artefact code is 200/201.
+        success: True when every reported artefact code is 200/201, and
+            also when the service accepted the request (HTTP 2xx)
+            without reporting any.
         messages: The per-artefact messages the service returned.
     """
 
@@ -165,7 +167,13 @@ def _submission_from_status(text: str) -> SubmissionResult:
 
 
 def _structure_result(text: str) -> StructureSubmissionResult:
-    """Parse an NSIWS ``SubmitStructureResponse`` error envelope."""
+    """Parse an NSIWS ``SubmitStructureResponse`` error envelope.
+
+    Only called with the body of an HTTP 2xx response (an HTTP error is
+    raised before), so the per-artefact codes can only downgrade that
+    success: a body reporting none -- e.g. the empty body of a 204 answer
+    to a deletion -- leaves it as a success.
+    """
     pairs = re.findall(
         r'code="(\d+)"[^>]*>\s*<[^>]*Text[^>]*>(.*?)</', text, re.DOTALL
     )
