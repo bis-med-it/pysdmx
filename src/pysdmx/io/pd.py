@@ -44,19 +44,29 @@ def _prepare_columns(
     """Prepare DataFrame columns for PyArrow type conversion.
 
     For non-string target dtypes, replaces empty strings with None
-    so that the conversion succeeds. For string target dtypes with
-    mixed-type object columns, converts values to Python str first
-    because PyArrow cannot infer the string type from a column
-    containing both integers and strings.
+    so that the conversion succeeds. For timestamp target dtypes,
+    converts the values to UTC, taking those without a time zone as
+    UTC, because PyArrow accepts neither a mix of both nor, for a
+    time zone aware type, a value without an offset. For string target
+    dtypes with mixed-type object columns, converts values to Python
+    str first because PyArrow cannot infer the string type from a
+    column containing both integers and strings.
 
     Args:
         data: The DataFrame to modify in place.
         conversion: Mapping of column names to target ArrowDtype.
         str_dtype: The PyArrow string dtype for comparison.
+
+    Raises:
+        ValueError: If a value of a timestamp column is not a date time.
     """
     for col, dtype in conversion.items():
         if dtype != str_dtype:
             data[col] = data[col].replace("", None)
+            if pa.types.is_timestamp(dtype.pyarrow_dtype):
+                data[col] = pd.to_datetime(
+                    data[col], utc=True, format="ISO8601"
+                )
         elif data[col].dtype == object:
             mask = data[col].notna()
             data.loc[mask, col] = data.loc[mask, col].astype(str)
@@ -103,8 +113,8 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
                 col: schema_dtypes.get(col, str_dtype)
                 for col in self.data.columns
             }
-            _prepare_columns(self.data, conversion, str_dtype)
             try:
+                _prepare_columns(self.data, conversion, str_dtype)
                 self.data = self.data.astype(conversion)
             except (ValueError, TypeError, pa.ArrowInvalid) as e:
                 raise Invalid(

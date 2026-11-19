@@ -40,7 +40,7 @@ def __get_pd_type(dt: DataType, required: bool) -> str:  # noqa: C901
     elif dt == DataType.GREGORIAN_TIME_PERIOD:
         return "object"
     elif dt == DataType.DATE_TIME:
-        return "datetime64[ns]"
+        return "datetime64[ns, UTC]"
     elif dt == DataType.YEAR:
         return "datetime64[Y]"
     elif dt == DataType.YEAR_MONTH:
@@ -69,7 +69,7 @@ def to_pandas_type(comp: Component) -> str:
         - 'category' (for enumerated components)
         - Numeric types ('int16', 'Int16', 'float32', 'Float32', etc.)
         - 'object' (for complex numeric types and time periods)
-        - Datetime types ('datetime64[ns]', 'datetime64[Y]', etc.)
+        - Datetime types ('datetime64[ns, UTC]', 'datetime64[Y]', etc.)
         - 'string' (default for unhandled types)
         - 'bool' or 'boolean' (for boolean values)
     """
@@ -129,7 +129,7 @@ def __get_pa_type(dt: DataType) -> pa.DataType:  # noqa: C901
     elif dt == DataType.DATE:
         return pa.date32()
     elif dt == DataType.DATE_TIME:
-        return pa.timestamp("ns")
+        return pa.timestamp("ns", tz="UTC")
     else:
         return pa.string()
 
