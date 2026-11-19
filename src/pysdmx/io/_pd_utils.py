@@ -1,6 +1,8 @@
 from typing import Any, Optional
 
+import numpy as np
 import pandas as pd
+from pandas.api.types import is_float_dtype
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset, format_value
@@ -38,6 +40,26 @@ def validate_schema_exists(dataset: PandasDataset) -> Schema:
             "Dataset Structure is not a Schema. Cannot perform operation."
         )
     return dataset.structure
+
+
+def to_objects(values: pd.Series) -> pd.Series:
+    """Give the values of a column as the objects that the writers take.
+
+    A float32 value is kept as such, for it to be written with its
+    shortest text: as a Python float it has the digits of its float64
+    (``0.1`` would be written as ``0.10000000149011612``).
+
+    Args:
+        values: The values of a column.
+
+    Returns:
+        The values as objects, the nulls as they are in the column.
+    """
+    dtype = values.dtype
+    if is_float_dtype(dtype) and getattr(dtype, "itemsize", 0) == 4:
+        floats = values.to_numpy(dtype=np.float32, na_value=np.nan)
+        return pd.Series(list(floats), index=values.index, dtype=object)
+    return values.astype(object)
 
 
 def _is_null_value(value: Any) -> bool:
@@ -129,7 +151,7 @@ def transform_dataframe_for_writing(
             # As objects, so that the values of a nullable integer column
             # are integers: pandas would otherwise hand them as floats
             # when one of them is null, and beyond 2**53 lose precision.
-            df[component.id] = (
-                df[component.id].astype(object).apply(transform_value)
+            df[component.id] = to_objects(df[component.id]).apply(
+                transform_value
             )
     return df

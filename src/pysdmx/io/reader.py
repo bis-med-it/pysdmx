@@ -288,6 +288,7 @@ def __manage_dataset_level_attributes(dataset: Dataset) -> None:
     if len(dataset.attributes) > 0:
         # If the dataset already has attributes, we do not need to add them
         return
+    from pysdmx.io._pd_utils import to_objects
     from pysdmx.io.pd import format_value
 
     attached_attributes: Dict[str, Optional[str]] = {}
@@ -295,9 +296,9 @@ def __manage_dataset_level_attributes(dataset: Dataset) -> None:
         if att.id not in dataset.data.columns:  # type: ignore[attr-defined]
             attached_attributes[att.id] = None
         else:
-            val = (
-                dataset.data[att.id].unique().tolist()[0]  # type: ignore[attr-defined]
-            )
+            val = to_objects(
+                dataset.data[att.id].iloc[:1]  # type: ignore[attr-defined]
+            ).iloc[0]
             attached_attributes[att.id] = (
                 format_value(val) if val is not None else None
             )
