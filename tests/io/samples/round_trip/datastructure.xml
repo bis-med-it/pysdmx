@@ -43,6 +43,12 @@
         <str:Concept id="DS_DT">
           <com:Name xml:lang="en">DS_DT</com:Name>
         </str:Concept>
+        <str:Concept id="DS_DEC">
+          <com:Name xml:lang="en">DS_DEC</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_STR">
+          <com:Name xml:lang="en">DS_STR</com:Name>
+        </str:Concept>
         <str:Concept id="SER_INT">
           <com:Name xml:lang="en">SER_INT</com:Name>
         </str:Concept>
@@ -55,6 +61,12 @@
         <str:Concept id="SER_DT">
           <com:Name xml:lang="en">SER_DT</com:Name>
         </str:Concept>
+        <str:Concept id="SER_DEC">
+          <com:Name xml:lang="en">SER_DEC</com:Name>
+        </str:Concept>
+        <str:Concept id="SER_STR">
+          <com:Name xml:lang="en">SER_STR</com:Name>
+        </str:Concept>
         <str:Concept id="OBS_INT">
           <com:Name xml:lang="en">OBS_INT</com:Name>
         </str:Concept>
@@ -66,6 +78,12 @@
         </str:Concept>
         <str:Concept id="OBS_DT">
           <com:Name xml:lang="en">OBS_DT</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_DEC">
+          <com:Name xml:lang="en">OBS_DEC</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_STR">
+          <com:Name xml:lang="en">OBS_STR</com:Name>
         </str:Concept>
       </str:ConceptScheme>
     </str:Concepts>
@@ -144,6 +162,28 @@
                 <str:None/>
               </str:AttributeRelationship>
             </str:Attribute>
+            <str:Attribute id="DS_DEC" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_DEC" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Decimal"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_STR" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_STR" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="String"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
             <str:Attribute id="SER_INT" assignmentStatus="Conditional">
               <str:ConceptIdentity>
                 <Ref agencyID="MD" class="Concept" id="SER_INT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
@@ -208,6 +248,38 @@
                 </str:Dimension>
               </str:AttributeRelationship>
             </str:Attribute>
+            <str:Attribute id="SER_DEC" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="SER_DEC" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Decimal"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>
+                  <Ref id="DIM1"/>
+                </str:Dimension>
+                <str:Dimension>
+                  <Ref id="DIM2"/>
+                </str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="SER_STR" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="SER_STR" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="String"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>
+                  <Ref id="DIM1"/>
+                </str:Dimension>
+                <str:Dimension>
+                  <Ref id="DIM2"/>
+                </str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
             <str:Attribute id="OBS_INT" assignmentStatus="Conditional">
               <str:ConceptIdentity>
                 <Ref agencyID="MD" class="Concept" id="OBS_INT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
@@ -253,6 +325,32 @@
               </str:ConceptIdentity>
               <str:LocalRepresentation>
                 <str:TextFormat textType="DateTime"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:PrimaryMeasure>
+                  <Ref id="OBS_VALUE"/>
+                </str:PrimaryMeasure>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="OBS_DEC" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_DEC" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Decimal"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:PrimaryMeasure>
+                  <Ref id="OBS_VALUE"/>
+                </str:PrimaryMeasure>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="OBS_STR" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_STR" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="String"/>
               </str:LocalRepresentation>
               <str:AttributeRelationship>
                 <str:PrimaryMeasure>

@@ -1,0 +1,6 @@
+STRUCTURE,STRUCTURE_ID,ACTION,DIM1,DIM2,TIME_PERIOD,OBS_VALUE,GRP_STR
+datastructure,MD:GROUPS(1.0),I,A,X,2020,10,Group note
+datastructure,MD:GROUPS(1.0),I,A,X,2021,20,Group note
+datastructure,MD:GROUPS(1.0),I,A,Y,2020,30,Group note
+datastructure,MD:GROUPS(1.0),I,B,X,2020,40,
+datastructure,MD:GROUPS(1.0),I,B,X,2021,50,

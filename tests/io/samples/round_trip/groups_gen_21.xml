@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:GenericData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:gen="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="GROUPS" dimensionAtObservation="TIME_PERIOD">
+			<com:Structure>
+				<Ref agencyID="MD" id="GROUPS" version="1.0" class="DataStructure"/>
+			</com:Structure>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet structureRef="GROUPS" action="Information">
+		<gen:Group type="GRP">
+			<gen:GroupKey>
+				<gen:Value id="DIM1" value="A"/>
+			</gen:GroupKey>
+			<gen:Attributes>
+				<gen:Value id="GRP_STR" value="Group note"/>
+			</gen:Attributes>
+		</gen:Group>
+		<gen:Series>
+			<gen:SeriesKey>
+				<gen:Value id="DIM1" value="A"/>
+				<gen:Value id="DIM2" value="X"/>
+			</gen:SeriesKey>
+			<gen:Obs>
+				<gen:ObsDimension value="2020"/>
+				<gen:ObsValue value="10"/>
+			</gen:Obs>
+			<gen:Obs>
+				<gen:ObsDimension value="2021"/>
+				<gen:ObsValue value="20"/>
+			</gen:Obs>
+		</gen:Series>
+		<gen:Series>
+			<gen:SeriesKey>
+				<gen:Value id="DIM1" value="A"/>
+				<gen:Value id="DIM2" value="Y"/>
+			</gen:SeriesKey>
+			<gen:Obs>
+				<gen:ObsDimension value="2020"/>
+				<gen:ObsValue value="30"/>
+			</gen:Obs>
+		</gen:Series>
+		<gen:Series>
+			<gen:SeriesKey>
+				<gen:Value id="DIM1" value="B"/>
+				<gen:Value id="DIM2" value="X"/>
+			</gen:SeriesKey>
+			<gen:Obs>
+				<gen:ObsDimension value="2020"/>
+				<gen:ObsValue value="40"/>
+			</gen:Obs>
+			<gen:Obs>
+				<gen:ObsDimension value="2021"/>
+				<gen:ObsValue value="50"/>
+			</gen:Obs>
+		</gen:Series>
+	</mes:DataSet>
+</mes:GenericData>

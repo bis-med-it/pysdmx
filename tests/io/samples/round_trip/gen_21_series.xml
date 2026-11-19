@@ -17,6 +17,8 @@
 			<gen:Value id="DS_LONG" value="9007199254740993"/>
 			<gen:Value id="DS_BOOL" value="true"/>
 			<gen:Value id="DS_DT" value="2025-12-19T14:30:00Z"/>
+			<gen:Value id="DS_DEC" value="1234567890.123456789"/>
+			<gen:Value id="DS_STR" value="Data set note"/>
 		</gen:Attributes>
 		<gen:Series>
 			<gen:SeriesKey>
@@ -28,6 +30,8 @@
 				<gen:Value id="SER_LONG" value="9007199254740993"/>
 				<gen:Value id="SER_BOOL" value="false"/>
 				<gen:Value id="SER_DT" value="2025-12-19T14:30:00Z"/>
+				<gen:Value id="SER_DEC" value="0.1"/>
+				<gen:Value id="SER_STR" value="Series note"/>
 			</gen:Attributes>
 			<gen:Obs>
 				<gen:ObsDimension value="2020"/>
@@ -37,6 +41,8 @@
 					<gen:Value id="OBS_LONG" value="9007199254740993"/>
 					<gen:Value id="OBS_BOOL" value="true"/>
 					<gen:Value id="OBS_DT" value="2025-12-19T14:30:00Z"/>
+					<gen:Value id="OBS_DEC" value="1234567890.123456789"/>
+					<gen:Value id="OBS_STR" value="First"/>
 				</gen:Attributes>
 			</gen:Obs>
 			<gen:Obs>
@@ -45,6 +51,7 @@
 				<gen:Attributes>
 					<gen:Value id="OBS_BOOL" value="false"/>
 					<gen:Value id="OBS_DT" value="2025-12-19T14:30:00.5Z"/>
+					<gen:Value id="OBS_DEC" value="0.1"/>
 				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>
@@ -63,6 +70,7 @@
 				<gen:Attributes>
 					<gen:Value id="OBS_INT" value="-5"/>
 					<gen:Value id="OBS_LONG" value="-9007199254740993"/>
+					<gen:Value id="OBS_STR" value="Third"/>
 				</gen:Attributes>
 			</gen:Obs>
 			<gen:Obs>
@@ -73,6 +81,7 @@
 					<gen:Value id="OBS_LONG" value="0"/>
 					<gen:Value id="OBS_BOOL" value="true"/>
 					<gen:Value id="OBS_DT" value="2025-12-19T12:30:00.123Z"/>
+					<gen:Value id="OBS_DEC" value="-0.000000001"/>
 				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>
@@ -84,6 +93,8 @@
 			<gen:Attributes>
 				<gen:Value id="SER_INT" value="3"/>
 				<gen:Value id="SER_LONG" value="-9007199254740993"/>
+				<gen:Value id="SER_DEC" value="1234.5"/>
+				<gen:Value id="SER_STR" value="Other note"/>
 			</gen:Attributes>
 			<gen:Obs>
 				<gen:ObsDimension value="2020"/>
@@ -91,6 +102,8 @@
 				<gen:Attributes>
 					<gen:Value id="OBS_BOOL" value="false"/>
 					<gen:Value id="OBS_DT" value="2026-01-01T04:30:00.123456789Z"/>
+					<gen:Value id="OBS_DEC" value="12345678901234567890.5"/>
+					<gen:Value id="OBS_STR" value="Fifth"/>
 				</gen:Attributes>
 			</gen:Obs>
 			<gen:Obs>
@@ -101,6 +114,8 @@
 					<gen:Value id="OBS_LONG" value="6"/>
 					<gen:Value id="OBS_BOOL" value="true"/>
 					<gen:Value id="OBS_DT" value="2025-12-19T23:59:59Z"/>
+					<gen:Value id="OBS_DEC" value="100"/>
+					<gen:Value id="OBS_STR" value="Sixth"/>
 				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>
