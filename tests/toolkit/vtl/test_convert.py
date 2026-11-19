@@ -802,6 +802,7 @@ def _one_measure(
         (Date, DataType.STD_TIME_PERIOD, "2025-12-19"),
         (TimePeriod, DataType.REP_TIME_PERIOD, "2025-Q1"),
         (TimePeriod, DataType.YEAR, "2025"),
+        (TimePeriod, DataType.BASIC_TIME_PERIOD, "2025-12"),
         (TimeInterval, DataType.TIME_RANGE, "2025-01-01/2025-12-31"),
     ],
 )
@@ -836,7 +837,12 @@ def test_convert_to_sdmx_schema_type_without_intervals_for_vtl_time(
 
 @pytest.mark.parametrize(
     "sdmx_type",
-    [DataType.YEAR, DataType.YEAR_MONTH, DataType.GREGORIAN_TIME_PERIOD],
+    [
+        DataType.YEAR,
+        DataType.YEAR_MONTH,
+        DataType.GREGORIAN_TIME_PERIOD,
+        DataType.BASIC_TIME_PERIOD,
+    ],
 )
 def test_convert_to_vtl_gregorian_periods_are_time_periods(
     sdmx_type: DataType,
@@ -850,6 +856,19 @@ def test_convert_to_vtl_gregorian_periods_are_time_periods(
     )
 
     assert vtl_dataset.components["ME"].data_type is TimePeriod
+
+
+def test_convert_to_vtl_date_time_of_a_time_period_is_its_day() -> None:
+    """A VTL time period has no time of day and no time zone."""
+    _, schema = _one_measure(TimePeriod, DataType.BASIC_TIME_PERIOD, None)
+    values = ["2025-12-19T23:30:00-05:00", "2025-12", None]
+    data = pd.DataFrame({"DIM": ["A", "B", "C"], "ME": values})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+
+    assert vtl_dataset.data["ME"].tolist()[:2] == ["2025-12-19", "2025-12"]
 
 
 def test_time_ranges_are_converted_to_vtl_times_and_back() -> None:

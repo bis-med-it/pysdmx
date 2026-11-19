@@ -45,14 +45,10 @@ from pysdmx.model import (
 )
 from pysdmx.model.dataflow import Role, Schema
 
-# VTL type given to a component of each SDMX data type, following "Mapping
-# SDMX data types to VTL basic scalar types" in the SDMX technical notes, as
-# reviewed for SDMX 3.2: a GregorianYear, a GregorianYearMonth and a
-# GregorianTimePeriod are time periods, as a VTL date is a full date. Two
-# differences with the technical notes, which convert them to a VTL time:
-# ObservationalTimePeriod and StandardTimePeriod are time periods and
-# BasicTimePeriod is a date, as vtlengine holds a time as two dates. XHTML
-# and GeospatialInformation have no VTL type.
+# See "Mapping SDMX data types to VTL basic scalar types" and "Mapping VTL
+# basic scalar types to SDMX data types" in the SDMX technical notes.
+
+# VTL type of each SDMX data type
 SDMX_TO_VTL_TYPE_MAP: Dict[DataType, Type[ScalarType]] = {
     DataType.STRING: String,
     DataType.ALPHA: String,
@@ -77,10 +73,10 @@ SDMX_TO_VTL_TYPE_MAP: Dict[DataType, Type[ScalarType]] = {
     DataType.BOOLEAN: Boolean,
     DataType.DATE: Date,
     DataType.DATE_TIME: Date,
-    DataType.BASIC_TIME_PERIOD: Date,
     DataType.YEAR: TimePeriod,
     DataType.YEAR_MONTH: TimePeriod,
     DataType.GREGORIAN_TIME_PERIOD: TimePeriod,
+    DataType.BASIC_TIME_PERIOD: TimePeriod,
     DataType.REP_TIME_PERIOD: TimePeriod,
     DataType.REP_YEAR: TimePeriod,
     DataType.REP_SEMESTER: TimePeriod,
@@ -95,11 +91,7 @@ SDMX_TO_VTL_TYPE_MAP: Dict[DataType, Type[ScalarType]] = {
     DataType.DURATION: Duration,
 }
 
-# SDMX data type given to a component of each VTL type in a generated
-# schema. The defaults are those of "Mapping VTL basic scalar types to SDMX
-# data types" in the SDMX technical notes, with two exceptions. A VTL number
-# is a Double: Float has 32 bits, so it would alter its digits. A VTL time
-# is a TimeRange: StandardTimePeriod cannot hold an interval.
+# Default SDMX data type of each VTL type
 VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
     String: DataType.STRING,
     Integer: DataType.INTEGER,
@@ -111,12 +103,7 @@ VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
     Duration: DataType.DURATION,
 }
 
-# SDMX data types that a schema may give to a component of each VTL type:
-# the ones that can hold its values. They are the data types that
-# SDMX_TO_VTL_TYPE_MAP converts to that VTL type, and these supersets: a VTL
-# date (a full date) can be held by GregorianTimePeriod, StandardTimePeriod
-# and ObservationalTimePeriod, and a VTL time (an interval) by
-# ObservationalTimePeriod. Month is left out: pysdmx holds it as an integer.
+# SDMX data types compatible with each VTL type
 SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
     String: frozenset(
         {
@@ -173,6 +160,7 @@ SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
             DataType.YEAR,
             DataType.YEAR_MONTH,
             DataType.GREGORIAN_TIME_PERIOD,
+            DataType.BASIC_TIME_PERIOD,
             DataType.STD_TIME_PERIOD,
             DataType.PERIOD,
         }
@@ -198,6 +186,17 @@ _TIME_RANGE = re.compile(
     r"(\d{4}-\d{2}-\d{2})"
     r"/P(?=\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?"
 )
+# A date with a time
+_DATE_TIME = r"\d{4}-\d{2}-\d{2}T[^/]*$"
+# The SDMX data types with values that VTL holds in another way
+_TIMES_TO_CONVERT = frozenset(
+    {
+        DataType.TIME_RANGE,
+        DataType.BASIC_TIME_PERIOD,
+        DataType.STD_TIME_PERIOD,
+        DataType.PERIOD,
+    }
+)
 # A VTL time, as vtlengine holds it: the first and the last day
 _VTL_TIME = re.compile(r"(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})")
 _ONE_DAY = pd.Timedelta(days=1)
@@ -216,6 +215,10 @@ def convert_dataset_to_vtl(
     The values of the `TimeRange` components, which are a start and a
     duration (`2025-01-01/P1Y`), are given as VTL times, which are the first
     and the last day (`2025-01-01/2025-12-31`).
+
+    A date with a time in a `BasicTimePeriod`, `StandardTimePeriod` or
+    `ObservationalTimePeriod` component, which are VTL time periods, is given
+    as its day: the time and the time zone are dropped.
 
     It raises an Invalid exception if the dataset structure is not a
     Schema object, or if a `TimeRange` has a time of day.
@@ -240,16 +243,13 @@ def convert_dataset_to_vtl(
 
     schema = dataset.structure
     pd_dataset = dataset.data
-    time_ranges = [
-        c.id for c in schema.components if c.dtype == DataType.TIME_RANGE
-    ]
-    if time_ranges:
-        pd_dataset = pd_dataset.assign(
-            **{
-                c: _convert_values(pd_dataset[c], _time_range_to_vtl_time)
-                for c in time_ranges
-            }
-        )
+    times = {
+        c.id: _vtl_times(pd_dataset[c.id], c.dtype)
+        for c in schema.components
+        if c.dtype in _TIMES_TO_CONVERT and c.id in pd_dataset.columns
+    }
+    if times:
+        pd_dataset = pd_dataset.assign(**times)
 
     # Use vtlengine's built-in conversion function to convert Schema to VTL,
     # with the VTL types of SDMX_TO_VTL_TYPE_MAP
@@ -281,6 +281,19 @@ def _convert_values(
 def _dates(texts: Sequence[str]) -> pd.DatetimeIndex:
     """Gives the dates of some texts, with a null if a text is not a date."""
     return pd.to_datetime(list(texts), format="%Y-%m-%d", errors="coerce")
+
+
+def _vtl_times(values: pd.Series, dtype: DataType) -> pd.Series:
+    """Gives the values of an SDMX time component as VTL holds them.
+
+    A TimeRange is given as a VTL time. In the time periods, a date with a
+    time is given as its day, without the time and the time zone, as a VTL
+    time period has none.
+    """
+    if dtype == DataType.TIME_RANGE:
+        return _convert_values(values, _time_range_to_vtl_time)
+    date_times = values.str.match(_DATE_TIME, na=False)
+    return values.where(~date_times, values.str.slice(0, 10))
 
 
 def _time_range_to_vtl_time(value: str) -> str:
