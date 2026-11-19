@@ -7,7 +7,10 @@ attributes without one: `DS_EMPTY`, whose column has no values, and
 `DS_ABSENT`, which has no column. `input.csv` gives the date times with
 an offset, with `Z` and without a time zone, and decimals with trailing
 zeros; the other files give the values as every data writer must write
-them. The `groups` files have an attribute attached to a group that only
+them. The `input_*.xml` files are SDMX-ML messages with the data set
+attributes as a provider may give them: a date time with an offset, `1`
+for a boolean, an integer with a leading zero and an attribute without a
+value. The `groups` files have an attribute attached to a group that only
 some series belong to.
 
 The decimal that float64 cannot hold is in columns with an empty value:
@@ -23,6 +26,7 @@ import pandas as pd
 import pyarrow as pa
 import pytest
 
+from pysdmx.errors import Invalid
 from pysdmx.io import get_datasets, read_sdmx, write_sdmx
 from pysdmx.io.format import Format
 from pysdmx.model import Organisation
@@ -126,6 +130,13 @@ SDMX_ML = [
     ),
 ]
 
+SDMX_ML_INPUTS = [
+    "input_gen_21.xml",
+    "input_str_21.xml",
+    "input_str_30.xml",
+    "input_str_31.xml",
+]
+
 PARTIAL_KEYS = [
     pytest.param(
         Format.DATA_SDMX_CSV_2_0_0,
@@ -169,11 +180,6 @@ def __data(filename):
     return read_sdmx(SAMPLES / filename).data[0].data
 
 
-def __reported(attributes):
-    # An SDMX-ML message only has the data set attributes with a value
-    return {k: v for k, v in attributes.items() if v is not None}
-
-
 @pytest.mark.parametrize(
     ("sdmx_format", "params", "filename"),
     [*SDMX_CSV, *SDMX_CSV_OPTIONS, *SDMX_ML, *PARTIAL_KEYS],
@@ -202,9 +208,7 @@ def test_values_are_read_back_with_the_same_schema(
     pd.testing.assert_frame_equal(
         result[0].data, expected[0].data, check_like=True
     )
-    assert __reported(result[0].attributes) == __reported(
-        expected[0].attributes
-    )
+    assert result[0].attributes == expected[0].attributes
 
 
 @pytest.mark.parametrize(("sdmx_format", "params", "filename"), SDMX_ML)
@@ -248,6 +252,50 @@ def test_data_set_attributes_given_as_python_values(
     result = __write(datasets, sdmx_format, params)
 
     assert result == __expected(filename)
+
+
+@pytest.mark.parametrize("filename", SDMX_ML_INPUTS)
+def test_data_set_attributes_of_sdmx_ml_get_the_types_of_the_schema(filename):
+    result = get_datasets(SAMPLES / filename, STRUCTURE)[0]
+
+    expected = get_datasets(DATA, STRUCTURE)[0]
+    assert result.attributes == expected.attributes
+    assert list(result.attributes) == list(expected.attributes)
+    pd.testing.assert_frame_equal(result.data, expected.data)
+
+
+@pytest.mark.parametrize("filename", SDMX_ML_INPUTS)
+@pytest.mark.parametrize(
+    ("sdmx_format", "params", "expected"),
+    [
+        pytest.param(Format.DATA_SDMX_CSV_2_0_0, {}, "csv_20.csv", id="csv"),
+        pytest.param(
+            Format.DATA_SDMX_ML_2_1_GEN, SERIES, "gen_21_series.xml", id="gen"
+        ),
+        pytest.param(
+            Format.DATA_SDMX_ML_2_1_STR, SERIES, "str_21_series.xml", id="str"
+        ),
+        pytest.param(
+            Format.DATA_SDMX_ML_3_0, SERIES, "str_30_series.xml", id="str_30"
+        ),
+        pytest.param(
+            Format.DATA_SDMX_ML_3_1, SERIES, "str_31_series.xml", id="str_31"
+        ),
+    ],
+)
+def test_data_set_attributes_of_sdmx_ml_are_written_in_their_sdmx_form(
+    filename, sdmx_format, params, expected
+):
+    datasets = get_datasets(SAMPLES / filename, STRUCTURE)
+
+    result = __write(datasets, sdmx_format, params)
+
+    assert result == __expected(expected)
+
+
+def test_data_set_attribute_of_sdmx_ml_that_does_not_fit_its_type():
+    with pytest.raises(Invalid, match="Type conversion failed"):
+        get_datasets(SAMPLES / "invalid_data_set_attribute.xml", STRUCTURE)
 
 
 def test_values_are_read_with_the_types_of_the_schema():
