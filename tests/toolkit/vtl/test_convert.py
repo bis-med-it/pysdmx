@@ -871,6 +871,39 @@ def test_convert_to_vtl_date_time_of_a_time_period_is_its_day() -> None:
     assert vtl_dataset.data["ME"].tolist()[:2] == ["2025-12-19", "2025-12"]
 
 
+def test_convert_to_vtl_time_range_of_a_time_period_is_its_period() -> None:
+    """A TimeRange in a time period is given as the period it covers."""
+    _, schema = _one_measure(TimePeriod, DataType.PERIOD, None)
+    periods = {
+        "2025-01-01/P1Y": "2025",
+        "2025-07-01/P6M": "2025-S2",
+        "2025-10-01/P3M": "2025-Q4",
+        "2025-12-01/P1M": "2025-12",
+        "2025-12-15/P7D": "2025-W51",
+        "2025-12-19/P1D": "2025-12-19",
+        "2025-12-01-05:00/P1M": "2025-12",
+        "2025-Q4-05:00": "2025-Q4",
+        "2025-Q1": "2025-Q1",
+    }
+    data = pd.DataFrame({"DIM": list("ABCDEFGHI"), "ME": list(periods)})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+
+    assert vtl_dataset.data["ME"].tolist() == list(periods.values())
+
+
+def test_convert_to_vtl_time_range_that_is_not_a_period() -> None:
+    _, schema = _one_measure(TimePeriod, DataType.PERIOD, None)
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["2025-01-15/P1M"]})
+
+    with pytest.raises(Invalid, match="is not a regular period"):
+        convert_dataset_to_vtl(
+            PandasDataset(structure=schema, data=data), "DS"
+        )
+
+
 def test_time_ranges_are_converted_to_vtl_times_and_back() -> None:
     """A TimeRange has a duration, a VTL time has the last day."""
     _, schema = _one_measure(TimeInterval, DataType.TIME_RANGE, None)

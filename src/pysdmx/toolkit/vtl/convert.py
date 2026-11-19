@@ -188,6 +188,8 @@ _TIME_RANGE = re.compile(
 )
 # A date with a time
 _DATE_TIME = r"\d{4}-\d{2}-\d{2}T[^/]*$"
+# A time zone
+_TIME_ZONE = r"(Z|[+-]\d{2}:\d{2})"
 # The SDMX data types with values that VTL holds in another way
 _TIMES_TO_CONVERT = frozenset(
     {
@@ -219,9 +221,13 @@ def convert_dataset_to_vtl(
     A date with a time in a `BasicTimePeriod`, `StandardTimePeriod` or
     `ObservationalTimePeriod` component, which are VTL time periods, is given
     as its day: the time and the time zone are dropped.
+    A `TimeRange` in an `ObservationalTimePeriod` component is given as the
+    regular period that it covers (`2025-01-01/P1Y` as `2025`).
+    The time zone of the values of these components is dropped.
 
     It raises an Invalid exception if the dataset structure is not a
-    Schema object, or if a `TimeRange` has a time of day.
+    Schema object, or if a `TimeRange` has a time of day or, in an
+    `ObservationalTimePeriod`, does not cover a regular period.
 
     Args:
         dataset: The PandasDataset to convert.
@@ -287,13 +293,56 @@ def _vtl_times(values: pd.Series, dtype: DataType) -> pd.Series:
     """Gives the values of an SDMX time component as VTL holds them.
 
     A TimeRange is given as a VTL time. In the time periods, a date with a
-    time is given as its day, without the time and the time zone, as a VTL
-    time period has none.
+    time is given as its day, a TimeRange as the period it covers, and the
+    time zone of a value is dropped.
     """
     if dtype == DataType.TIME_RANGE:
         return _convert_values(values, _time_range_to_vtl_time)
     date_times = values.str.match(_DATE_TIME, na=False)
-    return values.where(~date_times, values.str.slice(0, 10))
+    values = values.where(~date_times, values.str.slice(0, 10))
+    values = values.str.replace(f"{_TIME_ZONE}$", "", regex=True)
+    ranges = values.str.contains("/", regex=False, na=False)
+    if not ranges.any():
+        return values
+    periods = values.where(ranges).str.replace(
+        f"{_TIME_ZONE}/", "/", regex=True
+    )
+    periods = _convert_values(periods, _time_range_to_period)
+    return values.where(~ranges, periods)
+
+
+def _time_range_to_period(value: str) -> str:
+    """Gives an SDMX TimeRange as the regular period that it covers.
+
+    Args:
+        value: The TimeRange.
+
+    Returns:
+        The year, semester, quarter, month, week or day.
+
+    Raises:
+        Invalid: If the TimeRange does not cover a regular period.
+    """
+    first, last = _dates(_time_range_to_vtl_time(value).split("/"))
+    months = (last.year - first.year) * 12 + last.month - first.month + 1
+    whole_months = first.day == 1 and last == last + pd.offsets.MonthEnd(0)
+    periods = {
+        1: f"{first:%Y-%m}",
+        3: f"{first.year}-Q{(first.month + 2) // 3}",
+        6: f"{first.year}-S{(first.month + 5) // 6}",
+        12: f"{first.year}",
+    }
+    if first == last:
+        return f"{first.date()}"
+    if whole_months and (first.month - 1) % months == 0 and months in periods:
+        return periods[months]
+    if first.weekday() == 0 and (last - first).days == 6:
+        return f"{first.isocalendar().year}-W{first.isocalendar().week:02d}"
+    raise Invalid(
+        "Validation Error",
+        f"The TimeRange '{value}' is not a regular period, so it cannot "
+        "be converted to a VTL time period.",
+    )
 
 
 def _time_range_to_vtl_time(value: str) -> str:
