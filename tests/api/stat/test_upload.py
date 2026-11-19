@@ -601,6 +601,8 @@ def test_parse_import_operation_result():
     )
     assert r.success is True
     assert r.request_id == 42
+    # an OperationResult always carries "success": not assumed when absent
+    assert _submission_from_import('{"message": "odd"}').success is False
 
 
 def test_parse_import_non_json():

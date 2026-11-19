@@ -132,7 +132,9 @@ def _submission_from_import(text: str) -> SubmissionResult:
     message = str(lower.get("message") or "")
     rid = re.search(r"ID\s+(\d+)", message)
     return SubmissionResult(
-        success=bool(lower.get("success", True)),
+        # An OperationResult always carries "success"; a body without it
+        # is not an acknowledgement, so it is not reported as a success.
+        success=bool(lower.get("success", False)),
         message=message,
         request_id=int(rid.group(1)) if rid else lower.get("requestid"),
     )
