@@ -20,76 +20,100 @@
       <str:ConceptScheme id="TYPED_CONCEPTS" agencyID="MD" version="1.0">
         <com:Name xml:lang="en">Concepts of the typed values samples</com:Name>
         <str:Concept id="DIM1">
-          <com:Name xml:lang="en">DIM1</com:Name>
+          <com:Name xml:lang="en">First dimension</com:Name>
         </str:Concept>
         <str:Concept id="DIM2">
-          <com:Name xml:lang="en">DIM2</com:Name>
+          <com:Name xml:lang="en">Second dimension</com:Name>
         </str:Concept>
         <str:Concept id="TIME_PERIOD">
-          <com:Name xml:lang="en">TIME_PERIOD</com:Name>
+          <com:Name xml:lang="en">Time period</com:Name>
         </str:Concept>
         <str:Concept id="OBS_VALUE">
-          <com:Name xml:lang="en">OBS_VALUE</com:Name>
+          <com:Name xml:lang="en">Observation value</com:Name>
         </str:Concept>
         <str:Concept id="DS_INT">
-          <com:Name xml:lang="en">DS_INT</com:Name>
+          <com:Name xml:lang="en">Data set integer</com:Name>
         </str:Concept>
         <str:Concept id="DS_LONG">
-          <com:Name xml:lang="en">DS_LONG</com:Name>
+          <com:Name xml:lang="en">Data set long</com:Name>
         </str:Concept>
         <str:Concept id="DS_BOOL">
-          <com:Name xml:lang="en">DS_BOOL</com:Name>
+          <com:Name xml:lang="en">Data set boolean</com:Name>
         </str:Concept>
         <str:Concept id="DS_DT">
-          <com:Name xml:lang="en">DS_DT</com:Name>
+          <com:Name xml:lang="en">Data set date time</com:Name>
         </str:Concept>
         <str:Concept id="DS_DEC">
-          <com:Name xml:lang="en">DS_DEC</com:Name>
+          <com:Name xml:lang="en">Data set decimal</com:Name>
         </str:Concept>
         <str:Concept id="DS_STR">
-          <com:Name xml:lang="en">DS_STR</com:Name>
+          <com:Name xml:lang="en">Data set text</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_FLT">
+          <com:Name xml:lang="en">Data set float</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_DBL">
+          <com:Name xml:lang="en">Data set double</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_EMPTY">
+          <com:Name xml:lang="en">Data set attribute without a value</com:Name>
+        </str:Concept>
+        <str:Concept id="DS_ABSENT">
+          <com:Name xml:lang="en">Data set attribute not given</com:Name>
         </str:Concept>
         <str:Concept id="SER_INT">
-          <com:Name xml:lang="en">SER_INT</com:Name>
+          <com:Name xml:lang="en">Series integer</com:Name>
         </str:Concept>
         <str:Concept id="SER_LONG">
-          <com:Name xml:lang="en">SER_LONG</com:Name>
+          <com:Name xml:lang="en">Series long</com:Name>
         </str:Concept>
         <str:Concept id="SER_BOOL">
-          <com:Name xml:lang="en">SER_BOOL</com:Name>
+          <com:Name xml:lang="en">Series boolean</com:Name>
         </str:Concept>
         <str:Concept id="SER_DT">
-          <com:Name xml:lang="en">SER_DT</com:Name>
+          <com:Name xml:lang="en">Series date time</com:Name>
         </str:Concept>
         <str:Concept id="SER_DEC">
-          <com:Name xml:lang="en">SER_DEC</com:Name>
+          <com:Name xml:lang="en">Series decimal</com:Name>
         </str:Concept>
         <str:Concept id="SER_STR">
-          <com:Name xml:lang="en">SER_STR</com:Name>
+          <com:Name xml:lang="en">Series text</com:Name>
+        </str:Concept>
+        <str:Concept id="SER_FLT">
+          <com:Name xml:lang="en">Series float</com:Name>
+        </str:Concept>
+        <str:Concept id="SER_DBL">
+          <com:Name xml:lang="en">Series double</com:Name>
         </str:Concept>
         <str:Concept id="OBS_INT">
-          <com:Name xml:lang="en">OBS_INT</com:Name>
+          <com:Name xml:lang="en">Observation integer</com:Name>
         </str:Concept>
         <str:Concept id="OBS_LONG">
-          <com:Name xml:lang="en">OBS_LONG</com:Name>
+          <com:Name xml:lang="en">Observation long</com:Name>
         </str:Concept>
         <str:Concept id="OBS_BOOL">
-          <com:Name xml:lang="en">OBS_BOOL</com:Name>
+          <com:Name xml:lang="en">Observation boolean</com:Name>
         </str:Concept>
         <str:Concept id="OBS_DT">
-          <com:Name xml:lang="en">OBS_DT</com:Name>
+          <com:Name xml:lang="en">Observation date time</com:Name>
         </str:Concept>
         <str:Concept id="OBS_DEC">
-          <com:Name xml:lang="en">OBS_DEC</com:Name>
+          <com:Name xml:lang="en">Observation decimal</com:Name>
         </str:Concept>
         <str:Concept id="OBS_STR">
-          <com:Name xml:lang="en">OBS_STR</com:Name>
+          <com:Name xml:lang="en">Observation text</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_FLT">
+          <com:Name xml:lang="en">Observation float</com:Name>
+        </str:Concept>
+        <str:Concept id="OBS_DBL">
+          <com:Name xml:lang="en">Observation double</com:Name>
         </str:Concept>
       </str:ConceptScheme>
     </str:Concepts>
     <str:DataStructures>
       <str:DataStructure id="TYPED" agencyID="MD" version="1.0">
-        <com:Name xml:lang="en">Typed values at data set, series and observation level</com:Name>
+        <com:Name xml:lang="en">Typed values</com:Name>
         <str:DataStructureComponents>
           <str:DimensionList id="DimensionDescriptor">
             <str:Dimension id="DIM1" position="1">
@@ -176,6 +200,50 @@
             <str:Attribute id="DS_STR" assignmentStatus="Conditional">
               <str:ConceptIdentity>
                 <Ref agencyID="MD" class="Concept" id="DS_STR" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="String"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_FLT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_FLT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Float"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_DBL" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_DBL" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Double"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_EMPTY" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_EMPTY" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Integer"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:None/>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="DS_ABSENT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="DS_ABSENT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
               </str:ConceptIdentity>
               <str:LocalRepresentation>
                 <str:TextFormat textType="String"/>
@@ -280,6 +348,38 @@
                 </str:Dimension>
               </str:AttributeRelationship>
             </str:Attribute>
+            <str:Attribute id="SER_FLT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="SER_FLT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Float"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>
+                  <Ref id="DIM1"/>
+                </str:Dimension>
+                <str:Dimension>
+                  <Ref id="DIM2"/>
+                </str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="SER_DBL" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="SER_DBL" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Double"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:Dimension>
+                  <Ref id="DIM1"/>
+                </str:Dimension>
+                <str:Dimension>
+                  <Ref id="DIM2"/>
+                </str:Dimension>
+              </str:AttributeRelationship>
+            </str:Attribute>
             <str:Attribute id="OBS_INT" assignmentStatus="Conditional">
               <str:ConceptIdentity>
                 <Ref agencyID="MD" class="Concept" id="OBS_INT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
@@ -351,6 +451,32 @@
               </str:ConceptIdentity>
               <str:LocalRepresentation>
                 <str:TextFormat textType="String"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:PrimaryMeasure>
+                  <Ref id="OBS_VALUE"/>
+                </str:PrimaryMeasure>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="OBS_FLT" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_FLT" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Float"/>
+              </str:LocalRepresentation>
+              <str:AttributeRelationship>
+                <str:PrimaryMeasure>
+                  <Ref id="OBS_VALUE"/>
+                </str:PrimaryMeasure>
+              </str:AttributeRelationship>
+            </str:Attribute>
+            <str:Attribute id="OBS_DBL" assignmentStatus="Conditional">
+              <str:ConceptIdentity>
+                <Ref agencyID="MD" class="Concept" id="OBS_DBL" maintainableParentID="TYPED_CONCEPTS" maintainableParentVersion="1.0" package="conceptscheme"/>
+              </str:ConceptIdentity>
+              <str:LocalRepresentation>
+                <str:TextFormat textType="Double"/>
               </str:LocalRepresentation>
               <str:AttributeRelationship>
                 <str:PrimaryMeasure>

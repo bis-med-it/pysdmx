@@ -1,9 +1,11 @@
 """Values kept when data go from one data format to another.
 
-The samples have an integer, a long, a boolean, a date time, a decimal
-and a string attribute at data set, series and observation level, some
-of them without a value. `input.csv` gives the date times with an
-offset, with `Z` and without a time zone, and decimals with trailing
+The samples have an integer, a long, a boolean, a date time, a decimal,
+a string, a float and a double attribute at data set, series and
+observation level, some of them without a value, and two data set
+attributes without one: `DS_EMPTY`, whose column has no values, and
+`DS_ABSENT`, which has no column. `input.csv` gives the date times with
+an offset, with `Z` and without a time zone, and decimals with trailing
 zeros; the other files give the values as every data writer must write
 them. The `groups` files have an attribute attached to a group that only
 some series belong to.
@@ -13,7 +15,8 @@ the SDMX-CSV readers read a column of numbers without one through
 float64 (#776), which is why the data set attribute has none.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
 from pathlib import Path
 
 import pandas as pd
@@ -36,6 +39,46 @@ SDMX_CSV = [
     pytest.param(Format.DATA_SDMX_CSV_1_0_0, {}, "csv_10.csv", id="csv_10"),
     pytest.param(Format.DATA_SDMX_CSV_2_0_0, {}, "csv_20.csv", id="csv_20"),
     pytest.param(Format.DATA_SDMX_CSV_2_1_0, {}, "csv_21.csv", id="csv_21"),
+]
+
+# The columns that the SDMX-CSV readers drop: keys and labels
+SDMX_CSV_OPTIONS = [
+    pytest.param(
+        Format.DATA_SDMX_CSV_2_0_0,
+        {"keys": "both"},
+        "csv_20_keys_both.csv",
+        id="csv_20_keys_both",
+    ),
+    pytest.param(
+        Format.DATA_SDMX_CSV_2_0_0,
+        {"keys": "series"},
+        "csv_20_keys_series.csv",
+        id="csv_20_keys_series",
+    ),
+    pytest.param(
+        Format.DATA_SDMX_CSV_2_1_0,
+        {"keys": "obs"},
+        "csv_21_keys_obs.csv",
+        id="csv_21_keys_obs",
+    ),
+    pytest.param(
+        Format.DATA_SDMX_CSV_1_0_0,
+        {"labels": "both"},
+        "csv_10_labels_both.csv",
+        id="csv_10_labels_both",
+    ),
+    pytest.param(
+        Format.DATA_SDMX_CSV_2_0_0,
+        {"labels": "both"},
+        "csv_20_labels_both.csv",
+        id="csv_20_labels_both",
+    ),
+    pytest.param(
+        Format.DATA_SDMX_CSV_2_1_0,
+        {"labels": "name"},
+        "csv_21_labels_name.csv",
+        id="csv_21_labels_name",
+    ),
 ]
 
 SDMX_ML = [
@@ -91,15 +134,17 @@ PARTIAL_KEYS = pytest.param(
 )
 
 
-def __write(sdmx_format, params):
-    datasets = get_datasets(DATA, STRUCTURE)
+def __header():
+    return Header(
+        id="ID",
+        prepared=datetime(2021, 1, 1, tzinfo=timezone.utc),
+        sender=Organisation(id="ZZZ"),
+    )
+
+
+def __write(datasets, sdmx_format, params):
     if sdmx_format.name.startswith("DATA_SDMX_ML"):
-        header = Header(
-            id="ID",
-            prepared=datetime(2021, 1, 1, tzinfo=timezone.utc),
-            sender=Organisation(id="ZZZ"),
-        )
-        params = {**params, "header": header}
+        params = {**params, "header": __header()}
     return write_sdmx(datasets, sdmx_format, **params)
 
 
@@ -116,23 +161,31 @@ def __data(filename):
     return read_sdmx(SAMPLES / filename).data[0].data
 
 
+def __reported(attributes):
+    # An SDMX-ML message only has the data set attributes with a value
+    return {k: v for k, v in attributes.items() if v is not None}
+
+
 @pytest.mark.parametrize(
     ("sdmx_format", "params", "filename"),
-    [*SDMX_CSV, *SDMX_ML, PARTIAL_KEYS],
+    [*SDMX_CSV, *SDMX_CSV_OPTIONS, *SDMX_ML, PARTIAL_KEYS],
 )
 def test_values_are_written_in_their_sdmx_form(sdmx_format, params, filename):
-    result = __write(sdmx_format, params)
+    datasets = get_datasets(DATA, STRUCTURE)
+
+    result = __write(datasets, sdmx_format, params)
 
     assert result == __expected(filename)
 
 
 @pytest.mark.parametrize(
-    ("sdmx_format", "params", "filename"), [*SDMX_CSV, *SDMX_ML]
+    ("sdmx_format", "params", "filename"),
+    [*SDMX_CSV, *SDMX_CSV_OPTIONS, *SDMX_ML],
 )
 def test_values_are_read_back_with_the_same_schema(
     sdmx_format, params, filename
 ):
-    written = __write(sdmx_format, params)
+    written = __write(get_datasets(DATA, STRUCTURE), sdmx_format, params)
 
     result = get_datasets(written, STRUCTURE)
 
@@ -141,7 +194,52 @@ def test_values_are_read_back_with_the_same_schema(
     pd.testing.assert_frame_equal(
         result[0].data, expected[0].data, check_like=True
     )
-    assert result[0].attributes == expected[0].attributes
+    assert __reported(result[0].attributes) == __reported(
+        expected[0].attributes
+    )
+
+
+@pytest.mark.parametrize(("sdmx_format", "params", "filename"), SDMX_ML)
+def test_writers_leave_the_dataset_as_it_is(sdmx_format, params, filename):
+    datasets = get_datasets(DATA, STRUCTURE)
+    expected = get_datasets(DATA, STRUCTURE)[0]
+
+    first = __write(datasets, sdmx_format, params)
+    second = __write(datasets, sdmx_format, params)
+    csv = __write(datasets, Format.DATA_SDMX_CSV_2_0_0, {})
+
+    assert first == second == __expected(filename)
+    assert csv == __expected("csv_20.csv")
+    pd.testing.assert_frame_equal(datasets[0].data, expected.data)
+    assert datasets[0].attributes == expected.attributes
+
+
+@pytest.mark.parametrize(
+    ("sdmx_format", "params", "filename"),
+    [*SDMX_CSV, *SDMX_CSV_OPTIONS, *SDMX_ML],
+)
+def test_data_set_attributes_given_as_python_values(
+    sdmx_format, params, filename
+):
+    # The values that a user gives, instead of those taken from the data
+    datasets = get_datasets(DATA, STRUCTURE)
+    offset = timezone(timedelta(hours=2))
+    datasets[0].attributes = {
+        "DS_INT": 7,
+        "DS_LONG": 9007199254740993,
+        "DS_BOOL": True,
+        "DS_DT": datetime(2025, 12, 19, 16, 30, tzinfo=offset),
+        "DS_DEC": Decimal("1234.50"),
+        "DS_STR": "Data set note",
+        "DS_FLT": 0.1,
+        "DS_DBL": 100.0,
+        "DS_EMPTY": None,
+        "DS_ABSENT": "",
+    }
+
+    result = __write(datasets, sdmx_format, params)
+
+    assert result == __expected(filename)
 
 
 def test_values_are_read_with_the_types_of_the_schema():
@@ -150,6 +248,8 @@ def test_values_are_read_with_the_types_of_the_schema():
     expected = get_datasets(SAMPLES / "csv_20.csv", STRUCTURE)[0]
     pd.testing.assert_frame_equal(result.data, expected.data)
     assert result.attributes == expected.attributes
+    assert result.attributes["DS_EMPTY"] is None
+    assert result.attributes["DS_ABSENT"] is None
     dtypes = {
         name: dtype.pyarrow_dtype
         for name, dtype in result.data.dtypes.items()
@@ -164,6 +264,8 @@ def test_values_are_read_with_the_types_of_the_schema():
         # float64 cannot hold every value of the column
         "OBS_DEC": pa.decimal128(38, 9),
         "OBS_STR": pa.string(),
+        "OBS_FLT": pa.float32(),
+        "OBS_DBL": pa.float64(),
     }
     # float64 holds every value of the column
     assert result.data["SER_DEC"].dtype == pd.ArrowDtype(pa.float64())
@@ -175,7 +277,12 @@ def test_values_not_reported_are_read_as_empty_strings(filename):
 
     expected = __data("csv_20.csv")[result.columns]
     assert (expected == "").any(axis=None)
-    pd.testing.assert_frame_equal(result, expected)
+    pd.testing.assert_frame_equal(result == "", expected == "")
+    # Each format has its own text for floats and doubles
+    same_text = [
+        name for name in result.columns if not name.endswith(("_FLT", "_DBL"))
+    ]
+    pd.testing.assert_frame_equal(result[same_text], expected[same_text])
 
 
 @pytest.mark.parametrize(

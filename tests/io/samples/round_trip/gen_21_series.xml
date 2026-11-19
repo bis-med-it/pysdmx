@@ -19,6 +19,8 @@
 			<gen:Value id="DS_DT" value="2025-12-19T14:30:00Z"/>
 			<gen:Value id="DS_DEC" value="1234.5"/>
 			<gen:Value id="DS_STR" value="Data set note"/>
+			<gen:Value id="DS_FLT" value="0.1"/>
+			<gen:Value id="DS_DBL" value="100.0"/>
 		</gen:Attributes>
 		<gen:Series>
 			<gen:SeriesKey>
@@ -32,6 +34,8 @@
 				<gen:Value id="SER_DT" value="2025-12-19T14:30:00Z"/>
 				<gen:Value id="SER_DEC" value="0.1"/>
 				<gen:Value id="SER_STR" value="Series note"/>
+				<gen:Value id="SER_FLT" value="0.1"/>
+				<gen:Value id="SER_DBL" value="0.1"/>
 			</gen:Attributes>
 			<gen:Obs>
 				<gen:ObsDimension value="2020"/>
@@ -43,6 +47,8 @@
 					<gen:Value id="OBS_DT" value="2025-12-19T14:30:00Z"/>
 					<gen:Value id="OBS_DEC" value="1234567890.123456789"/>
 					<gen:Value id="OBS_STR" value="First"/>
+					<gen:Value id="OBS_FLT" value="0.1"/>
+					<gen:Value id="OBS_DBL" value="0.1"/>
 				</gen:Attributes>
 			</gen:Obs>
 			<gen:Obs>
@@ -71,6 +77,8 @@
 					<gen:Value id="OBS_INT" value="-5"/>
 					<gen:Value id="OBS_LONG" value="-9007199254740993"/>
 					<gen:Value id="OBS_STR" value="Third"/>
+					<gen:Value id="OBS_FLT" value="1"/>
+					<gen:Value id="OBS_DBL" value="1"/>
 				</gen:Attributes>
 			</gen:Obs>
 			<gen:Obs>
@@ -82,6 +90,8 @@
 					<gen:Value id="OBS_BOOL" value="true"/>
 					<gen:Value id="OBS_DT" value="2025-12-19T12:30:00.123Z"/>
 					<gen:Value id="OBS_DEC" value="-0.000000001"/>
+					<gen:Value id="OBS_FLT" value="1e-7"/>
+					<gen:Value id="OBS_DBL" value="1e-7"/>
 				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>
@@ -95,6 +105,8 @@
 				<gen:Value id="SER_LONG" value="-9007199254740993"/>
 				<gen:Value id="SER_DEC" value="1234.5"/>
 				<gen:Value id="SER_STR" value="Other note"/>
+				<gen:Value id="SER_FLT" value="1"/>
+				<gen:Value id="SER_DBL" value="1"/>
 			</gen:Attributes>
 			<gen:Obs>
 				<gen:ObsDimension value="2020"/>
@@ -104,6 +116,8 @@
 					<gen:Value id="OBS_DT" value="2026-01-01T04:30:00.123456789Z"/>
 					<gen:Value id="OBS_DEC" value="12345678901234567890.5"/>
 					<gen:Value id="OBS_STR" value="Fifth"/>
+					<gen:Value id="OBS_FLT" value="3.4028235e+38"/>
+					<gen:Value id="OBS_DBL" value="1.7976931348623157e+308"/>
 				</gen:Attributes>
 			</gen:Obs>
 			<gen:Obs>
@@ -116,6 +130,8 @@
 					<gen:Value id="OBS_DT" value="2025-12-19T23:59:59Z"/>
 					<gen:Value id="OBS_DEC" value="100"/>
 					<gen:Value id="OBS_STR" value="Sixth"/>
+					<gen:Value id="OBS_FLT" value="-2.5"/>
+					<gen:Value id="OBS_DBL" value="-2.5"/>
 				</gen:Attributes>
 			</gen:Obs>
 		</gen:Series>
