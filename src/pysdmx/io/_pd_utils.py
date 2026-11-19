@@ -1,11 +1,12 @@
-from typing import Any, Optional
+from copy import copy
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_float_dtype
 
 from pysdmx.errors import Invalid
-from pysdmx.io.pd import PandasDataset, format_value
+from pysdmx.io.pd import PandasDataset, format_value, stringify_dataframe
 from pysdmx.model import DataType
 from pysdmx.model.dataflow import Schema
 
@@ -115,6 +116,46 @@ def _get_value_to_write(
     if _is_null_value(value) or value == "":
         return _get_null_representation(dtype) if required else None
     return format_value(value)
+
+
+def data_set_attributes(dataset: PandasDataset) -> Dict[str, Optional[str]]:
+    """Give the data set attributes of a dataset as the text to write.
+
+    Args:
+        dataset: The dataset.
+
+    Returns:
+        The text of the value of each attribute, as ``format_value``
+        gives it, or None if the attribute has no value.
+    """
+    return {
+        name: _get_value_to_write(value, required=False)
+        for name, value in dataset.attributes.items()
+    }
+
+
+def text_dataset(dataset: PandasDataset) -> PandasDataset:
+    """Give a copy of a dataset with its values as the text to write.
+
+    The data are converted to strings, with the nulls as empty strings,
+    and the data set attributes to the text of their values, without
+    those that have no value. The dataset given is left as it is: only
+    the copy gets the new data and attributes.
+
+    Args:
+        dataset: The dataset to write.
+
+    Returns:
+        The copy of the dataset.
+    """
+    result = copy(dataset)
+    result.data = stringify_dataframe(dataset.data)
+    result.attributes = {
+        name: value
+        for name, value in data_set_attributes(dataset).items()
+        if value is not None
+    }
+    return result
 
 
 def transform_dataframe_for_writing(

@@ -82,7 +82,7 @@ def __write_data_structure_specific(
     outfile = ""
 
     for i, (short_urn, dataset) in enumerate(datasets.items()):
-        stringify_dataset(dataset)
+        dataset = stringify_dataset(dataset)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -115,8 +115,6 @@ def __write_data_single_dataset(
     """
     outfile = ""
     reference = parse_short_urn(get_structure(dataset))
-    # Remove null values from DataFrame
-    stringify_dataset(dataset)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""
