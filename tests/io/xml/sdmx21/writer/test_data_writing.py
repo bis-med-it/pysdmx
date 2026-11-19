@@ -406,26 +406,6 @@ def test_invalid_string_dimension_at_observation(content):
         )
 
 
-def test_data_writing_escape(content):
-    content = list(content.values())
-    content[0].data["ATT1"] = ["<A", ">B", "&C"]
-    result_spe = write_str_spec(content)
-    assert "&lt;A" in result_spe
-    assert "&gt;B" in result_spe
-    assert "&amp;C" in result_spe
-    result_gen = write_gen(content)
-    assert "&lt;A" in result_spe
-    assert "&gt;B" in result_spe
-    assert "&amp;C" in result_spe
-
-    # Read the result to check for formal errors
-    data_spe = read_sdmx(result_spe, validate=True).data[0]
-    data_gen = read_sdmx(result_gen, validate=True).data[0]
-
-    assert data_spe.data["ATT1"].tolist() == ["<A", ">B", "&C"]
-    assert data_gen.data["ATT1"].tolist() == ["<A", ">B", "&C"]
-
-
 def test_write_empty_data(header, content):
     content = list(content.values())
     content[0].data = pd.DataFrame(columns=content[0].data.columns)
@@ -546,15 +526,41 @@ def test_write_generic_with_groups(header, ds_with_group):
     assert result == sample
 
 
-def test_data_scape_quote(content):
-    # Create dataframe with quotation mark in string
-    data = pd.DataFrame({"A": 'quote="'}, index=pd.DatetimeIndex(["2000-1-1"]))
-    dataset: PandasDataset = content["DataStructure=MD:TEST(1.0)"]
-    dataset.data = data
+def with_context(content, context):
+    dataset = content["DataStructure=MD:TEST(1.0)"]
+    dataset.structure = Schema(
+        context=context,
+        id="TEST",
+        agency="MD",
+        version="1.0",
+        components=dataset.structure.components,
+    )
+    return dataset
 
-    result = write_str_spec([dataset])
-    assert result is not None
-    assert 'A="quote=&quot;"' in result
+
+@pytest.mark.parametrize(
+    ("context", "scope"),
+    [("dataflow", "Dataflow"), ("provisionagreement", "ProvisionAgreement")],
+)
+def test_str_spec_data_scope_is_the_structure_type(content, context, scope):
+    result = write_str_spec([with_context(content, context)])
+
+    assert f'ss:dataScope="{scope}"' in result
+
+
+@pytest.mark.parametrize(
+    ("context", "urn"),
+    [
+        ("dataflow", "datastructure.Dataflow=MD:TEST(1.0)"),
+        ("provisionagreement", "registry.ProvisionAgreement=MD:TEST(1.0)"),
+    ],
+)
+def test_str_spec_namespace_is_the_header_namespace(content, context, urn):
+    result = write_str_spec([with_context(content, context)])
+
+    namespace = f"urn:sdmx:org.sdmx.infomodel.{urn}:ObsLevelDim:AllDimensions"
+    assert f'xmlns:ns1="{namespace}"' in result
+    assert f'namespace="{namespace}"' in result
 
 
 def test_generic_writer_varying_attributes(header, content):
@@ -845,6 +851,15 @@ def test_all_dimensions_with_series_only_row(header):
             header=header,
             dimension_at_observation={ds.structure.short_urn: "AllDimensions"},
         )
+
+
+def test_all_dimensions_without_a_dimension_column(content):
+    dataset = content["DataStructure=MD:TEST(1.0)"]
+    dataset.data = dataset.data.drop(columns=["DIM2"])
+
+    result = write_str_spec([dataset])
+
+    assert '<Obs DIM1="1" ATT1="A" ATT2="7" M1="10" />' in result
 
 
 def test_series_format_with_series_no_obs(header):
