@@ -128,7 +128,7 @@ def _to_utc(values: pd.Series) -> pd.Series:
 _PLAIN = r"^[+-]?(\d+\.?\d*|\.\d+)$"
 # The text before the fractional digits of a number, and its trailing zeros
 _NOT_FRACTION = r"^[^.]*\.?|0+$"
-# float64 holds any number of up to these digits
+# float64 holds any number of up to these digits, so any text this short
 _FLOAT64_DIGITS = 15
 _DECIMAL_PRECISION = 38
 
