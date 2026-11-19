@@ -131,6 +131,8 @@ class _GenericDataSet:
                     set(df.columns).intersection(set(df_group.columns))
                 )
                 df = pd.merge(df, df_group, on=common_columns, how="left")
+                # A series of no group has no value for their attributes
+                df = df.fillna("")
             dim_at_obs = self.__structure[DIM_OBS]
             # In case there are observations defined, we need to replace the
             # OBS_DIM column with the dimension at observation
