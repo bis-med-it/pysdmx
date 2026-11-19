@@ -126,12 +126,20 @@ SDMX_ML = [
     ),
 ]
 
-PARTIAL_KEYS = pytest.param(
-    Format.DATA_SDMX_CSV_2_0_0,
-    {"partial_keys": True},
-    "csv_20_partial_keys.csv",
-    id="csv_20_partial_keys",
-)
+PARTIAL_KEYS = [
+    pytest.param(
+        Format.DATA_SDMX_CSV_2_0_0,
+        {"partial_keys": True},
+        "csv_20_partial_keys.csv",
+        id="csv_20_partial_keys",
+    ),
+    pytest.param(
+        Format.DATA_SDMX_CSV_2_0_0,
+        {"partial_keys": True, "labels": "both"},
+        "csv_20_labels_both_partial_keys.csv",
+        id="csv_20_labels_both_partial_keys",
+    ),
+]
 
 
 def __header():
@@ -168,7 +176,7 @@ def __reported(attributes):
 
 @pytest.mark.parametrize(
     ("sdmx_format", "params", "filename"),
-    [*SDMX_CSV, *SDMX_CSV_OPTIONS, *SDMX_ML, PARTIAL_KEYS],
+    [*SDMX_CSV, *SDMX_CSV_OPTIONS, *SDMX_ML, *PARTIAL_KEYS],
 )
 def test_values_are_written_in_their_sdmx_form(sdmx_format, params, filename):
     datasets = get_datasets(DATA, STRUCTURE)
