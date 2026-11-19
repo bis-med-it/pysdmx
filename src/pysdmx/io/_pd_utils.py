@@ -3,10 +3,21 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_float_dtype
+import pyarrow as pa
+from pandas.api.types import (
+    is_bool_dtype,
+    is_datetime64_any_dtype,
+    is_float_dtype,
+    is_integer_dtype,
+)
 
 from pysdmx.errors import Invalid
-from pysdmx.io.pd import PandasDataset, format_value, stringify_dataframe
+from pysdmx.io.pd import (
+    PandasDataset,
+    format_value,
+    is_decimal,
+    stringify_dataframe,
+)
 from pysdmx.model import DataType
 from pysdmx.model.dataflow import Schema
 
@@ -43,24 +54,38 @@ def validate_schema_exists(dataset: PandasDataset) -> Schema:
     return dataset.structure
 
 
-def to_objects(values: pd.Series) -> pd.Series:
-    """Give the values of a column as the objects that the writers take.
+def values_to_write(values: pd.Series) -> pd.Series:
+    """Give the values of a column as ``format_value`` can take them.
 
-    A float32 value is kept as such, for it to be written with its
-    shortest text: as a Python float it has the digits of its float64
-    (``0.1`` would be written as ``0.10000000149011612``).
+    pandas hands the values of some columns in another type, in which
+    their text is not the one to write:
+
+    - An integer column with a null is handed as floats (``1.0``, and
+      ``9007199254740992.0`` for 9007199254740993), so integers are
+      given as text, as booleans are (``true``).
+    - A float32 value is handed as a float, with the digits of its
+      float64 (``0.10000000149011612`` for 0.1), so it is given as its
+      shortest text. float64 values are left as they are.
+    - Date times and decimals are given as objects.
 
     Args:
         values: The values of a column.
 
     Returns:
-        The values as objects, the nulls as they are in the column.
+        The values, with the nulls as nulls.
     """
     dtype = values.dtype
-    if is_float_dtype(dtype) and getattr(dtype, "itemsize", 0) == 4:
+    if is_float_dtype(dtype):
+        if getattr(dtype, "itemsize", 8) != 4:
+            return values
         floats = values.to_numpy(dtype=np.float32, na_value=np.nan)
-        return pd.Series(list(floats), index=values.index, dtype=object)
-    return values.astype(object)
+        text = pd.Series(floats.astype(str), index=values.index, dtype=object)
+        return text.where(~np.isnan(floats), None)
+    if is_integer_dtype(dtype) or is_bool_dtype(dtype):
+        return values.astype(pd.ArrowDtype(pa.string()))
+    if is_datetime64_any_dtype(dtype) or is_decimal(dtype):
+        return values.astype(object)
+    return values
 
 
 def _is_null_value(value: Any) -> bool:
@@ -189,10 +214,7 @@ def transform_dataframe_for_writing(
             ) -> Optional[str]:
                 return _get_value_to_write(v, req, dt)
 
-            # As objects, so that the values of a nullable integer column
-            # are integers: pandas would otherwise hand them as floats
-            # when one of them is null, and beyond 2**53 lose precision.
-            df[component.id] = to_objects(df[component.id]).apply(
+            df[component.id] = values_to_write(df[component.id]).apply(
                 transform_value
             )
     return df

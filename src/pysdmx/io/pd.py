@@ -40,6 +40,9 @@ def format_value(value: Any) -> str:
     Returns:
         The text to write for the value.
     """
+    if isinstance(value, str):
+        # Most values are text already
+        return value
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, datetime):
@@ -54,7 +57,7 @@ def format_value(value: Any) -> str:
     return str(value)
 
 
-def _is_decimal(dtype: Any) -> bool:
+def is_decimal(dtype: Any) -> bool:
     """Whether a dtype is a PyArrow decimal."""
     return isinstance(dtype, pd.ArrowDtype) and pa.types.is_decimal(
         dtype.pyarrow_dtype
@@ -82,7 +85,7 @@ def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     formatted = {
         col: df[col].astype(object).map(format_value, na_action="ignore")
         for col in df.columns
-        if is_datetime64_any_dtype(df[col].dtype) or _is_decimal(df[col].dtype)
+        if is_datetime64_any_dtype(df[col].dtype) or is_decimal(df[col].dtype)
     }
     return df.assign(**formatted).astype(conversion).fillna("").astype(str)
 
@@ -162,7 +165,7 @@ def _to_decimal(values: pd.Series) -> pd.Series:
     """
     if is_float_dtype(values.dtype):
         return values
-    if _is_decimal(values.dtype) or values.dtype == object:
+    if is_decimal(values.dtype) or values.dtype == object:
         # Numbers that are not text yet, such as Decimal objects
         values = values.astype(object).map(format_value, na_action="ignore")
     values = values.astype(pd.ArrowDtype(pa.string()))
@@ -223,7 +226,7 @@ def _prepare_columns(
                 data[col] = _to_utc(data[col])
             elif col in decimals:
                 data[col] = _to_decimal(data[col])
-                if _is_decimal(data[col].dtype):
+                if is_decimal(data[col].dtype):
                     conversion[col] = cast("pd.ArrowDtype", data[col].dtype)
         elif data[col].dtype == object:
             mask = data[col].notna()
