@@ -1,5 +1,6 @@
 """Pandas SDMX Dataset."""
 
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 from pysdmx.__extras_check import __check_data_extra
@@ -10,10 +11,39 @@ __check_data_extra()
 # E402 is needed here to ensure a clear message is used on missing import
 import pandas as pd  # noqa: E402
 import pyarrow as pa  # noqa: E402
+from pandas.api.types import is_datetime64_any_dtype  # noqa: E402
 
 from pysdmx.errors import Invalid  # noqa: E402
 from pysdmx.model import Schema  # noqa: E402
 from pysdmx.toolkit.pd import to_pyarrow_schema  # noqa: E402
+
+
+def format_value(value: Any) -> str:
+    """Give the text of a value as SDMX represents it.
+
+    This is the one place that decides how the data writers write a typed
+    value. Booleans are written as ``true`` or ``false``. Date times are
+    written in UTC, in the ISO 8601 form ``2025-12-19T14:30:00Z``, with
+    fractional seconds only when the value has them; a date time without
+    a time zone is taken as UTC. Any other value is written as ``str``
+    gives it.
+
+    Args:
+        value: The value to write. It must not be null.
+
+    Returns:
+        The text to write for the value.
+    """
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, datetime):
+        if value.tzinfo is not None:
+            value = value.astimezone(timezone.utc).replace(tzinfo=None)
+        text = value.isoformat()
+        if "." in text:
+            text = text.rstrip("0")
+        return f"{text}Z"
+    return str(value)
 
 
 def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -21,7 +51,8 @@ def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     Casts all columns to ``string[pyarrow]`` so that null values become
     ``pd.NA``, fills nulls with empty strings, and converts to plain
-    Python strings.
+    Python strings. Date times are first given the text that
+    :func:`format_value` gives them, as the cast gives another one.
 
     Args:
         df: The DataFrame to convert.
@@ -33,7 +64,12 @@ def stringify_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         return df
     str_dtype = pd.ArrowDtype(pa.string())
     conversion = dict.fromkeys(df.columns, str_dtype)
-    return df.astype(conversion).fillna("").astype(str)
+    date_times = {
+        col: df[col].astype(object).map(format_value, na_action="ignore")
+        for col in df.columns
+        if is_datetime64_any_dtype(df[col].dtype)
+    }
+    return df.assign(**date_times).astype(conversion).fillna("").astype(str)
 
 
 def _prepare_columns(

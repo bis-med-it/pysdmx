@@ -3,7 +3,7 @@ from typing import Any, Optional
 import pandas as pd
 
 from pysdmx.errors import Invalid
-from pysdmx.io.pd import PandasDataset
+from pysdmx.io.pd import PandasDataset, format_value
 from pysdmx.model import DataType
 from pysdmx.model.dataflow import Schema
 
@@ -92,7 +92,7 @@ def _get_value_to_write(
     """
     if _is_null_value(value) or value == "":
         return _get_null_representation(dtype) if required else None
-    return str(value)
+    return format_value(value)
 
 
 def transform_dataframe_for_writing(
@@ -105,6 +105,8 @@ def transform_dataframe_for_writing(
     - Null values (None/np.nan/pd.NA) -> "NaN" (numeric) or "#N/A" (string)
     - Empty strings for required components -> "NaN" or "#N/A"
     - Empty strings for optional components -> None (to be skipped)
+
+    Any other value is given the text that ``format_value`` gives it.
 
     Args:
         df: The DataFrame to transform.
@@ -124,5 +126,10 @@ def transform_dataframe_for_writing(
             ) -> Optional[str]:
                 return _get_value_to_write(v, req, dt)
 
-            df[component.id] = df[component.id].apply(transform_value)
+            # As objects, so that the values of a nullable integer column
+            # are integers: pandas would otherwise hand them as floats
+            # when one of them is null, and beyond 2**53 lose precision.
+            df[component.id] = (
+                df[component.id].astype(object).apply(transform_value)
+            )
     return df
