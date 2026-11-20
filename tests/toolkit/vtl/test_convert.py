@@ -22,6 +22,8 @@ from vtlengine.Model import Role as VTLRole
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import (
+    Code,
+    Codelist,
     Component,
     Components,
     Concept,
@@ -797,6 +799,7 @@ def _one_measure(
     [
         (String, DataType.URI, "x"),
         (String, DataType.GEO_INFO, "x"),
+        (String, DataType.MONTH, "--05"),
         (Integer, DataType.LONG, 1),
         (Number, DataType.DECIMAL, 1.5),
         (Date, DataType.DATE_TIME, "2025-12-19"),
@@ -904,6 +907,31 @@ def test_convert_to_vtl_time_range_that_is_not_a_period() -> None:
         convert_dataset_to_vtl(
             PandasDataset(structure=schema, data=data), "DS"
         )
+
+
+def test_enumerated_component_is_a_vtl_string() -> None:
+    """The codes are strings, whatever the data type of the component."""
+    codes = Codelist("CL", agency="TEST", items=[Code("1"), Code("2")])
+    components = [
+        Component("DIM", True, Role.DIMENSION, Concept("DIM")),
+        Component(
+            "ME",
+            False,
+            Role.MEASURE,
+            Concept("ME", dtype=DataType.INTEGER),
+            local_codes=codes,
+        ),
+    ]
+    schema = Schema("datastructure", "TEST", "DSD", Components(components))
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["1"]})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+    back = convert_dataset_to_sdmx(vtl_dataset, schema=schema)
+
+    assert vtl_dataset.components["ME"].data_type is String
+    assert back.structure == schema
 
 
 def test_time_ranges_are_converted_to_vtl_times_and_back() -> None:

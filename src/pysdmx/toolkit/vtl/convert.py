@@ -113,6 +113,7 @@ SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
             DataType.ALPHA_NUM,
             DataType.NUMERIC,
             DataType.URI,
+            DataType.MONTH,
             DataType.MONTH_DAY,
             DataType.DAY,
             DataType.TIME,
@@ -264,9 +265,7 @@ def convert_dataset_to_vtl(
     # with the VTL types of SDMX_TO_VTL_TYPE_MAP
     vtl_json = to_vtl_json(schema, vtl_dataset_name)
     for component in vtl_json["datasets"][0]["DataStructure"]:
-        vtl_type = SDMX_TO_VTL_TYPE_MAP[
-            schema.components[component["name"]].dtype
-        ]
+        vtl_type = _vtl_type(schema.components[component["name"]])
         component["type"] = SCALAR_TYPES_CLASS_REVERSE[vtl_type]
 
     # Load the dataset structure using vtlengine's API
@@ -277,6 +276,22 @@ def convert_dataset_to_vtl(
     vtl_dataset.data = pd_dataset
 
     return vtl_dataset
+
+
+def _is_enumerated(component: Component) -> bool:
+    """Whether the values of a component are the codes of a codelist."""
+    return bool(component.enumeration or component.enum_ref)
+
+
+def _vtl_type(component: Component) -> Type[ScalarType]:
+    """Gives the VTL type of an SDMX component.
+
+    An enumerated component is a VTL string, as its codes are, whatever its
+    data type.
+    """
+    if _is_enumerated(component):
+        return String
+    return SDMX_TO_VTL_TYPE_MAP[component.dtype]
 
 
 def _convert_values(
@@ -663,7 +678,12 @@ def _validate_vtl_dataset_against_schema(
         # SDMX type of the schema must be one mapped to it
         _map_vtl_dtype_to_sdmx(vtl_comp.data_type)
         vtl_dtype_class = _vtl_dtype_class(vtl_comp.data_type)
-        if component.dtype not in SDMX_TYPES_BY_VTL_TYPE[vtl_dtype_class]:
+        if _is_enumerated(component):
+            compatible = vtl_dtype_class is String
+        else:
+            sdmx_types = SDMX_TYPES_BY_VTL_TYPE[vtl_dtype_class]
+            compatible = component.dtype in sdmx_types
+        if not compatible:
             raise Invalid(
                 "Validation Error",
                 "Component mismatch between VTL Dataset and Schema. "
