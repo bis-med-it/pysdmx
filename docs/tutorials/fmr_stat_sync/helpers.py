@@ -93,15 +93,6 @@ TYPES = (
     StructureType.DATA_STRUCTURE,
     StructureType.DATAFLOW,
 )
-# The position of each type in a deletion: the dependents come first.
-DELETION_ORDER = {
-    "DataConstraint": 0,
-    "ContentConstraint": 0,
-    "Dataflow": 1,
-    "DataStructure": 2,
-    "ConceptScheme": 3,
-    "Codelist": 4,
-}
 
 # --------------------------------------------------------------------------
 # Connections
@@ -358,8 +349,7 @@ def build_structures(ecb):
     The ECB concept scheme and codelists are copied to AGENCY, with PREFIX
     added to their ids, and two dataflows are built on top of them: EXR
     (in ``keep``) and EXR_OLD, which also has a UNIT attribute (in
-    ``legacy``). Each list ends with its DSD and its dataflow, so
-    reversing it gives the dependents first.
+    ``legacy``). Each list ends with its DSD and its dataflow.
     """
     concepts = restamp(
         next(s for s in ecb.structures if isinstance(s, ConceptScheme))

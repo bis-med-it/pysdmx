@@ -47,7 +47,6 @@ from io import BytesIO
 
 from helpers import (
     AGENCY,
-    DELETION_ORDER,
     DLM,
     ECB_STRUCTURES,
     PREFIX,
@@ -203,12 +202,11 @@ try:
 except Invalid as error:
     print(error)
 
-# Step 14: Delete the extras, dependents first.
-# Note: delete_structure takes a list of short URNs, deletes them in order and
-# stops at the first error. In that case, fix the cause and run it again with
-# the remaining structures.
-ordered = sorted(extras, key=lambda urn: DELETION_ORDER[urn.split("=")[0]])
-for result in stat_uploader().delete_structure(ordered):
+# Step 14: Delete the extras.
+# Note: delete_structure takes the short URNs in any order, deletes the
+# dependents first and stops at the first error. In that case, fix the cause
+# and run it again with the remaining structures.
+for result in stat_uploader().delete_structure(extras):
     print(result.messages)
 
 # Step 15: Check that .Stat matches the FMR again.
@@ -221,8 +219,8 @@ print(sorted(stat_after - fmr_urns))
 # Step 16: Delete the data and the constraint that .Stat created for them.
 # Note: The exercise now removes what it has published, so that .Stat is left
 # as it was found. The order matters: first the data, then their constraint,
-# and then the structures, dependents first. .Stat refuses to delete a dataflow
-# while its constraint exists.
+# and then the structures. .Stat refuses to delete a dataflow while its
+# constraint exists.
 # Note: The structures that the exercise has published are those that .Stat has
 # now and did not have before. delete_data submits the observations of the
 # dataflow with the Delete action.
@@ -242,13 +240,11 @@ if flow.short_urn in published:
         for result in stat_uploader().delete_structure(constraint):
             print(result.messages)
 
-# Step 17: Delete the structures that the exercise has published, dependents
-# first.
+# Step 17: Delete the structures that the exercise has published.
 # Note: cleanup_dsd removes what the Transfer service keeps for the DSD.
 # Note: The printed list must be empty: .Stat is left as it was found. The
 # copies in the FMR remain, because pysdmx cannot delete from the FMR.
-ordered = sorted(published, key=lambda urn: DELETION_ORDER[urn.split("=")[0]])
-for result in stat_uploader().delete_structure(ordered):
+for result in stat_uploader().delete_structure(published):
     print(result.messages)
 dsd = graph.get_data_structure_definitions()[0]
 if dsd.short_urn in published:
@@ -268,4 +264,4 @@ extra_codelist = Codelist(
 stat_uploader().submit_structure([extra_codelist], STAT_FORMAT)
 extras = list_urns(stat_service()) - before - fmr_urns
 print(sorted(extras))
-stat_uploader().delete_structure(sorted(extras))
+stat_uploader().delete_structure(extras)
