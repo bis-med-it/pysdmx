@@ -1,5 +1,7 @@
 """Tests for VTL and SDMX conversion functions."""
 
+from typing import Any, Tuple
+
 import pandas as pd
 import pytest
 from vtlengine import semantic_analysis
@@ -20,6 +22,8 @@ from vtlengine.Model import Role as VTLRole
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
 from pysdmx.model import (
+    Code,
+    Codelist,
     Component,
     Components,
     Concept,
@@ -376,7 +380,11 @@ def vtl_all_types_dataset() -> VTLengineDataset:
             "DATE_ATTR": ["2025-01-01", "2025-01-02", "2025-01-03"],
             "PERIOD_DIM": ["2025", "2025-01", "2025-Q1"],
             "DURATION_ATTR": ["P1Y", "P1M", "P1D"],
-            "TIME_ATTR": ["12:00:00", "13:30:00", "14:45:00"],
+            "TIME_ATTR": [
+                "2025-01-01/2025-12-31",
+                "2025-01-01/2025-03-31",
+                "2025-01-01/2025-01-01",
+            ],
         }
     )
     return VTLengineDataset(
@@ -523,10 +531,10 @@ def test_convert_to_sdmx_type_mappings(
     assert components_dict["INTEGER_MEASURE"].dtype == DataType.INTEGER
     assert components_dict["DOUBLE_MEASURE"].dtype == DataType.DOUBLE
     assert components_dict["BOOLEAN_ATTR"].dtype == DataType.BOOLEAN
-    assert components_dict["DATE_ATTR"].dtype == DataType.DATE
-    assert components_dict["PERIOD_DIM"].dtype == DataType.PERIOD
+    assert components_dict["DATE_ATTR"].dtype == DataType.DATE_TIME
+    assert components_dict["PERIOD_DIM"].dtype == DataType.REP_TIME_PERIOD
     assert components_dict["DURATION_ATTR"].dtype == DataType.DURATION
-    assert components_dict["TIME_ATTR"].dtype == DataType.TIME
+    assert components_dict["TIME_ATTR"].dtype == DataType.TIME_RANGE
 
     # Attributes should have attachment_level "O"
     assert components_dict["BOOLEAN_ATTR"].attachment_level == "O"
@@ -737,6 +745,241 @@ def test_convert_to_sdmx_schema_mismatch_wrong_type(
         match="Component mismatch between VTL Dataset and Schema",
     ):
         convert_dataset_to_sdmx(vtl_basic_dataset, schema=schema)
+
+
+def _one_measure(
+    vtl_type: Any, sdmx_type: DataType, value: Any
+) -> Tuple[VTLengineDataset, Schema]:
+    """A VTL dataset and a schema with a measure of the given types."""
+    dataset = VTLengineDataset(
+        name="DS",
+        components={
+            "DIM": VTLComponent(
+                name="DIM",
+                data_type=String(),
+                role=VTLRole.IDENTIFIER,
+                nullable=False,
+            ),
+            "ME": VTLComponent(
+                name="ME",
+                data_type=vtl_type(),
+                role=VTLRole.MEASURE,
+                nullable=True,
+            ),
+        },
+        data=pd.DataFrame({"DIM": ["A"], "ME": [value]}),
+    )
+    schema = Schema(
+        context="datastructure",
+        agency="TEST",
+        id="TEST_DSD",
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    id="DIM",
+                    required=True,
+                    role=Role.DIMENSION,
+                    concept=Concept("DIM", dtype=DataType.STRING),
+                ),
+                Component(
+                    id="ME",
+                    required=False,
+                    role=Role.MEASURE,
+                    concept=Concept("ME", dtype=sdmx_type),
+                ),
+            ]
+        ),
+    )
+    return dataset, schema
+
+
+@pytest.mark.parametrize(
+    ("vtl_type", "sdmx_type", "value"),
+    [
+        (String, DataType.URI, "x"),
+        (String, DataType.GEO_INFO, "x"),
+        (String, DataType.MONTH, "--05"),
+        (Integer, DataType.LONG, 1),
+        (Number, DataType.DECIMAL, 1.5),
+        (Date, DataType.DATE_TIME, "2025-12-19"),
+        (Date, DataType.STD_TIME_PERIOD, "2025-12-19"),
+        (TimePeriod, DataType.REP_TIME_PERIOD, "2025-Q1"),
+        (TimePeriod, DataType.YEAR, "2025"),
+        (TimePeriod, DataType.BASIC_TIME_PERIOD, "2025-12"),
+        (TimeInterval, DataType.TIME_RANGE, "2025-01-01/2025-12-31"),
+    ],
+)
+def test_convert_to_sdmx_schema_with_compatible_type(
+    vtl_type: Any, sdmx_type: DataType, value: Any
+) -> None:
+    """A schema may use any SDMX type mapped to the VTL type."""
+    dataset, schema = _one_measure(vtl_type, sdmx_type, value)
+
+    pandas_dataset = convert_dataset_to_sdmx(dataset, schema=schema)
+
+    assert pandas_dataset.structure == schema
+
+
+@pytest.mark.parametrize(
+    "sdmx_type", [DataType.TIME, DataType.STD_TIME_PERIOD]
+)
+def test_convert_to_sdmx_schema_type_without_intervals_for_vtl_time(
+    sdmx_type: DataType,
+) -> None:
+    """A VTL time is an interval, which these SDMX types cannot hold."""
+    dataset, schema = _one_measure(
+        TimeInterval, sdmx_type, "2025-01-01/2025-12-31"
+    )
+
+    with pytest.raises(
+        Invalid,
+        match="Component mismatch between VTL Dataset and Schema",
+    ):
+        convert_dataset_to_sdmx(dataset, schema=schema)
+
+
+@pytest.mark.parametrize(
+    "sdmx_type",
+    [
+        DataType.YEAR,
+        DataType.YEAR_MONTH,
+        DataType.GREGORIAN_TIME_PERIOD,
+        DataType.BASIC_TIME_PERIOD,
+    ],
+)
+def test_convert_to_vtl_gregorian_periods_are_time_periods(
+    sdmx_type: DataType,
+) -> None:
+    """A year or a month is a VTL time period, not a VTL date (a full date)."""
+    _, schema = _one_measure(TimePeriod, sdmx_type, None)
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["2025"]})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+
+    assert vtl_dataset.components["ME"].data_type is TimePeriod
+
+
+def test_convert_to_vtl_date_time_of_a_time_period_is_its_day() -> None:
+    """A VTL time period has no time of day and no time zone."""
+    _, schema = _one_measure(TimePeriod, DataType.BASIC_TIME_PERIOD, None)
+    values = ["2025-12-19T23:30:00-05:00", "2025-12", None]
+    data = pd.DataFrame({"DIM": ["A", "B", "C"], "ME": values})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+
+    assert vtl_dataset.data["ME"].tolist()[:2] == ["2025-12-19", "2025-12"]
+
+
+def test_convert_to_vtl_time_range_of_a_time_period_is_its_period() -> None:
+    """A TimeRange in a time period is given as the period it covers."""
+    _, schema = _one_measure(TimePeriod, DataType.PERIOD, None)
+    periods = {
+        "2025-01-01/P1Y": "2025",
+        "2025-07-01/P6M": "2025-S2",
+        "2025-10-01/P3M": "2025-Q4",
+        "2025-12-01/P1M": "2025-12",
+        "2025-12-15/P7D": "2025-W51",
+        "2025-12-19/P1D": "2025-12-19",
+        "2025-12-01-05:00/P1M": "2025-12",
+        "2025-01-01T00:00:00/P3M": "2025-Q1",
+        "2025-Q4-05:00": "2025-Q4",
+        "2025-Q1": "2025-Q1",
+    }
+    data = pd.DataFrame({"DIM": list("ABCDEFGHIJ"), "ME": list(periods)})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+
+    assert vtl_dataset.data["ME"].tolist() == list(periods.values())
+
+
+def test_convert_to_vtl_time_range_that_is_not_a_period() -> None:
+    _, schema = _one_measure(TimePeriod, DataType.PERIOD, None)
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["2025-01-15/P1M"]})
+
+    with pytest.raises(Invalid, match="is not a regular period"):
+        convert_dataset_to_vtl(
+            PandasDataset(structure=schema, data=data), "DS"
+        )
+
+
+def test_enumerated_component_is_a_vtl_string() -> None:
+    """The codes are strings, whatever the data type of the component."""
+    codes = Codelist("CL", agency="TEST", items=[Code("1"), Code("2")])
+    components = [
+        Component("DIM", True, Role.DIMENSION, Concept("DIM")),
+        Component(
+            "ME",
+            False,
+            Role.MEASURE,
+            Concept("ME", dtype=DataType.INTEGER),
+            local_codes=codes,
+        ),
+    ]
+    schema = Schema("datastructure", "TEST", "DSD", Components(components))
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["1"]})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+    back = convert_dataset_to_sdmx(vtl_dataset, schema=schema)
+
+    assert vtl_dataset.components["ME"].data_type is String
+    assert back.structure == schema
+
+
+def test_time_ranges_are_converted_to_vtl_times_and_back() -> None:
+    """A TimeRange has a duration, a VTL time has the last day."""
+    _, schema = _one_measure(TimeInterval, DataType.TIME_RANGE, None)
+    ranges = ["2025-01-01/P1Y", "2025-01-31/P1M1D", "2025-03-10/P14D", None]
+    data = pd.DataFrame({"DIM": ["A", "B", "C", "D"], "ME": ranges})
+    dataset = PandasDataset(structure=schema, data=data)
+
+    vtl_dataset = convert_dataset_to_vtl(dataset, "DS")
+    back = convert_dataset_to_sdmx(vtl_dataset, schema=schema)
+
+    assert vtl_dataset.data["ME"].tolist()[:3] == [
+        "2025-01-01/2025-12-31",
+        "2025-01-31/2025-02-28",
+        "2025-03-10/2025-03-23",
+    ]
+    pd.testing.assert_frame_equal(back.data, dataset.data)
+
+
+def test_convert_to_vtl_time_range_without_its_time_zone() -> None:
+    _, schema = _one_measure(TimeInterval, DataType.TIME_RANGE, None)
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["2025-01-01-05:00/P1Y"]})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+
+    assert vtl_dataset.data["ME"].tolist() == ["2025-01-01/2025-12-31"]
+
+
+def test_time_range_that_is_not_a_vtl_time() -> None:
+    """Vtlengine holds a time as two dates, so a time of day is refused."""
+    _, schema = _one_measure(TimeInterval, DataType.TIME_RANGE, None)
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["2025-01-01T12:00:00/PT6H"]})
+    dataset = PandasDataset(structure=schema, data=data)
+
+    with pytest.raises(Invalid, match="cannot be converted to a VTL time"):
+        convert_dataset_to_vtl(dataset, "DS")
+
+
+def test_vtl_time_that_is_not_an_interval() -> None:
+    dataset, schema = _one_measure(
+        TimeInterval, DataType.TIME_RANGE, "12:00:00"
+    )
+
+    with pytest.raises(Invalid, match="is not a VTL time"):
+        convert_dataset_to_sdmx(dataset, schema=schema)
 
 
 def test_convert_to_sdmx_schema_mismatch_wrong_role(

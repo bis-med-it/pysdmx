@@ -1,6 +1,15 @@
 """Conversions between pysdmx SDMX objects and vtlengine VTL objects."""
 
-from typing import Dict, Optional, Type, Union
+import re
+from typing import (
+    Callable,
+    Dict,
+    FrozenSet,
+    Optional,
+    Sequence,
+    Type,
+    Union,
+)
 
 import pandas as pd
 from vtlengine.API import (  # type: ignore[attr-defined]
@@ -8,6 +17,7 @@ from vtlengine.API import (  # type: ignore[attr-defined]
     to_vtl_json,
 )
 from vtlengine.DataTypes import (
+    SCALAR_TYPES_CLASS_REVERSE,
     Boolean,
     Date,
     Duration,
@@ -35,16 +45,131 @@ from pysdmx.model import (
 )
 from pysdmx.model.dataflow import Role, Schema
 
-# VTL to SDMX type mapping
+# See "Mapping SDMX data types to VTL basic scalar types" and "Mapping VTL
+# basic scalar types to SDMX data types" in the SDMX technical notes.
+
+# VTL type of each SDMX data type
+SDMX_TO_VTL_TYPE_MAP: Dict[DataType, Type[ScalarType]] = {
+    DataType.STRING: String,
+    DataType.ALPHA: String,
+    DataType.ALPHA_NUM: String,
+    DataType.NUMERIC: String,
+    DataType.URI: String,
+    DataType.MONTH: String,
+    DataType.MONTH_DAY: String,
+    DataType.DAY: String,
+    DataType.TIME: String,
+    DataType.GEO_INFO: String,
+    DataType.INTEGER: Integer,
+    DataType.LONG: Integer,
+    DataType.SHORT: Integer,
+    DataType.COUNT: Integer,
+    DataType.BIG_INTEGER: Integer,
+    DataType.DOUBLE: Number,
+    DataType.DECIMAL: Number,
+    DataType.FLOAT: Number,
+    DataType.INC_VAL_RANGE: Number,
+    DataType.EXC_VAL_RANGE: Number,
+    DataType.INCREMENTAL: Number,
+    DataType.BOOLEAN: Boolean,
+    DataType.DATE: Date,
+    DataType.DATE_TIME: Date,
+    DataType.YEAR: TimePeriod,
+    DataType.YEAR_MONTH: TimePeriod,
+    DataType.GREGORIAN_TIME_PERIOD: TimePeriod,
+    DataType.BASIC_TIME_PERIOD: TimePeriod,
+    DataType.REP_TIME_PERIOD: TimePeriod,
+    DataType.REP_YEAR: TimePeriod,
+    DataType.REP_SEMESTER: TimePeriod,
+    DataType.REP_TRIMESTER: TimePeriod,
+    DataType.REP_QUARTER: TimePeriod,
+    DataType.REP_MONTH: TimePeriod,
+    DataType.REP_WEEK: TimePeriod,
+    DataType.REP_DAY: TimePeriod,
+    DataType.STD_TIME_PERIOD: TimePeriod,
+    DataType.PERIOD: TimePeriod,
+    DataType.TIME_RANGE: TimeInterval,
+    DataType.DURATION: Duration,
+}
+
+# Default SDMX data type of each VTL type
 VTL_TO_SDMX_TYPE_MAP: Dict[Type[ScalarType], DataType] = {
     String: DataType.STRING,
     Integer: DataType.INTEGER,
     Number: DataType.DOUBLE,
     Boolean: DataType.BOOLEAN,
-    Date: DataType.DATE,
-    TimePeriod: DataType.PERIOD,
-    TimeInterval: DataType.TIME,
+    Date: DataType.DATE_TIME,
+    TimePeriod: DataType.REP_TIME_PERIOD,
+    TimeInterval: DataType.TIME_RANGE,
     Duration: DataType.DURATION,
+}
+
+# SDMX data types compatible with each VTL type
+SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
+    String: frozenset(
+        {
+            DataType.STRING,
+            DataType.ALPHA,
+            DataType.ALPHA_NUM,
+            DataType.NUMERIC,
+            DataType.URI,
+            DataType.MONTH,
+            DataType.MONTH_DAY,
+            DataType.DAY,
+            DataType.TIME,
+            DataType.GEO_INFO,
+        }
+    ),
+    Integer: frozenset(
+        {
+            DataType.INTEGER,
+            DataType.LONG,
+            DataType.SHORT,
+            DataType.COUNT,
+            DataType.BIG_INTEGER,
+        }
+    ),
+    Number: frozenset(
+        {
+            DataType.DOUBLE,
+            DataType.DECIMAL,
+            DataType.FLOAT,
+            DataType.INC_VAL_RANGE,
+            DataType.EXC_VAL_RANGE,
+            DataType.INCREMENTAL,
+        }
+    ),
+    Boolean: frozenset({DataType.BOOLEAN}),
+    Date: frozenset(
+        {
+            DataType.DATE,
+            DataType.DATE_TIME,
+            DataType.BASIC_TIME_PERIOD,
+            DataType.GREGORIAN_TIME_PERIOD,
+            DataType.STD_TIME_PERIOD,
+            DataType.PERIOD,
+        }
+    ),
+    TimePeriod: frozenset(
+        {
+            DataType.REP_TIME_PERIOD,
+            DataType.REP_YEAR,
+            DataType.REP_SEMESTER,
+            DataType.REP_TRIMESTER,
+            DataType.REP_QUARTER,
+            DataType.REP_MONTH,
+            DataType.REP_WEEK,
+            DataType.REP_DAY,
+            DataType.YEAR,
+            DataType.YEAR_MONTH,
+            DataType.GREGORIAN_TIME_PERIOD,
+            DataType.BASIC_TIME_PERIOD,
+            DataType.STD_TIME_PERIOD,
+            DataType.PERIOD,
+        }
+    ),
+    TimeInterval: frozenset({DataType.TIME_RANGE, DataType.PERIOD}),
+    Duration: frozenset({DataType.DURATION}),
 }
 
 # Role mapping
@@ -59,6 +184,29 @@ VTL_TO_SDMX_ROLE_MAP: Dict[VTLRole, Role] = {
 
 VALID_SDMX_TYPES = {"DataStructure", "Dataflow", "ProvisionAgreement"}
 
+# An SDMX TimeRange that a VTL time can hold: a date, also at midnight, and
+# a duration in days
+_TIME_RANGE = re.compile(
+    r"(\d{4}-\d{2}-\d{2})(?:T00:00:00(?:\.0+)?)?"
+    r"/P(?=\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?"
+)
+# A date with a time
+_DATE_TIME = r"\d{4}-\d{2}-\d{2}T[^/]*$"
+# A time zone
+_TIME_ZONE = r"(Z|[+-]\d{2}:\d{2})"
+# The SDMX data types with values that VTL holds in another way
+_TIMES_TO_CONVERT = frozenset(
+    {
+        DataType.TIME_RANGE,
+        DataType.BASIC_TIME_PERIOD,
+        DataType.STD_TIME_PERIOD,
+        DataType.PERIOD,
+    }
+)
+# A VTL time, as vtlengine holds it: the first and the last day
+_VTL_TIME = re.compile(r"(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})")
+_ONE_DAY = pd.Timedelta(days=1)
+
 
 def convert_dataset_to_vtl(
     dataset: PandasDataset, vtl_dataset_name: str
@@ -67,10 +215,23 @@ def convert_dataset_to_vtl(
 
     This function converts a PandasDataset, which contains both data and
     structure (Schema), into a vtlengine Dataset. It uses vtlengine's
-    conversion functions to handle the Schema to VTL structure mapping.
+    conversion functions to handle the Schema to VTL structure mapping, with
+    the VTL type that `SDMX_TO_VTL_TYPE_MAP` gives to each SDMX data type.
+
+    The values of the `TimeRange` components, which are a start and a
+    duration (`2025-01-01/P1Y`), are given as VTL times, which are the first
+    and the last day (`2025-01-01/2025-12-31`).
+
+    A date with a time in a `BasicTimePeriod`, `StandardTimePeriod` or
+    `ObservationalTimePeriod` component, which are VTL time periods, is given
+    as its day: the time and the time zone are dropped.
+    A `TimeRange` in an `ObservationalTimePeriod` component is given as the
+    regular period that it covers (`2025-01-01/P1Y` as `2025`).
+    The time zone of the values of these components is dropped.
 
     It raises an Invalid exception if the dataset structure is not a
-    Schema object.
+    Schema object, or if a `TimeRange` has a time of day or, in an
+    `ObservationalTimePeriod`, does not cover a regular period.
 
     Args:
         dataset: The PandasDataset to convert.
@@ -92,9 +253,20 @@ def convert_dataset_to_vtl(
 
     schema = dataset.structure
     pd_dataset = dataset.data
+    times = {
+        c.id: _vtl_times(pd_dataset[c.id], c.dtype)
+        for c in schema.components
+        if c.dtype in _TIMES_TO_CONVERT and c.id in pd_dataset.columns
+    }
+    if times:
+        pd_dataset = pd_dataset.assign(**times)
 
-    # Use vtlengine's built-in conversion function to convert Schema to VTL
+    # Use vtlengine's built-in conversion function to convert Schema to VTL,
+    # with the VTL types of SDMX_TO_VTL_TYPE_MAP
     vtl_json = to_vtl_json(schema, vtl_dataset_name)
+    for component in vtl_json["datasets"][0]["DataStructure"]:
+        vtl_type = _vtl_type(schema.components[component["name"]])
+        component["type"] = SCALAR_TYPES_CLASS_REVERSE[vtl_type]
 
     # Load the dataset structure using vtlengine's API
     datasets, scalars = load_datasets(vtl_json)
@@ -106,11 +278,175 @@ def convert_dataset_to_vtl(
     return vtl_dataset
 
 
+def _is_enumerated(component: Component) -> bool:
+    """Whether the values of a component are the codes of a codelist."""
+    return bool(component.enumeration or component.enum_ref)
+
+
+def _vtl_type(component: Component) -> Type[ScalarType]:
+    """Gives the VTL type of an SDMX component.
+
+    An enumerated component is a VTL string, as its codes are, whatever its
+    data type.
+    """
+    if _is_enumerated(component):
+        return String
+    return SDMX_TO_VTL_TYPE_MAP[component.dtype]
+
+
+def _convert_values(
+    values: pd.Series, convert: Callable[[str], str]
+) -> pd.Series:
+    """Converts the values of a column, each distinct value once."""
+    converted = {value: convert(value) for value in values.dropna().unique()}
+    return values.map(converted).astype(values.dtype)
+
+
+def _dates(texts: Sequence[str]) -> pd.DatetimeIndex:
+    """Gives the dates of some texts, with a null if a text is not a date."""
+    return pd.to_datetime(list(texts), format="%Y-%m-%d", errors="coerce")
+
+
+def _vtl_times(values: pd.Series, dtype: DataType) -> pd.Series:
+    """Gives the values of an SDMX time component as VTL holds them.
+
+    A TimeRange is given as a VTL time. In the time periods, a date with a
+    time is given as its day and a TimeRange as the period it covers. The
+    time zone of a value is dropped.
+    """
+    if dtype == DataType.TIME_RANGE:
+        values = values.str.replace(f"{_TIME_ZONE}/", "/", regex=True)
+        return _convert_values(values, _time_range_to_vtl_time)
+    date_times = values.str.match(_DATE_TIME, na=False)
+    values = values.where(~date_times, values.str.slice(0, 10))
+    values = values.str.replace(f"{_TIME_ZONE}$", "", regex=True)
+    ranges = values.str.contains("/", regex=False, na=False)
+    if not ranges.any():
+        return values
+    periods = values.where(ranges).str.replace(
+        f"{_TIME_ZONE}/", "/", regex=True
+    )
+    periods = _convert_values(periods, _time_range_to_period)
+    return values.where(~ranges, periods)
+
+
+def _time_range_to_period(value: str) -> str:
+    """Gives an SDMX TimeRange as the regular period that it covers.
+
+    Args:
+        value: The TimeRange.
+
+    Returns:
+        The year, semester, quarter, month, week or day.
+
+    Raises:
+        Invalid: If the TimeRange does not cover a regular period.
+    """
+    first, last = _dates(_time_range_to_vtl_time(value).split("/"))
+    months = (last.year - first.year) * 12 + last.month - first.month + 1
+    whole_months = first.day == 1 and last == last + pd.offsets.MonthEnd(0)
+    periods = {
+        1: f"{first:%Y-%m}",
+        3: f"{first.year}-Q{(first.month + 2) // 3}",
+        6: f"{first.year}-S{(first.month + 5) // 6}",
+        12: f"{first.year}",
+    }
+    if first == last:
+        return f"{first.date()}"
+    if whole_months and (first.month - 1) % months == 0 and months in periods:
+        return periods[months]
+    if first.weekday() == 0 and (last - first).days == 6:
+        return f"{first.isocalendar().year}-W{first.isocalendar().week:02d}"
+    raise Invalid(
+        "Validation Error",
+        f"The TimeRange '{value}' is not a regular period, so it cannot "
+        "be converted to a VTL time period.",
+    )
+
+
+def _time_range_to_vtl_time(value: str) -> str:
+    """Gives an SDMX TimeRange as a VTL time.
+
+    A TimeRange is a start and a duration (`2025-01-01/P1Y`). A VTL time is
+    the first and the last day (`2025-01-01/2025-12-31`).
+
+    Args:
+        value: The TimeRange.
+
+    Returns:
+        The VTL time.
+
+    Raises:
+        Invalid: If the TimeRange is not a date and a duration in years,
+            months, weeks or days, which is all that a VTL time can hold.
+    """
+    match = _TIME_RANGE.fullmatch(value)
+    dates = _dates(match.groups()[:1] if match else ())
+    if match is None or dates.hasnans:
+        raise Invalid(
+            "Validation Error",
+            f"The TimeRange '{value}' cannot be converted to a VTL time: it "
+            "must be a date and a duration in years, months, weeks or days.",
+        )
+    start = dates[0]
+    years, months, weeks, days = (int(n or 0) for n in match.groups()[1:])
+    duration = pd.DateOffset(years=years, months=months, days=7 * weeks + days)
+    return f"{match[1]}/{(start + duration - _ONE_DAY).date()}"
+
+
+def _vtl_time_to_time_range(value: str) -> str:
+    """Gives a VTL time as an SDMX TimeRange.
+
+    A VTL time is the first and the last day (`2025-01-01/2025-12-31`). A
+    TimeRange is a start and a duration (`2025-01-01/P1Y`), given here in
+    years, months and days.
+
+    Args:
+        value: The VTL time.
+
+    Returns:
+        The TimeRange.
+
+    Raises:
+        Invalid: If the value is not a VTL time.
+    """
+    match = _VTL_TIME.fullmatch(value)
+    dates = _dates(match.groups() if match else ())
+    if match is None or dates.hasnans:
+        raise Invalid(
+            "Validation Error",
+            f"'{value}' is not a VTL time (YYYY-MM-DD/YYYY-MM-DD).",
+        )
+    first, last = dates
+    end = last + _ONE_DAY
+    months = (end.year - first.year) * 12 + end.month - first.month
+    months -= end.day < first.day
+    days = (end - (first + pd.DateOffset(months=months))).days
+    parts = zip((months // 12, months % 12, days), "YMD")
+    return f"{match[1]}/P{''.join(f'{n}{unit}' for n, unit in parts if n)}"
+
+
 def _data(dataset: VTLengineDataset) -> pd.DataFrame:
-    """Returns the data of a VTL dataset, without rows if it has no data."""
+    """Returns the data of a VTL dataset, as SDMX holds them.
+
+    The data have no rows if the dataset has no data, and the VTL times are
+    given as SDMX TimeRanges.
+    """
     if dataset.data is None:
         return pd.DataFrame(columns=list(dataset.components))
-    return dataset.data
+    times = [
+        name
+        for name, component in dataset.components.items()
+        if _vtl_dtype_class(component.data_type) is TimeInterval
+    ]
+    if not times:
+        return dataset.data
+    return dataset.data.assign(
+        **{
+            name: _convert_values(dataset.data[name], _vtl_time_to_time_range)
+            for name in times
+        }
+    )
 
 
 def convert_dataset_to_sdmx(
@@ -132,6 +468,18 @@ def convert_dataset_to_sdmx(
     schema. If no `schema` is provided, a `reference` must be given so a new
     SDMX structure (with components, roles, and data types mapped from the
     VTL dataset) can be created.
+
+    The data types follow the mappings between SDMX data types and VTL basic
+    scalar types of the SDMX technical notes. A `schema` may give a component
+    any SDMX data type that can hold the values of its VTL type (e.g.
+    `Double`, `Decimal` or `Float` for a VTL number). A generated schema uses
+    the default SDMX data type of each VTL type (e.g. `DateTime` for a VTL
+    date), except for a VTL number, which is a `Double`, and a VTL time,
+    which is a `TimeRange`.
+
+    The values of the VTL times, which are the first and the last day
+    (`2025-01-01/2025-12-31`), are given as SDMX `TimeRange` values, which
+    are a start and a duration (`2025-01-01/P1Y`).
 
     A dataset without data (e.g. a result of the semantic analysis of
     vtlengine, which only has the components) is converted too: the
@@ -227,6 +575,15 @@ def convert_dataset_to_sdmx(
     return pandas_dataset
 
 
+def _vtl_dtype_class(
+    vtl_dtype_value: Union[ScalarType, Type[ScalarType]],
+) -> Type[ScalarType]:
+    """Return the class of a VTL scalar type, given as a class or instance."""
+    if isinstance(vtl_dtype_value, type):
+        return vtl_dtype_value
+    return type(vtl_dtype_value)
+
+
 def _map_vtl_dtype_to_sdmx(
     vtl_dtype_value: Union[ScalarType, Type[ScalarType]],
 ) -> DataType:
@@ -241,10 +598,7 @@ def _map_vtl_dtype_to_sdmx(
     Raises:
         Invalid: If the VTL DataType cannot be mapped to an SDMX DataType.
     """
-    if isinstance(vtl_dtype_value, type):
-        vtl_dtype_class: type[ScalarType] = vtl_dtype_value
-    else:
-        vtl_dtype_class = type(vtl_dtype_value)
+    vtl_dtype_class = _vtl_dtype_class(vtl_dtype_value)
 
     if vtl_dtype_class not in VTL_TO_SDMX_TYPE_MAP:
         supported = ", ".join(str(t.__name__) for t in VTL_TO_SDMX_TYPE_MAP)
@@ -320,13 +674,20 @@ def _validate_vtl_dataset_against_schema(
         comp_id = str(component.id)
         vtl_comp = dataset.components[comp_id]
 
-        # Validate data type using helper
-        expected_sdmx_dtype = _map_vtl_dtype_to_sdmx(vtl_comp.data_type)
-        if component.dtype != expected_sdmx_dtype:
+        # Validate the data type: the VTL type must be supported, and the
+        # SDMX type of the schema must be one mapped to it
+        _map_vtl_dtype_to_sdmx(vtl_comp.data_type)
+        vtl_dtype_class = _vtl_dtype_class(vtl_comp.data_type)
+        if _is_enumerated(component):
+            compatible = vtl_dtype_class is String
+        else:
+            sdmx_types = SDMX_TYPES_BY_VTL_TYPE[vtl_dtype_class]
+            compatible = component.dtype in sdmx_types
+        if not compatible:
             raise Invalid(
                 "Validation Error",
                 "Component mismatch between VTL Dataset and Schema. "
-                f"Component '{comp_id}' has type {expected_sdmx_dtype} "
+                f"Component '{comp_id}' has type {vtl_dtype_class.__name__} "
                 f"in VTL but {component.dtype} in Schema",
             )
 

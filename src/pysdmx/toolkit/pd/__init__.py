@@ -124,8 +124,6 @@ def __get_pa_type(dt: DataType) -> pa.DataType:  # noqa: C901
         return pa.float64()
     elif dt == DataType.BOOLEAN:
         return pa.bool_()
-    elif dt == DataType.MONTH:
-        return pa.int8()
     elif dt == DataType.DATE:
         return pa.date32()
     elif dt == DataType.DATE_TIME:

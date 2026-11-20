@@ -230,10 +230,15 @@ class PandasConnector(BasicConnector):
             ):
                 flow = self.dataflow(dataflow)
 
-            # Apply schema
+            # Apply schema. pandas does not take a date type as the dtype
+            # of a column to read: the dates are parsed instead
             if apply_schema:
                 schema = to_pandas_schema(flow.components)  # type: ignore[union-attr,arg-type]
-                params["dtype"] = schema
+                dates = [c for c, t in schema.items() if "datetime" in t]
+                params["dtype"] = {
+                    c: t for c, t in schema.items() if c not in dates
+                }
+                params["parse_dates"] = dates
 
             # Read CSV
             df = pd.read_csv(temp_path, **params)
