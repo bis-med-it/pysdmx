@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:GenericData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:gen="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2021-01-01T00:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="TYPED" dimensionAtObservation="AllDimensions">
+			<com:Structure>
+				<Ref agencyID="MD" id="TYPED" version="1.0" class="DataStructure"/>
+			</com:Structure>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet structureRef="TYPED" action="Information">
+		<gen:Attributes>
+			<gen:Value id="DS_INT" value="7"/>
+			<gen:Value id="DS_LONG" value="9007199254740993"/>
+			<gen:Value id="DS_BOOL" value="true"/>
+			<gen:Value id="DS_DT" value="2025-12-19T14:30:00Z"/>
+			<gen:Value id="DS_DEC" value="1234.5"/>
+			<gen:Value id="DS_STR" value="Data set note"/>
+			<gen:Value id="DS_FLT" value="1e-7"/>
+			<gen:Value id="DS_DBL" value="100"/>
+			<gen:Value id="DS_NAN" value="NaN"/>
+		</gen:Attributes>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="A"/>
+				<gen:Value id="DIM2" value="X"/>
+				<gen:Value id="TIME_PERIOD" value="2020"/>
+				<gen:Value id="SER_INT" value="2"/>
+				<gen:Value id="SER_LONG" value="9007199254740993"/>
+				<gen:Value id="SER_BOOL" value="false"/>
+				<gen:Value id="SER_DT" value="2025-12-19T14:30:00Z"/>
+				<gen:Value id="SER_DEC" value="0.1"/>
+				<gen:Value id="SER_STR" value="Series note"/>
+				<gen:Value id="SER_FLT" value="0.1"/>
+				<gen:Value id="SER_DBL" value="0.1"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="10"/>
+			<gen:Attributes>
+				<gen:Value id="OBS_INT" value="1"/>
+				<gen:Value id="OBS_LONG" value="9007199254740993"/>
+				<gen:Value id="OBS_BOOL" value="true"/>
+				<gen:Value id="OBS_DT" value="2025-12-19T14:30:00Z"/>
+				<gen:Value id="OBS_DEC" value="1234567890.123456789"/>
+				<gen:Value id="OBS_STR" value="First"/>
+				<gen:Value id="OBS_FLT" value="0.1"/>
+				<gen:Value id="OBS_DBL" value="0.1"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="A"/>
+				<gen:Value id="DIM2" value="X"/>
+				<gen:Value id="TIME_PERIOD" value="2021"/>
+				<gen:Value id="SER_INT" value="2"/>
+				<gen:Value id="SER_LONG" value="9007199254740993"/>
+				<gen:Value id="SER_BOOL" value="false"/>
+				<gen:Value id="SER_DT" value="2025-12-19T14:30:00Z"/>
+				<gen:Value id="SER_DEC" value="0.1"/>
+				<gen:Value id="SER_STR" value="Series note"/>
+				<gen:Value id="SER_FLT" value="0.1"/>
+				<gen:Value id="SER_DBL" value="0.1"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="20"/>
+			<gen:Attributes>
+				<gen:Value id="OBS_BOOL" value="false"/>
+				<gen:Value id="OBS_DT" value="2025-12-19T14:30:00.5Z"/>
+				<gen:Value id="OBS_DEC" value="0.1"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="A"/>
+				<gen:Value id="DIM2" value="Y"/>
+				<gen:Value id="TIME_PERIOD" value="2020"/>
+				<gen:Value id="SER_BOOL" value="true"/>
+				<gen:Value id="SER_DT" value="2025-12-19T14:30:00.123456789Z"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="30"/>
+			<gen:Attributes>
+				<gen:Value id="OBS_INT" value="-5"/>
+				<gen:Value id="OBS_LONG" value="-9007199254740993"/>
+				<gen:Value id="OBS_STR" value="Third"/>
+				<gen:Value id="OBS_FLT" value="1"/>
+				<gen:Value id="OBS_DBL" value="1"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="A"/>
+				<gen:Value id="DIM2" value="Y"/>
+				<gen:Value id="TIME_PERIOD" value="2021"/>
+				<gen:Value id="SER_BOOL" value="true"/>
+				<gen:Value id="SER_DT" value="2025-12-19T14:30:00.123456789Z"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="40"/>
+			<gen:Attributes>
+				<gen:Value id="OBS_INT" value="0"/>
+				<gen:Value id="OBS_LONG" value="0"/>
+				<gen:Value id="OBS_BOOL" value="true"/>
+				<gen:Value id="OBS_DT" value="2025-12-19T12:30:00.123Z"/>
+				<gen:Value id="OBS_DEC" value="-0.000000001"/>
+				<gen:Value id="OBS_FLT" value="1e-7"/>
+				<gen:Value id="OBS_DBL" value="1e-7"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="B"/>
+				<gen:Value id="DIM2" value="X"/>
+				<gen:Value id="TIME_PERIOD" value="2020"/>
+				<gen:Value id="SER_INT" value="3"/>
+				<gen:Value id="SER_LONG" value="-9007199254740993"/>
+				<gen:Value id="SER_DEC" value="1234.5"/>
+				<gen:Value id="SER_STR" value="Other note"/>
+				<gen:Value id="SER_FLT" value="1"/>
+				<gen:Value id="SER_DBL" value="1"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="50"/>
+			<gen:Attributes>
+				<gen:Value id="OBS_BOOL" value="false"/>
+				<gen:Value id="OBS_DT" value="2026-01-01T04:30:00.123456789Z"/>
+				<gen:Value id="OBS_DEC" value="12345678901234567890.5"/>
+				<gen:Value id="OBS_STR" value="Fifth"/>
+				<gen:Value id="OBS_FLT" value="3.4028235e+38"/>
+				<gen:Value id="OBS_DBL" value="1.7976931348623157e+308"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="DIM1" value="B"/>
+				<gen:Value id="DIM2" value="X"/>
+				<gen:Value id="TIME_PERIOD" value="2021"/>
+				<gen:Value id="SER_INT" value="3"/>
+				<gen:Value id="SER_LONG" value="-9007199254740993"/>
+				<gen:Value id="SER_DEC" value="1234.5"/>
+				<gen:Value id="SER_STR" value="Other note"/>
+				<gen:Value id="SER_FLT" value="1"/>
+				<gen:Value id="SER_DBL" value="1"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="60"/>
+			<gen:Attributes>
+				<gen:Value id="OBS_INT" value="6"/>
+				<gen:Value id="OBS_LONG" value="6"/>
+				<gen:Value id="OBS_BOOL" value="true"/>
+				<gen:Value id="OBS_DT" value="2025-12-19T23:59:59Z"/>
+				<gen:Value id="OBS_DEC" value="100"/>
+				<gen:Value id="OBS_STR" value="Sixth"/>
+				<gen:Value id="OBS_FLT" value="-2.5"/>
+				<gen:Value id="OBS_DBL" value="-2.5"/>
+			</gen:Attributes>
+		</gen:Obs>
+	</mes:DataSet>
+</mes:GenericData>

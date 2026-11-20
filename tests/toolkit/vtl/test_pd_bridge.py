@@ -76,8 +76,8 @@ def test_decimal_numbers(dt: DataType, required: bool, expected: str):
 @pytest.mark.parametrize(
     ("dt", "required", "expected"),
     [
-        (DataType.DATE_TIME, True, "datetime64[ns]"),
-        (DataType.DATE_TIME, False, "datetime64[ns]"),
+        (DataType.DATE_TIME, True, "datetime64[ns, UTC]"),
+        (DataType.DATE_TIME, False, "datetime64[ns, UTC]"),
         (DataType.DATE, True, "datetime64[D]"),
         (DataType.DATE, False, "datetime64[D]"),
         (DataType.YEAR_MONTH, True, "datetime64[M]"),

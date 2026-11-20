@@ -5,7 +5,6 @@ from io import BytesIO
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
-    Dict,
     Iterator,
     Optional,
     Sequence,
@@ -278,27 +277,49 @@ def __read_sdmx_csv_data(
 
 
 def __manage_dataset_level_attributes(dataset: Dataset) -> None:
-    """Manage attributes at dataset level and remove them from data."""
+    """Gives the data set attributes the values of their components.
+
+    SDMX-CSV gives the data set attributes in columns of the data, which
+    have the types of the schema: they are taken from the data. SDMX-ML
+    gives them apart from the data, as text: they get their types as a
+    row of data does. Either way, each data set attribute of the schema
+    gets the text of its value, as the writers write it, or None if it
+    has no value. The other attributes of the dataset are left as they
+    are.
+
+    Raises:
+        Invalid: If a data set attribute of SDMX-ML does not fit the
+            type of its component.
+    """
     # This function requires the dataset to have a structure defined.
-    dataset_level_attributes = [
-        x
-        for x in dataset.structure.components.attributes  # type: ignore[union-attr]
-        if x.attachment_level == "D"
-    ]
-    if len(dataset.attributes) > 0:
-        # If the dataset already has attributes, we do not need to add them
-        return
-    attached_attributes: Dict[str, Optional[str]] = {}
-    for att in dataset_level_attributes:
-        if att.id not in dataset.data.columns:  # type: ignore[attr-defined]
-            attached_attributes[att.id] = None
-        else:
-            val = (
-                dataset.data[att.id].unique().tolist()[0]  # type: ignore[attr-defined]
-            )
-            attached_attributes[att.id] = str(val) if val is not None else None
-            del dataset.data[att.id]  # type: ignore[attr-defined]
-    dataset.attributes = attached_attributes
+    from pysdmx.io._pd_utils import (
+        data_set_attribute_ids,
+        first_value_to_write,
+        typed_values,
+    )
+
+    schema = cast(Schema, dataset.structure)
+    names = data_set_attribute_ids(schema)
+    given = dataset.attributes
+    if len(given) > 0:
+        values = typed_values(
+            {name: given[name] for name in names if name in given}, schema
+        )
+    else:
+        data = dataset.data  # type: ignore[attr-defined]
+        present = [name for name in names if name in data.columns]
+        # A data set attribute has one value: the one of the first row
+        values = data.iloc[:1][present]
+        for name in present:
+            del data[name]
+    attributes = {
+        name: first_value_to_write(values[name])
+        if name in values.columns
+        else None
+        for name in names
+    }
+    others = {k: v for k, v in given.items() if k not in attributes}
+    dataset.attributes = {**attributes, **others}
 
 
 def __assign_structure_to_dataset(

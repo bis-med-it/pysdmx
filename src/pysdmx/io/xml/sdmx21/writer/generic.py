@@ -126,7 +126,7 @@ def __write_data_generic(
 
     for short_urn, dataset in datasets.items():
         writing_validation(dataset)
-        stringify_dataset(dataset)
+        dataset = stringify_dataset(dataset)
         outfile += __write_data_single_dataset(
             dataset=dataset,
             prettyprint=prettyprint,
@@ -154,7 +154,6 @@ def __write_data_single_dataset(
     outfile = ""
     structure_urn = get_structure(dataset)
     id_structure = parse_short_urn(structure_urn).id
-    stringify_dataset(dataset)
 
     nl = "\n" if prettyprint else ""
     child1 = "\t" if prettyprint else ""

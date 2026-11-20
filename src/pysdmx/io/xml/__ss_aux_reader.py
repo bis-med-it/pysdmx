@@ -127,6 +127,10 @@ class _StructureSpecificDataSet:
             df = self.__series.frame()
             if self.__groups:
                 df = _merge_groups(df, self.__groups)
+            # The values not reported are nulls up to here, for the groups
+            # to fill them. They are read as empty strings, as the
+            # observations without series and as the other readers do
+            df = df.fillna("")
         else:
             # Structure Specific All dimensions
             df = self.__observations.frame()

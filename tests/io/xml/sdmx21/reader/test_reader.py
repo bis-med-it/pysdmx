@@ -1378,8 +1378,8 @@ def test_group_merge_multiple_common_columns(multiple_groups_path):
             "TIME_PERIOD": ["2010", "2011", "2010", "2011"],
             "OBS_VALUE": ["1.0", "2.0", "3.0", "4.0"],
             "GATTR": ["G1", "G1", "G2", "G2"],
-            "OTHER_ATTR": ["OTHER", "OTHER", None, None],
-            "MISMATCH_ATTR": [None, None, None, None],
+            "OTHER_ATTR": ["OTHER", "OTHER", "", ""],
+            "MISMATCH_ATTR": ["", "", "", ""],
         },
         dtype=pd.ArrowDtype(pa.string()),
     )
@@ -1433,9 +1433,9 @@ def test_group_merge_group_without_series_columns(multiple_groups_path):
     )
 
     expected = series_with(
-        DIMX=[None, None, None, None],
-        OTHER_ATTR=[None, None, None, None],
-        GATTR=["G1", "G1", None, None],
+        DIMX=["", "", "", ""],
+        OTHER_ATTR=["", "", "", ""],
+        GATTR=["G1", "G1", "", ""],
     )
     pd.testing.assert_frame_equal(data, expected)
 
