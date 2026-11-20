@@ -32,6 +32,7 @@ from pysdmx.model import (
     Dataflow,
     DataStructureDefinition,
     MetadataReport,
+    Reference,
     Role,
     Schema,
 )
@@ -531,7 +532,7 @@ def test_delete_structure_sequence_dependents_first(respx_mock, uploader):
             cs,
             "Codelist=MD:CL_A(1.0)",
             dsd,
-            "Dataflow=MD:DF_X(1.0)",
+            Reference("Dataflow", "MD", "DF_X", "1.0"),
             "Foo=MD:X(1.0)",
             "DataConstraint=MD:CR_A_DF_X(1.0)",
         ]
@@ -598,7 +599,7 @@ def test_delete_structure_not_found_raises(respx_mock, uploader):
     respx_mock.delete(url).mock(return_value=httpx.Response(404))
 
     with pytest.raises(NotFound):
-        uploader.delete_structure("Dataflow=MD:DF_X(1.0)")
+        uploader.delete_structure(Reference("Dataflow", "MD", "DF_X", "1.0"))
 
 
 def test_delete_structure_without_token_raises():

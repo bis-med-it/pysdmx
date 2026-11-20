@@ -1333,8 +1333,9 @@ class StatUploader:
         self,
         artefacts: Union[
             MaintainableArtefact,
+            Reference,
             str,
-            Iterable[Union[MaintainableArtefact, str]],
+            Iterable[Union[MaintainableArtefact, Reference, str]],
         ],
     ) -> list[StructureSubmissionResult]:
         """Delete structural artefact(s) from the NSI web service.
@@ -1342,9 +1343,9 @@ class StatUploader:
         Each artefact is deleted with
         ``DELETE {nsi}/rest/{type}/{agency}/{id}/{version}`` (the type
         segment is the lower-cased SDMX type). Accepts a maintainable
-        artefact, a short-URN string (e.g.
-        ``"DataConstraint=MD:CR_A_DF(1.0)"``), or a collection of either
-        (a list, a set, ...).
+        artefact, a :class:`~pysdmx.model.Reference`, a short-URN string
+        (e.g. ``"DataConstraint=MD:CR_A_DF(1.0)"``), or a collection of
+        them (a list, a set, ...).
 
         A collection may be given in any order: the artefacts are deleted
         **dependents first**, following a fixed order of types
@@ -1359,7 +1360,8 @@ class StatUploader:
         dataflow, its DSD and concept scheme.
 
         Args:
-            artefacts: The artefact(s) or short URN(s) to delete.
+            artefacts: The artefact(s), reference(s) or short URN(s) to
+                delete.
 
         Deletion is fail-fast: on the first error the exception is
         raised and an indeterminate part of the collection may already
@@ -1385,12 +1387,16 @@ class StatUploader:
         """
         items = (
             [artefacts]
-            if isinstance(artefacts, (str, MaintainableArtefact))
+            if isinstance(artefacts, (str, MaintainableArtefact, Reference))
             else list(artefacts)
         )
         refs = []
         for item in items:
-            urn = item if isinstance(item, str) else item.short_urn
+            urn = (
+                item.short_urn
+                if isinstance(item, MaintainableArtefact)
+                else str(item)
+            )
             try:
                 refs.append(parse_short_urn(urn))
             except errors.Invalid as exc:
