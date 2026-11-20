@@ -501,11 +501,21 @@ def test_delete_structure_urn_string_and_type_segment(respx_mock, uploader):
     assert out[0].success is True  # 204 No Content -> empty body
 
 
-def test_delete_structure_sequence_in_order(respx_mock, uploader):
-    dsd_url = f"{NSI}/rest/datastructure/MD/DSD_X/1.0"
-    cs_url = f"{NSI}/rest/conceptscheme/MD/CS_X/1.0"
-    respx_mock.delete(dsd_url).mock(return_value=httpx.Response(200, text="d"))
-    respx_mock.delete(cs_url).mock(return_value=httpx.Response(200, text="c"))
+def test_delete_structure_sequence_dependents_first(respx_mock, uploader):
+    urls = [
+        f"{NSI}/rest/{path}/1.0"
+        for path in (
+            "foo/MD/X",  # an unknown type goes first
+            "dataconstraint/MD/CR_A_DF_X",
+            "dataflow/MD/DF_X",
+            "datastructure/MD/DSD_X",
+            "conceptscheme/MD/CS_X",
+            "codelist/MD/CL_B",  # the given order is kept within a type
+            "codelist/MD/CL_A",
+        )
+    ]
+    for url in urls:
+        respx_mock.delete(url).mock(return_value=httpx.Response(200, text="x"))
 
     dsd = DataStructureDefinition(
         id="DSD_X",
@@ -515,10 +525,20 @@ def test_delete_structure_sequence_in_order(respx_mock, uploader):
         components=Components([]),
     )
     cs = ConceptScheme(id="CS_X", agency="MD", version="1.0", name="x")
-    out = uploader.delete_structure([dsd, cs])
+    out = uploader.delete_structure(
+        [
+            "Codelist=MD:CL_B(1.0)",
+            cs,
+            "Codelist=MD:CL_A(1.0)",
+            dsd,
+            "Dataflow=MD:DF_X(1.0)",
+            "Foo=MD:X(1.0)",
+            "DataConstraint=MD:CR_A_DF_X(1.0)",
+        ]
+    )
 
-    assert [r.success for r in out] == [True, True]
-    assert [str(c.request.url) for c in respx_mock.calls] == [dsd_url, cs_url]
+    assert [r.success for r in out] == [True] * 7
+    assert [str(c.request.url) for c in respx_mock.calls] == urls
 
 
 def test_delete_structure_conflict_raises_invalid(respx_mock, uploader):

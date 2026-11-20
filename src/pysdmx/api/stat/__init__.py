@@ -13,6 +13,7 @@ from typing import (
     Any,
     AsyncGenerator,
     Generator,
+    Iterable,
     Literal,
     Mapping,
     NoReturn,
@@ -67,7 +68,7 @@ from pysdmx.model import (
     StructureMap,
     TransformationScheme,
 )
-from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.model.__base import MaintainableArtefact, Reference
 from pysdmx.model.dataset import ActionType, Dataset
 from pysdmx.util import (
     experimental,
@@ -87,6 +88,60 @@ if TYPE_CHECKING:  # pragma: no cover
         MetadataReport,
         Schema,
     )
+
+
+# The types of structures, in the order in which they are deleted. A type
+# references only types that come after it, so the dependents go first.
+_DELETION_ORDER = (
+    "process",
+    "categorisation",
+    "hierarchyassociation",
+    "dataconstraint",
+    "contentconstraint",
+    "metadataconstraint",
+    "attachmentconstraint",
+    "reportingtaxonomymap",
+    "reportingtaxonomy",
+    "transformationscheme",
+    "userdefinedoperatorscheme",
+    "rulesetscheme",
+    "vtlmappingscheme",
+    "namepersonalisationscheme",
+    "customtypescheme",
+    "structureset",
+    "structuremap",
+    "representationmap",
+    "conceptschememap",
+    "categoryschememap",
+    "organisationschememap",
+    "metadataprovisionagreement",
+    "provisionagreement",
+    "metadataflow",
+    "dataflow",
+    "datastructure",
+    "metadatastructure",
+    "hierarchy",
+    "hierarchicalcodelist",
+    "conceptscheme",
+    "codelist",
+    "valuelist",
+    "categoryscheme",
+    "agencyscheme",
+    "dataproviderscheme",
+    "dataconsumerscheme",
+    "metadataproviderscheme",
+    "organisationunitscheme",
+)
+_DELETION_RANK = {t: i for i, t in enumerate(_DELETION_ORDER)}
+
+
+def _deletion_rank(ref: Reference) -> int:
+    """Return the position of the type of ``ref`` in a deletion.
+
+    A type that is not in the order goes first, so that the service
+    rejects it before anything is deleted.
+    """
+    return _DELETION_RANK.get(ref.sdmx_type.lower(), -1)
 
 
 class SubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
@@ -1300,7 +1355,7 @@ class StatUploader:
         artefacts: Union[
             MaintainableArtefact,
             str,
-            Sequence[Union[MaintainableArtefact, str]],
+            Iterable[Union[MaintainableArtefact, str]],
         ],
     ) -> list[StructureSubmissionResult]:
         """Delete structural artefact(s) from the NSI web service.
@@ -1309,20 +1364,26 @@ class StatUploader:
         ``DELETE {nsi}/rest/{type}/{agency}/{id}/{version}`` (the type
         segment is the lower-cased SDMX type). Accepts a maintainable
         artefact, a short-URN string (e.g.
-        ``"DataConstraint=MD:CR_A_DF(1.0)"``), or a sequence of either;
-        a sequence is deleted **in order**, so pass dependents first.
+        ``"DataConstraint=MD:CR_A_DF(1.0)"``), or a collection of either
+        (a list, a set, ...).
+
+        A collection may be given in any order: the artefacts are deleted
+        **dependents first**, following a fixed order of types
+        (constraints, dataflows, data structures, concept schemes,
+        codelists, ...), because the NSI rejects the deletion of an
+        artefact that another one still references (``409``). Artefacts
+        of the same type are deleted in the order given.
 
         .Stat dependencies: a data import auto-creates an actual content
         constraint ``CR_A_<dataflow>``. To remove a dataflow, first
-        :meth:`delete_data`, then delete that constraint, then the
-        dataflow, its DSD and concept scheme (a wrong order yields a
-        ``409``/:class:`~pysdmx.errors.Invalid`).
+        :meth:`delete_data`, then delete that constraint along with the
+        dataflow, its DSD and concept scheme.
 
         Args:
             artefacts: The artefact(s) or short URN(s) to delete.
 
         Deletion is fail-fast: on the first error the exception is
-        raised and an indeterminate prefix of the sequence may already
+        raised and an indeterminate part of the collection may already
         have been deleted (re-run with the remaining artefacts). The NSI
         signals a delete failure with an HTTP status (mapped above)
         rather than an in-body error, but callers may still inspect the
@@ -1330,7 +1391,7 @@ class StatUploader:
 
         Returns:
             The parsed :class:`StructureSubmissionResult` for each
-            artefact, in order.
+            artefact, in the order of deletion.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
@@ -1348,17 +1409,19 @@ class StatUploader:
             if isinstance(artefacts, (str, MaintainableArtefact))
             else list(artefacts)
         )
-        responses = []
+        refs = []
         for item in items:
             urn = item if isinstance(item, str) else item.short_urn
             try:
-                ref = parse_short_urn(urn)
+                refs.append(parse_short_urn(urn))
             except errors.Invalid as exc:
                 raise errors.Invalid(
                     "Invalid artefact reference",
                     "Expected a short URN like 'Dataflow=MD:DF(1.0)'; "
                     f"got {urn!r}.",
                 ) from exc
+        responses = []
+        for ref in sorted(refs, key=_deletion_rank):
             url = (
                 f"{self._nsi}/rest/{ref.sdmx_type.lower()}"
                 f"/{ref.agency}/{ref.id}/{ref.version}"
