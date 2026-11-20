@@ -90,47 +90,26 @@ if TYPE_CHECKING:  # pragma: no cover
     )
 
 
-# The types of structures, in the order in which they are deleted. A type
-# references only types that come after it, so the dependents go first.
+# The types of structures that .Stat Suite holds, in the order in which
+# they are deleted. A type references only types that come after it, so
+# the dependents go first.
 _DELETION_ORDER = (
-    "process",
     "categorisation",
-    "hierarchyassociation",
     "dataconstraint",
     "contentconstraint",
-    "metadataconstraint",
-    "attachmentconstraint",
-    "reportingtaxonomymap",
-    "reportingtaxonomy",
-    "transformationscheme",
-    "userdefinedoperatorscheme",
-    "rulesetscheme",
-    "vtlmappingscheme",
-    "namepersonalisationscheme",
-    "customtypescheme",
     "structureset",
-    "structuremap",
-    "representationmap",
-    "conceptschememap",
-    "categoryschememap",
-    "organisationschememap",
-    "metadataprovisionagreement",
     "provisionagreement",
     "metadataflow",
     "dataflow",
     "datastructure",
     "metadatastructure",
-    "hierarchy",
     "hierarchicalcodelist",
     "conceptscheme",
     "codelist",
-    "valuelist",
     "categoryscheme",
     "agencyscheme",
     "dataproviderscheme",
     "dataconsumerscheme",
-    "metadataproviderscheme",
-    "organisationunitscheme",
 )
 _DELETION_RANK = {t: i for i, t in enumerate(_DELETION_ORDER)}
 
@@ -138,8 +117,8 @@ _DELETION_RANK = {t: i for i, t in enumerate(_DELETION_ORDER)}
 def _deletion_rank(ref: Reference) -> int:
     """Return the position of the type of ``ref`` in a deletion.
 
-    A type that is not in the order goes first, so that the service
-    rejects it before anything is deleted.
+    A type that .Stat Suite does not hold goes first, so that the
+    service rejects it before anything is deleted.
     """
     return _DELETION_RANK.get(ref.sdmx_type.lower(), -1)
 
