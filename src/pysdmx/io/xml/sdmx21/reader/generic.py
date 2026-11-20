@@ -2,11 +2,16 @@
 
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, cast
 
-import pandas as pd
 from lxml import etree
 
 from pysdmx.io.pd import PandasDataset
-from pysdmx.io.xml.__data_stream import Columns, Names, read_data
+from pysdmx.io.xml.__data_stream import (
+    Columns,
+    Names,
+    Row,
+    merge_groups,
+    read_data,
+)
 from pysdmx.io.xml.__tokens import (
     ATTRIBUTES,
     DIM_OBS,
@@ -22,7 +27,6 @@ from pysdmx.io.xml.__tokens import (
 )
 from pysdmx.model.dataset import ActionType
 
-Row = Dict[str, Optional[str]]
 VALUE_ATTRIBUTE = VALUE.lower()
 OBS_CHILDREN = (OBS_DIM, OBS_KEY, OBS_VALUE_XML_TAG, ATTRIBUTES)
 
@@ -65,9 +69,8 @@ class _GenericDataSet:
         self.__names = names
         self.__series = Columns("")
         self.__observations = Columns("")
-        self.__groups = Columns("")
+        self.__groups: List[Row] = []
         self.__has_series = False
-        self.__has_groups = False
         self.__keys: Optional[Row] = None
         self.__series_has_obs = False
 
@@ -115,8 +118,7 @@ class _GenericDataSet:
         row: Row = {}
         _values(children[GROUP_KEY], self.__names, row)
         _values(children[ATTRIBUTES], self.__names, row)
-        self.__has_groups = True
-        self.__groups.add(row)
+        self.__groups.append(row)
 
     def finish(self, dataset: etree._Element) -> PandasDataset:
         attributes: Row = {}
@@ -125,20 +127,16 @@ class _GenericDataSet:
             _values(children[ATTRIBUTES], self.__names, attributes)
         if self.__has_series:
             df = self.__series.frame()
-            if self.__has_groups:
-                df_group = self.__groups.frame()
-                common_columns = list(
-                    set(df.columns).intersection(set(df_group.columns))
-                )
-                df = pd.merge(df, df_group, on=common_columns, how="left")
-            dim_at_obs = self.__structure[DIM_OBS]
-            # In case there are observations defined, we need to replace the
-            # OBS_DIM column with the dimension at observation
-            if OBS_DIM in df.columns:
-                df[dim_at_obs] = df[OBS_DIM]
-                del df[OBS_DIM]
         else:
             df = self.__observations.frame()
+        if self.__groups:
+            df = merge_groups(df, self.__groups)
+        # In case there are observations defined, we need to replace the
+        # OBS_DIM column with the dimension at observation
+        if OBS_DIM in df.columns:
+            dim_at_obs = self.__structure[DIM_OBS]
+            df[dim_at_obs] = df[OBS_DIM]
+            del df[OBS_DIM]
         action = ActionType(self.__attributes.get("action", "Information"))
         structure_type = self.__structure["structure_type"]
         urn = f"{structure_type}={self.__structure['unique_id']}"
