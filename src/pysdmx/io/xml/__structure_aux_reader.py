@@ -177,6 +177,7 @@ from pysdmx.io.xml.__tokens import (
     PAR_VER,
     PROV_AGREEMENT,
     PROV_AGREEMENTS,
+    QUERY_EXTRACTION,
     REF,
     REPRESENTATION_MAP,
     REPRESENTATION_MAPS,
@@ -217,6 +218,7 @@ from pysdmx.io.xml.__tokens import (
     URI,
     URIS,
     URL,
+    URL_EXTRACTION,
     URN,
     USAGE,
     VALID_FROM,
@@ -231,6 +233,9 @@ from pysdmx.io.xml.__tokens import (
     VERSION,
     VTL_CL_MAPP,
     VTL_CON_MAPP,
+    VTL_DS_MAPP,
+    VTL_EXECUTION,
+    VTL_EXECUTIONS,
     VTL_MAPPING_SCHEME,
     VTLMAPPING,
     VTLMAPPING_SCHEMES,
@@ -312,20 +317,27 @@ from pysdmx.model.vtl import (
     FromVtlMapping,
     NamePersonalisation,
     NamePersonalisationScheme,
+    QueryExtraction,
+    QueryParameter,
     Ruleset,
     RulesetScheme,
     ToVtlMapping,
     Transformation,
     TransformationScheme,
+    UrlExtraction,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
     VtlDataflowMapping,
+    VtlDatasetMapping,
+    VtlExecution,
+    VtlMapping,
     VtlMappingScheme,
 )
 from pysdmx.util import (
     ensure_tz_aware,
     find_by_urn,
     is_final,
+    parse_item_urn,
     parse_short_item_urn,
     parse_urn,
 )
@@ -366,6 +378,7 @@ STRUCTURES_MAPPING = {
     NAME_PER_SCHEME: NamePersonalisationScheme,
     CUSTOM_TYPE_SCHEME: CustomTypeScheme,
     PROV_AGREEMENTS: ProvisionAgreement,
+    VTL_EXECUTIONS: VtlExecution,
     METADATAFLOWS: Metadataflow,
     MSDS: MetadataStructure,
     MPAS: MetadataProvisionAgreement,
@@ -528,6 +541,7 @@ class StructureParser(Struct):
     concepts: Dict[str, ConceptScheme] = {}
     datastructures: Dict[str, DataStructureDefinition] = {}
     dataflows: Dict[str, Dataflow] = {}
+    provision_agreements: Dict[str, ProvisionAgreement] = {}
     metadatastructures: Dict[str, MetadataStructure] = {}
     metadataflows: Dict[str, Metadataflow] = {}
     metadata_provision_agreements: Dict[str, MetadataProvisionAgreement] = {}
@@ -1830,6 +1844,100 @@ class StructureParser(Struct):
 
         return json_vtl
 
+    def __resolve_reference(self, urn: str) -> Any:
+        """Returns the artefact with a URN, if read, or else a reference."""
+        ref = parse_urn(urn)
+        read: Dict[str, Dict[str, Any]] = {
+            CL: self.codelists,
+            DFW: self.dataflows,
+            DSD: self.datastructures,
+            PROV_AGREEMENT: self.provision_agreements,
+            TRANS_SCHEME: self.transformations,
+        }
+        return read.get(ref.sdmx_type, {}).get(str(ref), ref)
+
+    def __format_vtl_mapping(
+        self, element: Dict[str, Any], mapping: str
+    ) -> VtlMapping:
+        """Formats a VtlDatasetMapping or VtlCodelistMapping (SDMX-ML 3.2)."""
+        element = self.__format_annotations(element)
+        element = self.__format_name_description(element)
+        element.pop(LINK, None)
+        element["vtl_alias"] = element.pop("vtlAlias")
+        if mapping == VTL_CL_MAPP:
+            element[CL_LOW] = self.__resolve_reference(element.pop(CL))
+            return VtlCodelistMapping(**element)
+        element["is_input"] = element.pop("isInput").lower() == "true"
+        urn = next(
+            element.pop(artefact)
+            for artefact in (DSD, DFW, PROV_AGREEMENT)
+            if artefact in element
+        )
+        element["sdmx_artefact"] = self.__resolve_reference(urn)
+        return VtlDatasetMapping(**element)
+
+    def __format_vtl_mappings(
+        self, scheme: Dict[str, Any]
+    ) -> List[VtlMapping]:
+        """Formats the SDMX-ML 3.2 mappings of a VTL mapping scheme.
+
+        The deprecated VtlMapping elements are formatted as any other item,
+        and come after these ones in the scheme.
+        """
+        return [
+            self.__format_vtl_mapping(element, mapping)
+            for mapping in (VTL_DS_MAPP, VTL_CL_MAPP)
+            for element in add_list(scheme.pop(mapping, []))
+        ]
+
+    @staticmethod
+    def __format_query_parameters(
+        extraction: Dict[str, Any],
+    ) -> Tuple[QueryParameter, ...]:
+        """Formats the query parameters of a data extraction."""
+        return tuple(
+            QueryParameter(
+                name=parameter["name"],
+                value=parameter.get("value"),
+                is_fixed=parameter["isFixed"].lower() == "true",
+            )
+            for parameter in add_list(extraction.get("QueryParameter", []))
+        )
+
+    def __format_vtl_execution(
+        self, element: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Formats the references and data extractions of a VtlExecution."""
+        # A stub has neither a transformation scheme nor data extractions
+        if TRANS_SCHEME in element:
+            element["transformation_scheme"] = self.__resolve_reference(
+                element.pop(TRANS_SCHEME)
+            )
+        extractions: List[Union[QueryExtraction, UrlExtraction]] = []
+        for query in add_list(element.pop(QUERY_EXTRACTION, [])):
+            context = query.get("Context")
+            extractions.append(
+                QueryExtraction(
+                    dataset_mapping=parse_item_urn(query["DatasetMapping"]),
+                    entry_point=query["EntryPoint"],
+                    sdmx_api_version=query.get("sdmxApiVersion"),
+                    context=(
+                        self.__resolve_reference(context) if context else None
+                    ),
+                    parameters=self.__format_query_parameters(query),
+                )
+            )
+        extractions.extend(
+            UrlExtraction(
+                dataset_mapping=parse_item_urn(url["DatasetMapping"]),
+                url_template=url["UrlTemplate"],
+                parameters=self.__format_query_parameters(url),
+            )
+            for url in add_list(element.pop(URL_EXTRACTION, []))
+        )
+        element["extractions"] = tuple(extractions)
+        return element
+
     def __format_item(
         self, item_json_info: Dict[str, Any], item_name_class: str
     ) -> Item:
@@ -2092,6 +2200,7 @@ class StructureParser(Struct):
                 del element[item]
             if scheme == AGENCY_SCHEME:
                 items = self.__prefix_agency_ids(items, element[AGENCY_ID])
+            items = [*self.__format_vtl_mappings(element), *items]
             element["items"] = tuple(items)
             element = self.__format_agency(element)
             element = self.__format_validity(element)
@@ -2539,6 +2648,8 @@ class StructureParser(Struct):
                 element = self.__format_prov_agreement(element)
             if item in [CON_CONS, DATA_CONS]:
                 element = self.__format_constraint(element)
+            if item == VTL_EXECUTION:
+                element = self.__format_vtl_execution(element)
 
             if "xmlns" in element:
                 del element["xmlns"]
@@ -2702,6 +2813,7 @@ class StructureParser(Struct):
                 lambda data: self.__format_schema(
                     data, PROV_AGREEMENTS, PROV_AGREEMENT
                 ),
+                "provision_agreements",
             ),
             MSDS: process_structure(
                 MSDS,
@@ -2857,6 +2969,12 @@ class StructureParser(Struct):
                     TRANSFORMATION,
                 ),
                 "transformations",
+            ),
+            VTL_EXECUTIONS: process_structure(
+                VTL_EXECUTIONS,
+                lambda data: self.__format_schema(
+                    data, VTL_EXECUTIONS, VTL_EXECUTION
+                ),
             ),
         }
         self.__enrich_category_schemes(structures.get(CATEGORY_SCHEMES, {}))

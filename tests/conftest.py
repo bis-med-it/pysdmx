@@ -9,6 +9,7 @@ PATH_RULES = {
     "/tests/io/xml/sdmx31/writer/test_structures_writing.py": ("xml", True),
     "/tests/io/xml/sdmx30/reader/test_reader.py": ("xml", False),
     "/tests/io/xml/sdmx31/reader/test_reader.py": ("xml", False),
+    "/tests/io/xml/sdmx32/": ("xml", True),
     # xml and data tests
     "/tests/io/xml/sdmx21/writer/test_data_writing.py": ("xml_data", True),
     "/tests/io/xml/sdmx30/writer/test_data_writing.py": ("xml_data", True),

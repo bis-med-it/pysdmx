@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:Structure xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/message" xmlns:str="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/structure" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v3_2/message https://registry.sdmx.org/schemas/v3_2/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2026-01-01T00:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+	</mes:Header>
+	<mes:Structures>
+		<str:VtlMappingSchemes>
+			<str:VtlMappingScheme id="VMS" version="1.0" isExternalReference="false" agencyID="AG" isPartial="false" >
+				<com:Name xml:lang="en">Mappings</com:Name>
+				<str:VtlDatasetMapping id="DS_A" vtlAlias="ds_a" isInput="true">
+					<com:Name xml:lang="en">Input A</com:Name>
+					<str:DataStructure>urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure=AG:DSD(1.0)</str:DataStructure>
+				</str:VtlDatasetMapping>
+				<str:VtlDatasetMapping id="DS_B" vtlAlias="ds_b" isInput="true">
+					<com:Name xml:lang="en">Input B</com:Name>
+					<com:Description xml:lang="en">Mapped to a Dataflow</com:Description>
+					<str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=AG:DF_B(1.0)</str:Dataflow>
+				</str:VtlDatasetMapping>
+				<str:VtlDatasetMapping id="DS_R" vtlAlias="ds_r" isInput="false">
+					<com:Name xml:lang="en">Result</com:Name>
+					<str:ProvisionAgreement>urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=AG:PA_R(1.0)</str:ProvisionAgreement>
+				</str:VtlDatasetMapping>
+				<str:VtlCodelistMapping id="CL_AREA" vtlAlias="cl_area">
+					<com:Name xml:lang="en">Areas</com:Name>
+					<str:Codelist>urn:sdmx:org.sdmx.infomodel.codelist.Codelist=AG:CL_AREA(1.0)</str:Codelist>
+				</str:VtlCodelistMapping>
+				<str:VtlMapping id="OLD" alias="old">
+					<com:Name xml:lang="en">Deprecated mapping</com:Name>
+					<str:Dataflow>urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=AG:DF_OLD(1.0)</str:Dataflow>
+				</str:VtlMapping>
+			</str:VtlMappingScheme>
+		</str:VtlMappingSchemes>
+		<str:VtlExecutions>
+			<str:VtlExecution id="EXEC" version="1.0" isExternalReference="false" agencyID="AG">
+				<com:Name xml:lang="en">Execution</com:Name>
+				<str:TransformationScheme>urn:sdmx:org.sdmx.infomodel.transformation.TransformationScheme=AG:TS(1.0)</str:TransformationScheme>
+				<str:QueryExtraction sdmxApiVersion="2.1">
+					<str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=AG:VMS(1.0).DS_A</str:DatasetMapping>
+					<str:EntryPoint>https://sdmx.example.org/rest?a=1&amp;b=2</str:EntryPoint>
+					<str:Context>urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement=AG:PA_A(1.0)</str:Context>
+					<str:QueryParameter name="key" value="A.B" isFixed="true"/>
+					<str:QueryParameter name="c[OBS_STATUS]" value="&quot;A&quot; &amp; 'B' &lt; C" isFixed="false"/>
+					<str:QueryParameter name="updatedAfter" isFixed="false"/>
+				</str:QueryExtraction>
+				<str:QueryExtraction>
+					<str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=AG:VMS(1.0).DS_B</str:DatasetMapping>
+					<str:EntryPoint>https://sdmx.example.org/rest</str:EntryPoint>
+				</str:QueryExtraction>
+				<str:UrlExtraction>
+					<str:DatasetMapping>urn:sdmx:org.sdmx.infomodel.transformation.VtlDatasetMapping=AG:VMS(1.0).DS_C</str:DatasetMapping>
+					<str:UrlTemplate>https://example.org/{flow}?from={start}&amp;x=1</str:UrlTemplate>
+					<str:QueryParameter name="flow" value="DF" isFixed="true"/>
+					<str:QueryParameter name="start" isFixed="false"/>
+				</str:UrlExtraction>
+			</str:VtlExecution>
+		</str:VtlExecutions>
+	</mes:Structures>
+</mes:Structure>

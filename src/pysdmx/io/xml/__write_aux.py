@@ -36,6 +36,7 @@ from pysdmx.io.xml.__tokens import (
     UDOS,
     URI_LOW,
     URN_LOW,
+    VTL_EXECUTIONS,
     VTLMAPPING_SCHEMES,
     VTLMAPPINGS,
 )
@@ -56,6 +57,7 @@ MESSAGE_TYPE_MAPPING = {
     Format.STRUCTURE_SDMX_ML_3_0: "Structure",
     Format.DATA_SDMX_ML_3_1: "StructureSpecificData",
     Format.STRUCTURE_SDMX_ML_3_1: "Structure",
+    Format.STRUCTURE_SDMX_ML_3_2: "Structure",
     Format.REFMETA_SDMX_ML_3_0: "GenericMetadata",
     Format.REFMETA_SDMX_ML_3_1: "GenericMetadata",
 }
@@ -129,6 +131,15 @@ NAMESPACES_31 = {
     ABBR_META: f"{BASE_URL_31}/metadata/generic",
 }
 
+BASE_URL_32 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_2"
+
+NAMESPACES_32 = {
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    ABBR_MSG: f"{BASE_URL_32}/message",
+    ABBR_COM: f"{BASE_URL_32}/common",
+    ABBR_STR: f"{BASE_URL_32}/structure",
+}
+
 URN_DS_BASE = "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
 URN_PROVISION = "urn:sdmx:org.sdmx.infomodel.registry.ProvisionAgreement="
 URN_DFW = "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow="
@@ -146,8 +157,14 @@ def __namespaces_from_type(type_: Format) -> str:
     Raises:
         NotImplemented: If the MessageType is not implemented
     """
-    if type_ == Format.STRUCTURE_SDMX_ML_2_1:
-        return f"xmlns:{ABBR_STR}={NAMESPACES_21[ABBR_STR]!r} "
+    structure_namespaces = {
+        Format.STRUCTURE_SDMX_ML_2_1: NAMESPACES_21,
+        Format.STRUCTURE_SDMX_ML_3_0: NAMESPACES_30,
+        Format.STRUCTURE_SDMX_ML_3_1: NAMESPACES_31,
+        Format.STRUCTURE_SDMX_ML_3_2: NAMESPACES_32,
+    }
+    if type_ in structure_namespaces:
+        return f"xmlns:{ABBR_STR}={structure_namespaces[type_][ABBR_STR]!r} "
     elif type_ in (
         Format.DATA_SDMX_ML_2_1_STR,
         Format.DATA_SDMX_ML_2_1_STRTS,
@@ -160,12 +177,8 @@ def __namespaces_from_type(type_: Format) -> str:
         return f"xmlns:{ABBR_GEN}={NAMESPACES_21[ABBR_GEN]!r} "
     elif type_ == Format.DATA_SDMX_ML_3_0:
         return f"xmlns:{ABBR_SPE}={NAMESPACES_30[ABBR_SPE]!r} "
-    elif type_ == Format.STRUCTURE_SDMX_ML_3_0:
-        return f"xmlns:{ABBR_STR}={NAMESPACES_30[ABBR_STR]!r} "
     elif type_ == Format.DATA_SDMX_ML_3_1:
         return f"xmlns:{ABBR_SPE}={NAMESPACES_31[ABBR_SPE]!r} "
-    elif type_ == Format.STRUCTURE_SDMX_ML_3_1:
-        return f"xmlns:{ABBR_STR}={NAMESPACES_31[ABBR_STR]!r} "
     elif type_ == Format.REFMETA_SDMX_ML_3_0:
         return f"xmlns:{ABBR_META}={NAMESPACES_30[ABBR_META]!r} "
     elif type_ == Format.REFMETA_SDMX_ML_3_1:
@@ -219,6 +232,15 @@ def create_namespaces(
             f"{ss_namespaces}"
             f'xsi:schemaLocation="{NAMESPACES_31[ABBR_MSG]} '
             f'https://registry.sdmx.org/schemas/v3_1/SDMXMessage.xsd">'
+        )
+    elif type_ == Format.STRUCTURE_SDMX_ML_3_2:
+        outfile += f"xmlns:xsi={NAMESPACES_32['xsi']!r} "
+        outfile += f"xmlns:{ABBR_MSG}={NAMESPACES_32[ABBR_MSG]!r} "
+        outfile += __namespaces_from_type(type_)
+        outfile += (
+            f"xmlns:{ABBR_COM}={NAMESPACES_32[ABBR_COM]!r} "
+            f'xsi:schemaLocation="{NAMESPACES_32[ABBR_MSG]} '
+            f'https://registry.sdmx.org/schemas/v3_2/SDMXMessage.xsd">'
         )
     else:
         outfile += f"xmlns:xsi={NAMESPACES_21['xsi']!r} "
@@ -296,6 +318,13 @@ MSG_CONTENT_PKG_31 = OrderedDict(
     [
         *MSG_CONTENT_PKG_30.items(),
         (AVAILABILITY_CONSTRAINTS, "AvailabilityConstraints"),
+    ]
+)
+
+MSG_CONTENT_PKG_32 = OrderedDict(
+    [
+        *MSG_CONTENT_PKG_31.items(),
+        (VTL_EXECUTIONS, "VtlExecutions"),
     ]
 )
 

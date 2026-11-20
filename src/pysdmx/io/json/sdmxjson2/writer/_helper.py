@@ -71,7 +71,7 @@ def write_structure_msg(
     output_path: Optional[Union[str, Path]] = None,
     prettyprint: bool = True,
     header: Optional[Header] = None,
-    msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
+    msg_version: Literal["2.0.0", "2.1", "2.2"] = "2.0.0",
 ) -> Optional[str]:
     """Write artefacts and availability constraints in SDMX-JSON 2.0.0.
 

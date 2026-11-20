@@ -45,11 +45,40 @@ from pysdmx.io.json.sdmxjson2.messages.vtl import (
     JsonRulesetScheme,
     JsonTransformationScheme,
     JsonUserDefinedOperatorScheme,
+    JsonVtlExecution,
     JsonVtlMappingScheme,
 )
 from pysdmx.model import AvailabilityConstraint
 from pysdmx.model.__base import MaintainableArtefact
 from pysdmx.model.message import StructureMessage
+
+
+def _vtl_executions(
+    msg: StructureMessage, msg_version: str
+) -> Sequence[JsonVtlExecution]:
+    """Returns the VTL executions and checks the SDMX-JSON 2.2 VTL rules."""
+    executions = msg.get_vtl_executions()
+    if msg_version != "2.2":
+        if executions:
+            raise errors.Invalid(
+                "Invalid input",
+                "VtlExecution cannot be written as the requested SDMX-JSON "
+                "version.",
+            )
+        return ()
+    for scheme in (
+        *msg.get_transformation_schemes(),
+        *msg.get_ruleset_schemes(),
+        *msg.get_user_defined_operator_schemes(),
+    ):
+        if scheme.vtl_version is None:
+            raise errors.Invalid(
+                "Invalid input",
+                f"{type(scheme).__name__} must have a VTL version in "
+                "SDMX-JSON 2.2.",
+                {"scheme": scheme.id},
+            )
+    return tuple([JsonVtlExecution.from_model(e) for e in executions])
 
 
 class JsonStructures(Struct, frozen=True, omit_defaults=True):
@@ -81,6 +110,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
     transformationSchemes: Sequence[JsonTransformationScheme] = ()
     userDefinedOperatorSchemes: Sequence[JsonUserDefinedOperatorScheme] = ()
     valueLists: Sequence[JsonValuelist] = ()
+    vtlExecutions: Sequence[JsonVtlExecution] = ()
     vtlMappingSchemes: Sequence[JsonVtlMappingScheme] = ()
 
     def to_model(
@@ -166,6 +196,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             i.to_model() for i in self.userDefinedOperatorSchemes
         )
         structures.extend(i.to_model() for i in self.valueLists)
+        structures.extend(i.to_model() for i in self.vtlExecutions)
         structures.extend(i.to_model() for i in self.vtlMappingSchemes)
         return structures
 
@@ -173,7 +204,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
     def from_model(
         cls,
         msg: StructureMessage,
-        msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
+        msg_version: Literal["2.0.0", "2.1", "2.2"] = "2.0.0",
     ) -> "JsonStructures":
         """Create an SDMX-JSON structures from a list of artefacts.
 
@@ -290,7 +321,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         )
         vtl_mappings = tuple(
             [
-                JsonVtlMappingScheme.from_model(vm)
+                JsonVtlMappingScheme.from_model(vm, msg_version)
                 for vm in msg.get_vtl_mapping_schemes()
             ]
         )
@@ -303,7 +334,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
         hierarchies = tuple(
             [JsonHierarchy.from_model(h) for h in msg.get_hierarchies()]
         )
-        if msg_version == "2.1":
+        if msg_version != "2.0.0":
             # tuple([...]) rather than a generator: on Python 3.10 an
             # empty tuple built from a generator is not interned, so
             # msgspec's omit_defaults would emit [] (which the 2.1
@@ -386,6 +417,7 @@ class JsonStructures(Struct, frozen=True, omit_defaults=True):
             transformationSchemes=transformations,
             userDefinedOperatorSchemes=user_operators,
             valueLists=valuelists,
+            vtlExecutions=_vtl_executions(msg, msg_version),
             vtlMappingSchemes=vtl_mappings,
         )
 
@@ -406,7 +438,7 @@ class JsonStructureMessage(Struct, frozen=True, omit_defaults=True):
     def from_model(
         cls,
         message: StructureMessage,
-        msg_version: Literal["2.0.0", "2.1"] = "2.0.0",
+        msg_version: Literal["2.0.0", "2.1", "2.2"] = "2.0.0",
     ) -> "JsonStructureMessage":
         """Creates an SDMX-JSON payload from a pysdmx StructureMessage."""
         if not message.header:
