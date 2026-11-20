@@ -249,8 +249,7 @@ class PandasDataset(Dataset, frozen=False, kw_only=True):
     their values as they are given (``0.10``, ``1.5``, ``1234.5``). If
     it would alter one of them (``1234567890.123456789``), the column is
     cast to ``decimal128(38, scale)`` instead, the scale being the
-    largest number of fractional digits of its values. A value of more
-    than 38 digits raises ``Invalid``.
+    largest number of fractional digits of its values.
 
     Args:
         data: Pandas Dataframe to contain SDMX data.
