@@ -9,7 +9,16 @@ import pytest
 from pysdmx.api.dc.pd import PandasConnector
 from pysdmx.api.dc.query import Operator, TextFilter
 from pysdmx.errors import InternalError, NotFound
-from pysdmx.model import Dataflow, Reference
+from pysdmx.model import (
+    Component,
+    Components,
+    Concept,
+    Dataflow,
+    DataflowInfo,
+    DataType,
+    Reference,
+    Role,
+)
 
 
 @pytest.fixture
@@ -255,6 +264,46 @@ def test_data_query_with_schema(
     data = client.data(dfref)
 
     assert data["DER_CURR_LEG1"].dtype == "category"
+
+
+def test_data_query_with_schema_of_dates(respx_mock, client, mock_dataflow):
+    # pandas does not take a date type as the dtype of a column to read
+    components = [
+        Component("FREQ", True, Role.DIMENSION, Concept("FREQ")),
+        Component(
+            "TIME_PERIOD",
+            True,
+            Role.DIMENSION,
+            Concept("TIME_PERIOD", dtype=DataType.YEAR_MONTH),
+        ),
+        Component("OBS_VALUE", False, Role.MEASURE, Concept("OBS_VALUE")),
+        Component(
+            "EMBARGO_TIME",
+            False,
+            Role.ATTRIBUTE,
+            Concept("EMBARGO_TIME", dtype=DataType.DATE_TIME),
+            attachment_level="O",
+        ),
+    ]
+    mock_dataflow.return_value = DataflowInfo(
+        "DF_EXR", Components(components), "BMS", version="1.0"
+    )
+    csv = pathlib.Path(
+        "tests/io/csv/sdmx20/reader/samples/data_v2_datetime.csv"
+    ).read_bytes()
+    respx_mock.get(
+        "https://test.org/data/dataflow/BMS/DF_EXR/1.0"
+        "?dimensionAtObservation=AllDimensions"
+    ).mock(return_value=httpx.Response(200, content=csv))
+
+    data = client.data(
+        Reference("Dataflow", "BMS", "DF_EXR", "1.0"),
+        infer_index=False,
+        infer_series_keys=False,
+    )
+
+    assert data["TIME_PERIOD"].iloc[0] == pd.Timestamp("1999-01-01")
+    assert data["EMBARGO_TIME"].iloc[0] == pd.Timestamp("2025-12-19T14:30Z")
 
 
 def test_data_query_with_columns_and_index(
