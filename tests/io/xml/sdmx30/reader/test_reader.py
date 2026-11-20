@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from pathlib import Path
 
+import msgspec
 import pytest
 
 from pysdmx.errors import Invalid
@@ -10,11 +11,14 @@ from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
 from pysdmx.io.reader import read_sdmx as reader
 from pysdmx.io.writer import write_sdmx
+from pysdmx.io.xml.sdmx21.writer.structure import write as write_structure_21
 from pysdmx.io.xml.sdmx30.reader.structure import read as read_structure
 from pysdmx.io.xml.sdmx30.writer.structure import write as write_structure
+from pysdmx.io.xml.sdmx31.writer.structure import write as write_structure_31
 from pysdmx.model import (
     Agency,
     AgencyScheme,
+    ArrayBoundaries,
     AvailabilityConstraint,
     Categorisation,
     CategoryScheme,
@@ -57,7 +61,11 @@ from pysdmx.model import (
     VtlDataflowMapping,
     VtlMappingScheme,
 )
-from pysdmx.model.dataflow import DataStructureDefinition, ProvisionAgreement
+from pysdmx.model.dataflow import (
+    Components,
+    DataStructureDefinition,
+    ProvisionAgreement,
+)
 from pysdmx.model.dataset import ActionType
 
 
@@ -567,6 +575,70 @@ def test_dataflow_structure_read(samples_folder):
         dataflow.urn
         == "urn:sdmx:org.sdmx.infomodel.datastructure.Dataflow=ECB:EXR(1.0)"
     )
+
+
+DSD_ARRAY_DEFS = {
+    "FREQ": None,
+    "TIME_PERIOD": None,
+    "OBS_VALUE": None,
+    "OBS_VALUE1": ArrayBoundaries(2, 5),
+    # maxOccurs="1": a single value
+    "TIME_FORMAT": None,
+    "OBS_STATUS": ArrayBoundaries(1),
+    "DECIMALS": ArrayBoundaries(0, 3),
+}
+
+
+def _array_defs(dsd):
+    return {c.id: c.array_def for c in dsd.components}
+
+
+def test_data_structure_array_def_read(samples_folder):
+    # SDMX-ML 3.x sets minOccurs and maxOccurs on the LocalRepresentation
+    # of attributes and measures
+    data_path = samples_folder / "dsd_array_def.xml"
+
+    dsd = read_sdmx(data_path, validate=True).get_data_structure_definitions()
+
+    assert _array_defs(dsd[0]) == DSD_ARRAY_DEFS
+
+
+@pytest.mark.parametrize("writer", [write_structure, write_structure_31])
+def test_data_structure_array_def_write(samples_folder, writer):
+    data_path = samples_folder / "dsd_array_def.xml"
+    dsd = read_sdmx(data_path).get_data_structure_definitions()[0]
+
+    written = writer([dsd], prettyprint=True)
+
+    assert '<str:LocalRepresentation minOccurs="1" maxOccurs="unbounded">' in (
+        written
+    )
+    assert '<str:LocalRepresentation minOccurs="0" maxOccurs="3">' in written
+    assert '<str:LocalRepresentation minOccurs="2" maxOccurs="5">' in written
+    result = read_sdmx(written, validate=True)
+    assert _array_defs(result.get_data_structure_definitions()[0]) == (
+        DSD_ARRAY_DEFS
+    )
+
+
+def test_data_structure_array_def_not_written_in_21(samples_folder):
+    # SDMX-ML 2.1 cannot express several values per component (nor
+    # several measures, so the second measure is left out)
+    data_path = samples_folder / "dsd_array_def.xml"
+    dsd = read_sdmx(data_path).get_data_structure_definitions()[0]
+    dsd = msgspec.structs.replace(
+        dsd,
+        components=Components(
+            [c for c in dsd.components if c.id != "OBS_VALUE1"]
+        ),
+    )
+
+    written = write_structure_21([dsd], prettyprint=True)
+
+    assert "Occurs=" not in written
+    result = read_sdmx(written, validate=True)
+    dsd_21 = result.get_data_structure_definitions()[0]
+    assert all(c.array_def is None for c in dsd_21.components)
 
 
 def test_data_structure_read(samples_folder):
