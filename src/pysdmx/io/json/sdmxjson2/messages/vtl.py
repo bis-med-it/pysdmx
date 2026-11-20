@@ -388,7 +388,7 @@ class JsonRuleset(Struct, frozen=True, omit_defaults=True):
     id: str
     name: str
     rulesetDefinition: str
-    rulesetType: Literal["datapoint", "hierarchical"]
+    rulesetType: Literal["datapoint", "hierarchical", "viral"]
     rulesetScope: Literal["variable", "valuedomain"]
     description: Optional[str] = None
     annotations: Sequence[JsonAnnotation] = ()
@@ -763,10 +763,7 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
             ),
             isPartial=vms.is_partial,
             vtlMappings=tuple(
-                [
-                    JsonVtlMapping.from_model(i)  # type: ignore[arg-type]
-                    for i in vms.items
-                ]
+                [JsonVtlMapping.from_model(i) for i in vms.items]
             ),
         )
 
