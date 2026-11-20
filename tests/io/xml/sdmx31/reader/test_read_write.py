@@ -8,6 +8,7 @@ import pytest
 from pysdmx.io.format import Format
 from pysdmx.io.input_processor import process_string_to_read
 from pysdmx.io.reader import read_sdmx
+from pysdmx.io.xml.sdmx21.writer.structure import write as write_structure_21
 from pysdmx.io.xml.sdmx30.writer.structure import write as write_structure
 from pysdmx.io.xml.sdmx30.writer.structure_specific import (
     write as write_str_spe,
@@ -18,6 +19,8 @@ from pysdmx.model import (
     ConceptScheme,
     DataConsumerScheme,
     DataflowRef,
+    DataKey,
+    DataKeyValue,
     DataProviderScheme,
     Hierarchy,
     HierarchyAssociation,
@@ -222,6 +225,47 @@ def test_dataflow_31(samples_folder):
     result = read_sdmx(write, validate=True).structures
     dataflow = result[0]
     assert isinstance(dataflow, Dataflow)
+
+
+def test_keyset_several_values_31(samples_folder):
+    # SDMX-ML 3.1 allows several values for a dimension in a data key
+    data_path = samples_folder / "constraint_keyset_several_values.xml"
+    input_str, read_format = process_string_to_read(data_path)
+    assert read_format == Format.STRUCTURE_SDMX_ML_3_1
+
+    constraint = read_sdmx(input_str, validate=True).get_data_constraints()[0]
+
+    key_set = constraint.key_sets[0]
+    assert key_set.is_included is True
+    assert key_set.keys == (
+        DataKey(
+            (
+                DataKeyValue("FREQ", values=("M", "Q")),
+                DataKeyValue("CURRENCY", "USD"),
+            )
+        ),
+    )
+
+    written = write_structure_31([constraint], prettyprint=True)
+    assert written.count("<str:Key>") == 1
+    result = read_sdmx(written, validate=True).get_data_constraints()[0]
+    assert result.key_sets == constraint.key_sets
+
+
+@pytest.mark.parametrize("writer", [write_structure, write_structure_21])
+def test_keyset_several_values_expanded_before_31(samples_folder, writer):
+    # SDMX-ML 2.1 and 3.0 allow a single value per dimension in a data
+    # key, so a key with several values becomes one key per value.
+    data_path = samples_folder / "constraint_keyset_several_values.xml"
+    constraint = read_sdmx(data_path).get_data_constraints()[0]
+
+    written = writer([constraint], prettyprint=True)
+
+    result = read_sdmx(written, validate=True).get_data_constraints()[0]
+    assert result.key_sets[0].keys == (
+        DataKey((DataKeyValue("FREQ", "M"), DataKeyValue("CURRENCY", "USD"))),
+        DataKey((DataKeyValue("FREQ", "Q"), DataKeyValue("CURRENCY", "USD"))),
+    )
 
 
 def test_metadata_family_round_trip_31(samples_folder):

@@ -12,6 +12,8 @@ from pysdmx.model import (
     CubeRegion,
     CubeTimeRange,
     CubeValue,
+    DataKey,
+    DataKeyValue,
     TimePeriodBoundary,
 )
 
@@ -103,6 +105,73 @@ def test_cube_key_value_keyvalue_validity():
     )
     assert kv.valid_from == datetime(2020, 1, 1)
     assert kv.values[0].value == "A"
+
+
+def test_data_key_value_single_value():
+    kv = DataKeyValue("FREQ", "M")
+    assert kv.value == "M"
+    assert kv.values == ()
+
+
+def test_data_key_value_several_values():
+    kv = DataKeyValue("FREQ", values=("M", "Q"))
+    assert kv.value is None
+    assert kv.values == ("M", "Q")
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {},
+        {"values": ()},
+        {"value": "M", "values": ("M", "Q")},
+    ],
+)
+def test_data_key_value_needs_value_or_values(kwargs):
+    with pytest.raises(Invalid, match="FREQ"):
+        DataKeyValue("FREQ", **kwargs)
+
+
+def test_data_key_expand():
+    key = DataKey(
+        (
+            DataKeyValue("FREQ", values=("M", "Q")),
+            DataKeyValue("CURRENCY", "USD"),
+            DataKeyValue("CURRENCY_DENOM", values=("EUR", "JPY")),
+        ),
+        valid_from=datetime(2020, 1, 1),
+        valid_to=datetime(2021, 1, 1),
+    )
+
+    expanded = key.expand()
+
+    assert [[kv.value for kv in k.keys_values] for k in expanded] == [
+        ["M", "USD", "EUR"],
+        ["M", "USD", "JPY"],
+        ["Q", "USD", "EUR"],
+        ["Q", "USD", "JPY"],
+    ]
+    for k in expanded:
+        assert [kv.id for kv in k.keys_values] == [
+            "FREQ",
+            "CURRENCY",
+            "CURRENCY_DENOM",
+        ]
+        assert all(kv.values == () for kv in k.keys_values)
+        assert k.valid_from == datetime(2020, 1, 1)
+        assert k.valid_to == datetime(2021, 1, 1)
+
+
+def test_data_key_expand_single_values():
+    key = DataKey((DataKeyValue("FREQ", "M"), DataKeyValue("CURRENCY", "USD")))
+
+    assert key.expand() == (key,)
+
+
+def test_data_key_expand_empty_key():
+    key = DataKey(())
+
+    assert key.expand() == (key,)
 
 
 def _attachment(**kwargs):

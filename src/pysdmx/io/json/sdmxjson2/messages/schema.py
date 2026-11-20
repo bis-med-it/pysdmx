@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for SDMX-REST schema queries."""
 
-from typing import Dict, Literal, Optional, Sequence, Tuple
+from typing import Dict, Literal, Optional, Sequence, Tuple, cast
 
 import msgspec
 
@@ -8,6 +8,7 @@ from pysdmx.io.json.sdmxjson2.messages.code import JsonCodelist, JsonValuelist
 from pysdmx.io.json.sdmxjson2.messages.concept import JsonConceptScheme
 from pysdmx.io.json.sdmxjson2.messages.constraint import (
     JsonDataConstraint,
+    JsonDataKeyValue,
     JsonKeySet,
 )
 from pysdmx.io.json.sdmxjson2.messages.core import JsonHeader
@@ -52,12 +53,18 @@ class JsonSchemas(msgspec.Struct, frozen=True, omit_defaults=True):
         for ks in keysets:
             keys.extend(
                 [
-                    {kv.id: kv.to_model().value for kv in k.keyValues}
+                    {kv.id: self.__key_value(kv) for kv in k.keyValues}
                     for k in ks.keys
                     if (ks.isIncluded if included else not ks.isIncluded)
                 ]
             )
         return keys
+
+    def __key_value(self, kv: JsonDataKeyValue) -> str:
+        # Several values for a dimension are joined with "+", as in
+        # SDMX-REST keys (e.g. M+Q).
+        m = kv.to_model()
+        return "+".join(m.values) if m.values else cast(str, m.value)
 
     def __infer_keys(self, keys_dict: Dict[str, str]) -> str:
         dimensions = [

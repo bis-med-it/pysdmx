@@ -89,19 +89,30 @@ def test_keyset_21_values(body, validate):
     )
 
 
-def test_keyset_deser_several_values(body):
+@pytest.mark.parametrize("validate", [True, False])
+def test_keyset_21_several_values(body, validate):
+    # SDMX-JSON 2.1 allows several values for a dimension in a data key
     data = json.loads(body)
-    key = data["data"]["dataConstraints"][0]["dataKeySets"][0]["keys"][0]
+    data["meta"]["schema"] = (
+        "https://json.sdmx.org/2.1/sdmx-json-structure-schema.json"
+    )
+    constraint = data["data"]["dataConstraints"][0]
+    del constraint["role"]
+    key = constraint["dataKeySets"][0]["keys"][0]
     key["keyValues"][0] = {
         "id": "SERIES",
         "values": ["SI_POV_DAY1", "SI_POV_DAY2"],
     }
-    modified_body = json.dumps(data).encode()
 
-    res = msgspec.json.Decoder(JsonDataConstraintMessage).decode(modified_body)
+    msg = read(json.dumps(data), validate=validate)
 
-    with pytest.raises(errors.NotImplemented, match="SERIES"):
-        res.to_model()
+    keys = msg.get_data_constraints()[0].key_sets[0].keys
+    assert keys[0].keys_values == (
+        DataKeyValue("SERIES", values=("SI_POV_DAY1", "SI_POV_DAY2")),
+        DataKeyValue("UNIT_MEASURE", "PT"),
+        DataKeyValue("UNIT_MULT", "0"),
+        DataKeyValue("COMPOSITE_BREAKDOWN", "_T"),
+    )
 
 
 def test_keyset_deser_without_value(body):
