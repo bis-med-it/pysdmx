@@ -8,7 +8,7 @@ from lxml import etree
 
 from pysdmx.io.pd import PandasDataset
 from pysdmx.io.xml.__data_stream import Columns, Names, read_data
-from pysdmx.io.xml.__tokens import EXCLUDED_ATTRIBUTES
+from pysdmx.io.xml.__tokens import ATTS, EXCLUDED_ATTRIBUTES
 from pysdmx.model.dataset import ActionType
 
 Row = Dict[str, Optional[str]]
@@ -130,10 +130,12 @@ class _StructureSpecificDataSet:
         else:
             # Structure Specific All dimensions
             df = self.__observations.frame()
+        attributes = {
+            **self.__attributes,
+            **self.__data_set_atts(dataset, df.columns),
+        }
         attached_attributes = {
-            k: v
-            for k, v in self.__attributes.items()
-            if k not in EXCLUDED_ATTRIBUTES
+            k: v for k, v in attributes.items() if k not in EXCLUDED_ATTRIBUTES
         }
         action = ActionType(self.__attributes.get("action", "Information"))
         structure_type = self.__structure["structure_type"]
@@ -144,6 +146,23 @@ class _StructureSpecificDataSet:
             data=df,
             action=action,
         )
+
+    def __data_set_atts(
+        self, dataset: etree._Element, columns: Iterable[str]
+    ) -> Dict[str, str]:
+        """Returns the data set attributes given in Atts elements.
+
+        In SDMX-ML 3.x, an Atts without a key gives data set attributes.
+        An Atts with a column of the data has a key, and is left out.
+        """
+        keys = set(columns)
+        attributes: Dict[str, str] = {}
+        for child in dataset:
+            if self.__names[child.tag] == ATTS:
+                values = self.__names.attributes(child)
+                if keys.isdisjoint(values):
+                    attributes.update(values)
+        return attributes
 
 
 def read_structure_specific(

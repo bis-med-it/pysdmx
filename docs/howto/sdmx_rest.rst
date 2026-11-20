@@ -63,14 +63,42 @@ as well as the version of the SDMX-REST API that the endpoint supports.
 In case the query requires features that are not available in the version
 of the API supported by the endpoint, an error will be raised.
 
+The ``RestService`` is strict: it expects the service to be protocol-correct.
+For example, a response is only decompressed if the service declares its
+compression in the ``Content-Encoding`` header. Some services do not, such as
+Eurostat's SDMX API, which sends gzip-compressed responses without that
+header. The ``LenientRestService`` is used exactly as the ``RestService``, but
+it also accepts such responses and decompresses them. The
+``AsyncLenientRestService`` does the same for the ``AsyncRestService``.
+
+Both lenient services also follow the asynchronous extractions in which
+Eurostat's SDMX API queues large data queries: instead of the data, the
+service answers with the id of an extraction, whose status the lenient
+services check every 10 seconds, until it is available, to return its data.
+The ``extraction_timeout`` argument sets the seconds to wait for it (600 by
+default). As for any long wait, a ``UserWarning`` is emitted if the data
+have not started to arrive after 60 seconds, and another one every 10
+seconds afterwards.
+
+.. code-block:: python
+
+    from pysdmx.api.qb import ApiVersion, LenientRestService
+
+    endpoint = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0"
+    version = ApiVersion.V2_0_0
+    service = LenientRestService(endpoint, version, extraction_timeout=1200)
+
+The ``RegistryClient`` and the ``AsyncRegistryClient`` use the strict services
+by default; instantiate them with ``lenient=True`` to use the lenient ones.
+The ``PandasConnector`` takes the same argument, which applies to the data it
+retrieves: its metadata are always retrieved with the strict service.
+
 Deserializing the response
 --------------------------
 
 The response of the web service will be returned as a sequence of bytes.
 By default, the returned responses will be in the SDMX-JSON format, but
 this can be configured when instantiating the ``RestService``.
-A response compressed with gzip without a ``Content-Encoding`` header, as
-Eurostat's SDMX API sends them, is decompressed as well.
 
 You can then process the response using your preferred library for the
 requested format, such as, for example, Python ``json`` module, for SDMX-JSON

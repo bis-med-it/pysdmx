@@ -26,9 +26,22 @@ def query(fmr: RegistryClient) -> str:
 
 
 @pytest.fixture
+def query_ks(fmr: RegistryClient) -> str:
+    return f"{fmr.api_endpoint}/structure/dataconstraint/BIS.CBS/AL/"
+
+
+@pytest.fixture
 def body() -> bytes:
     with open(
         "tests/api/fmr/samples/constraint/data_constraint.fusion.json", "rb"
+    ) as file:
+        return file.read()
+
+
+@pytest.fixture
+def body_ks() -> bytes:
+    with open(
+        "tests/api/fmr/samples/constraint/keyset_constraint.fusion.json", "rb"
     ) as file:
         return file.read()
 
@@ -61,4 +74,11 @@ async def test_returns_data_constraint_async(
         "CBS_CONSTRAINTS",
         (("CBS_BANK_TYPE", ("4C", "4D")),),
         is_fusion=True,
+    )
+
+
+def test_returns_keyset_constraint(respx_mock, fmr, query_ks, body_ks) -> None:
+    """get_data_constraint() should return a data constraint."""
+    checks.check_keyset_constraint(
+        respx_mock, fmr, query_ks, body_ks, "BIS.CBS", "AL"
     )

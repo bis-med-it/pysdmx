@@ -1,4 +1,5 @@
 import httpx
+import pytest
 
 from pysdmx.api.fmr import AsyncRegistryClient, RegistryClient
 from pysdmx.io.format import Format
@@ -45,6 +46,22 @@ async def check_data_constraint_async(
     )
 
 
+def check_keyset_constraint(
+    mock,
+    fmr: RegistryClient,
+    query: str,
+    body: bytes,
+    agency: str,
+    id: str,
+) -> None:
+    """get_data_constraint() may return a keyset constraint."""
+    mock.get(query).mock(return_value=httpx.Response(200, content=body))
+
+    constraint = fmr.get_data_constraint(agency, id)
+
+    _check_keyset_constraint(constraint)
+
+
 def _check_data_constraint(
     mock,
     constraint: DataConstraint,
@@ -85,3 +102,28 @@ def _check_data_constraint(
         )
         == cube_values
     )
+    assert len(constraint.key_sets) == 0
+
+
+def _check_keyset_constraint(constraint: DataConstraint) -> None:
+    assert len(constraint.cube_regions) == 0
+    assert len(constraint.key_sets) == 1
+    assert constraint.key_sets[0].is_included is True
+    assert len(constraint.key_sets[0].keys) == 2
+    for dks in constraint.key_sets[0].keys:
+        assert len(dks.keys_values) == 6
+        for kv in dks.keys_values:
+            if kv.id == "CBS_BASIS":
+                assert kv.value == "F"
+            elif kv.id == "L_POSITION":
+                assert kv.value == "L"
+            elif kv.id == "L_INSTR":
+                assert kv.value in ["A", "G"]
+            elif kv.id in ["REM_MATURITY", "L_CP_SECTOR"]:
+                assert kv.value == "A"
+            elif kv.id == "CURR_TYPE_BOOK":
+                assert kv.value == "TO1"
+            else:
+                pytest.fail(f"Unexpected component: {kv.id}")
+        assert dks.valid_from is None
+        assert dks.valid_to is None
