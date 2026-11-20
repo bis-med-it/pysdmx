@@ -59,6 +59,7 @@ SDMX_TO_VTL_TYPE_MAP: Dict[DataType, Type[ScalarType]] = {
     DataType.MONTH_DAY: String,
     DataType.DAY: String,
     DataType.TIME: String,
+    DataType.GEO_INFO: String,
     DataType.INTEGER: Integer,
     DataType.LONG: Integer,
     DataType.SHORT: Integer,
@@ -115,6 +116,7 @@ SDMX_TYPES_BY_VTL_TYPE: Dict[Type[ScalarType], FrozenSet[DataType]] = {
             DataType.MONTH_DAY,
             DataType.DAY,
             DataType.TIME,
+            DataType.GEO_INFO,
         }
     ),
     Integer: frozenset(
@@ -294,10 +296,11 @@ def _vtl_times(values: pd.Series, dtype: DataType) -> pd.Series:
     """Gives the values of an SDMX time component as VTL holds them.
 
     A TimeRange is given as a VTL time. In the time periods, a date with a
-    time is given as its day, a TimeRange as the period it covers, and the
+    time is given as its day and a TimeRange as the period it covers. The
     time zone of a value is dropped.
     """
     if dtype == DataType.TIME_RANGE:
+        values = values.str.replace(f"{_TIME_ZONE}/", "/", regex=True)
         return _convert_values(values, _time_range_to_vtl_time)
     date_times = values.str.match(_DATE_TIME, na=False)
     values = values.where(~date_times, values.str.slice(0, 10))

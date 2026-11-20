@@ -796,6 +796,7 @@ def _one_measure(
     ("vtl_type", "sdmx_type", "value"),
     [
         (String, DataType.URI, "x"),
+        (String, DataType.GEO_INFO, "x"),
         (Integer, DataType.LONG, 1),
         (Number, DataType.DECIMAL, 1.5),
         (Date, DataType.DATE_TIME, "2025-12-19"),
@@ -921,6 +922,17 @@ def test_time_ranges_are_converted_to_vtl_times_and_back() -> None:
         "2025-03-10/2025-03-23",
     ]
     pd.testing.assert_frame_equal(back.data, dataset.data)
+
+
+def test_convert_to_vtl_time_range_without_its_time_zone() -> None:
+    _, schema = _one_measure(TimeInterval, DataType.TIME_RANGE, None)
+    data = pd.DataFrame({"DIM": ["A"], "ME": ["2025-01-01-05:00/P1Y"]})
+
+    vtl_dataset = convert_dataset_to_vtl(
+        PandasDataset(structure=schema, data=data), "DS"
+    )
+
+    assert vtl_dataset.data["ME"].tolist() == ["2025-01-01/2025-12-31"]
 
 
 def test_time_range_that_is_not_a_vtl_time() -> None:
