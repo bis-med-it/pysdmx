@@ -58,11 +58,27 @@ def __check_vtl_extra() -> None:
         ) from None
 
 
-def __check_json_extra() -> None:
+def __check_json_extra() -> str:
+    """Checks the json extra and returns the JSON Schema library to use.
+
+    jsonschema-rs is used when it is installed. Otherwise, jsonschema (with
+    rfc3339-validator, for its date-time checks) is used.
+
+    Returns:
+        The name of the module to validate with: ``jsonschema_rs`` or
+        ``jsonschema``.
+    """
     try:
-        import jsonschema  # noqa: F401
-        import rfc3339_validator  # noqa: F401
         import sdmxschemas  # noqa: F401
+
+        try:
+            import jsonschema_rs  # noqa: F401
+        except ImportError:
+            import jsonschema  # noqa: F401
+            import rfc3339_validator  # noqa: F401
+
+            return "jsonschema"
+        return "jsonschema_rs"
     except ImportError:
         raise ImportError(
             ERROR_MESSAGE.format(
