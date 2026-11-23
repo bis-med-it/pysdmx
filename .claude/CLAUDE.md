@@ -68,7 +68,7 @@ Models use `msgspec.Struct` (frozen, immutable). Validation happens in `__post_i
 | `data` | pandas, pyarrow | DataFrame support |
 | `dc` | python-dateutil | Date/time handling |
 | `vtl` | vtlengine | VTL support |
-| `json` | sdmxschemas, jsonschema | JSON schema validation |
+| `json` | sdmxschemas, jsonschema-rs, jsonschema | JSON schema validation (jsonschema-rs preferred) |
 | `xml` | lxml, xmltodict, sdmxschemas | XML format I/O |
 | `all` | All of the above | Everything |
 

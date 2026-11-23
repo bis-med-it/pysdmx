@@ -119,7 +119,8 @@ The following extras are available:
    * - ``xml``
      - Read and Write SDMX-ML messages, on pysdmx.io.xml.
    * - ``json``
-     - Only required to validate SDMX-JSON Structure messages when reading them.
+     - Only required to validate SDMX-JSON Structure messages when reading them,
+       using jsonschema-rs, or jsonschema if jsonschema-rs is not installed.
    * - ``data``
      - Read and write SDMX-CSV and handle SDMX datasets as Pandas Dataframes.
    * - ``dc``
