@@ -1,14 +1,25 @@
 import json
 import re
 from datetime import datetime, timezone
+from importlib.util import find_spec
 from pathlib import Path
 
 import pytest
 
 from pysdmx.errors import Invalid
+from pysdmx.io.json.sdmxjson2.reader import doc_validation
 from pysdmx.io.json.sdmxjson2.reader.doc_validation import validate_sdmx_json
 from pysdmx.io.json.sdmxjson2.reader.metadata import read as read_metadata
 from pysdmx.io.json.sdmxjson2.reader.structure import read as read_structure
+
+
+@pytest.fixture(autouse=True, params=["jsonschema_rs", "jsonschema"])
+def json_schema_library(request, monkeypatch):
+    # Every test runs with each JSON Schema library, which must give the
+    # same outcome. jsonschema-rs is preferred when both are installed.
+    if find_spec(request.param) is None:
+        pytest.skip(f"{request.param} is not installed")
+    monkeypatch.setattr(doc_validation, "_json_library", lambda: request.param)
 
 
 @pytest.fixture
@@ -283,6 +294,10 @@ def test_tzless_datetime_warning_points_at_offending_values(tzless_datetime):
         "$.data.conceptSchemes.0.concepts.0.coreRepresentation"
         ".format.startTime: '2000-01-01T00:00:00'"
     ) in message
+    assert (
+        "$.data.conceptSchemes.0.concepts.0.coreRepresentation"
+        ".format.endTime: '2020-12-31T23:59:59'"
+    ) in message
     assert "$.data.conceptSchemes.0.validFrom: '2003-01-01T00:00:00'" in (
         message
     )
@@ -324,3 +339,70 @@ def test_aware_datetime_keeps_its_timezone(tzless_datetime, recwarn):
     facets = msg.structures[0].items[0].facets
     assert facets.start_time.isoformat() == "2000-01-01T00:00:00+02:00"
     assert facets.end_time.isoformat() == "2020-12-31T23:59:59+02:00"
+
+
+def test_json_21_unevaluated_property(valid_metadata_21):
+    message = json.loads(valid_metadata_21)
+    message["data"]["metadataSets"][0]["foo"] = 1
+
+    with pytest.raises(
+        Invalid,
+        match=re.escape(
+            "Validation Error: $.data.metadataSets.0:"
+            " unexpected property 'foo'"
+        ),
+    ):
+        validate_sdmx_json(json.dumps(message))
+
+
+def test_json_one_of_reports_failure_of_a_subschema(valid_metadata_21):
+    # ``prepared`` is either a date-time or a date: both subschemas fail.
+    message = json.loads(valid_metadata_21)
+    message["meta"]["prepared"] = 123
+
+    with pytest.raises(
+        Invalid,
+        match=re.escape(
+            "Validation Error: $.meta.prepared: invalid type (expected string)"
+        ),
+    ):
+        validate_sdmx_json(json.dumps(message))
+
+
+@pytest.mark.filterwarnings("ignore:The message contains SDMX datetimes")
+def test_json_one_of_matching_several_subschemas():
+    # A representation map source is either a codelist or a data type.
+    path = Path(__file__).parent / "samples" / "maps" / "code_maps.json"
+    message = json.loads(path.read_text(encoding="utf-8"))
+    message["data"]["representationMaps"][0]["source"][0]["dataType"] = (
+        "String"
+    )
+
+    with pytest.raises(
+        Invalid,
+        match=re.escape(
+            "Validation Error: $.data.representationMaps.0.source.0:"
+            " matches more than one allowed definition"
+        ),
+    ):
+        validate_sdmx_json(json.dumps(message))
+
+
+def test_json_formats_checked_as_by_jsonschema(valid_metadata_21):
+    # jsonschema does not check the ``uri`` format, and only checks that
+    # an ``email`` contains an ``@``. jsonschema-rs must agree with it.
+    message = json.loads(valid_metadata_21)
+    contact = {"emails": ["foo@"], "uris": ["not a uri"]}
+    message["meta"]["sender"] = {"id": "S", "contacts": [contact]}
+
+    validate_sdmx_json(json.dumps(message))
+
+    contact["emails"] = ["foo"]
+    with pytest.raises(
+        Invalid,
+        match=re.escape(
+            "Validation Error: $.meta.sender.contacts.0.emails.0:"
+            " 'foo' is not a valid email"
+        ),
+    ):
+        validate_sdmx_json(json.dumps(message))

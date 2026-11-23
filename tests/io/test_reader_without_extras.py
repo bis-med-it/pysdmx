@@ -15,9 +15,9 @@ SAMPLES = Path(__file__).parent / "samples"
 FMR_SAMPLES = Path(__file__).parent.parent / "api" / "fmr" / "samples"
 JSON_STRUCTURE = FMR_SAMPLES / "code" / "freq.json"
 JSON_REFMETA = FMR_SAMPLES / "refmeta" / "report.json"
-JSON_EXTRA = all(
-    find_spec(name)
-    for name in ("jsonschema", "rfc3339_validator", "sdmxschemas")
+JSON_EXTRA = find_spec("sdmxschemas") and (
+    find_spec("jsonschema_rs")
+    or (find_spec("jsonschema") and find_spec("rfc3339_validator"))
 )
 XML_EXTRA = all(
     find_spec(name) for name in ("lxml", "sdmxschemas", "xmltodict")
