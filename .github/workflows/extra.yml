@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: ["3.12"]
-        extra: [noextra,json,dc,vtl,data,xml,xml-data,xml-data-json]
+        extra: [noextra,json,json-jsonschema,dc,vtl,data,xml,xml-data,xml-data-json]
         include:
           - extra: noextra
             marker: noextra
@@ -26,6 +26,12 @@ jobs:
           - extra: json
             marker: json
             extras_to_install: "json"
+          # jsonschema, the alternative to jsonschema-rs for the validation
+          # of SDMX-JSON messages, used when jsonschema-rs is not installed
+          - extra: json-jsonschema
+            marker: json
+            extras_to_install: "json"
+            uninstall: "jsonschema-rs"
           - extra: dc
             marker: dc
             extras_to_install: "dc"
@@ -66,6 +72,11 @@ jobs:
           else
             poetry install --no-interaction --without extras-dev
           fi
+
+      - name: Uninstall packages (${{ matrix.uninstall }})
+        if: ${{ matrix.uninstall }}
+        run: poetry run python -m pip uninstall --yes ${{ matrix.uninstall }}
+
       - name: Verify extras
         run: |
           poetry run python - <<'PY'
@@ -109,9 +120,10 @@ jobs:
               return seen
 
           selected = "${{ matrix.extras_to_install }}".split()
+          uninstalled = {mod(p) for p in "${{ matrix.uninstall }}".split()}
           all_pkgs = {Requirement(r).name for spec in extras.values() for r in spec}
           direct = {Requirement(r).name for e in selected for r in extras.get(e, [])}
-          must = {mod(p) for p in transitive(direct) & all_pkgs}
+          must = {mod(p) for p in transitive(direct) & all_pkgs} - uninstalled
           forbidden = {mod(p) for p in all_pkgs} - must
 
           ok = True
