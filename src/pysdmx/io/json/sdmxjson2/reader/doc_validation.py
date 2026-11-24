@@ -291,12 +291,9 @@ _SUBSCHEMA_PRIORITY = (
 )
 
 
-def _describe_other(f: _Failure) -> str:
-    return f"does not match the '{f.keyword}' constraint"
-
-
 def _describe(f: _Failure) -> str:
-    return _DESCRIPTIONS.get(f.keyword, _describe_other)(f)
+    describe = _DESCRIPTIONS.get(f.keyword)
+    return describe(f) if describe else f"fails the '{f.keyword}' check"
 
 
 def _priority(f: _Failure) -> int:
