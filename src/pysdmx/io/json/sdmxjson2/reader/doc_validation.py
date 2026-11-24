@@ -7,10 +7,12 @@ does not depend on the library in use.
 """
 
 import ast
+import gc
 import heapq
 import json
 import re
 import warnings
+from contextlib import contextmanager
 from functools import lru_cache
 from pathlib import Path
 from typing import (
@@ -350,6 +352,24 @@ def _describe_datetimes(failures: Sequence[_Failure]) -> List[str]:
     ]
 
 
+@contextmanager
+def _gc_paused() -> Iterator[None]:
+    """Pauses the garbage collector, unless it is already disabled.
+
+    Parsing a large message, and collecting many failures, creates many
+    objects. Each allocation may trigger a collection walking all these
+    objects, which can take most of the validation time, while none of
+    them is garbage until the validation is over.
+    """
+    enabled = gc.isenabled()
+    gc.disable()
+    try:
+        yield
+    finally:
+        if enabled:
+            gc.enable()
+
+
 def _first(failures: List[_Failure], n: int) -> List[_Failure]:
     """The first failures, by location then description.
 
@@ -389,14 +409,15 @@ def validate_sdmx_json(input_str: str) -> None:
         UserWarning: If the only issues found are datetimes that are not
             RFC 3339 compliant (e.g. without timezone information).
     """
-    instance = json.loads(input_str)
-    schema_path = _schema_for(instance)
-    find_failures = _FAILURES[_json_library()]
-
     dt_failures: List[_Failure] = []
     other_failures: List[_Failure] = []
-    for f in find_failures(schema_path, instance):
-        (dt_failures if _involves_datetime(f) else other_failures).append(f)
+    with _gc_paused():
+        instance = json.loads(input_str)
+        schema_path = _schema_for(instance)
+        find_failures = _FAILURES[_json_library()]
+        for f in find_failures(schema_path, instance):
+            failures = dt_failures if _involves_datetime(f) else other_failures
+            failures.append(f)
 
     if dt_failures:
         messages = _describe_datetimes(dt_failures)

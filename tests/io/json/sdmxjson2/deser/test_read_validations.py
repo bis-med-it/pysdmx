@@ -1,3 +1,4 @@
+import gc
 import json
 import re
 from datetime import datetime, timezone
@@ -424,3 +425,18 @@ def test_json_first_three_failures_by_location(valid_metadata_21):
         ),
     ):
         validate_sdmx_json(json.dumps(message))
+
+
+@pytest.mark.parametrize("enabled", [True, False])
+def test_json_validation_restores_garbage_collection(
+    valid_metadata_21, enabled
+):
+    # The garbage collector is paused while validating, then left as it was.
+    if not enabled:
+        gc.disable()
+    try:
+        validate_sdmx_json(valid_metadata_21)
+
+        assert gc.isenabled() is enabled
+    finally:
+        gc.enable()
