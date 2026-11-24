@@ -38,7 +38,8 @@ documentation = "https://bis-med-it.github.io/pysdmx"
 data = ["pandas>=2.1.4", "pyarrow>=14.0,<26.0"]
 dc = ["python-dateutil>=2.8.2"]
 vtl = ["vtlengine>=1.8.0,<2.0"]
-json = ["sdmxschemas>=1.1.0", "jsonschema>=4.10", "rfc3339-validator>=0.1.4"]
+json = ["sdmxschemas>=1.1.0", "jsonschema-rs>=0.61.2", "jsonschema>=4.10",
+    "rfc3339-validator>=0.1.4"]
 xml = ["lxml>=6.1.0; sys_platform != 'emscripten'",
     "lxml>=6.0.2; sys_platform == 'emscripten'",
     "xmltodict>=0.13", "sdmxschemas>=1.1.0"]
@@ -46,7 +47,7 @@ all = ["lxml>=6.1.0; sys_platform != 'emscripten'",
     "lxml>=6.0.2; sys_platform == 'emscripten'",
     "xmltodict>=0.13", "sdmxschemas>=1.1.0", "pandas>=2.1.4",
     "pyarrow>=14.0,<26.0", "python-dateutil>=2.8.2", "vtlengine>=1.8.0,<2.0",
-    "jsonschema>=4.10", "rfc3339-validator>=0.1.4"]
+    "jsonschema-rs>=0.61.2", "jsonschema>=4.10", "rfc3339-validator>=0.1.4"]
 
 [tool.poetry]
 requires-poetry = ">=2.0"
