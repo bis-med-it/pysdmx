@@ -406,3 +406,21 @@ def test_json_formats_checked_as_by_jsonschema(valid_metadata_21):
         ),
     ):
         validate_sdmx_json(json.dumps(message))
+
+
+def test_json_first_three_failures_by_location(valid_metadata_21):
+    message = json.loads(valid_metadata_21)
+    for metadata_set in message["data"]["metadataSets"]:
+        metadata_set["foo"] = 1
+    del message["data"]["metadataSets"][0]["agencyID"]
+
+    with pytest.raises(
+        Invalid,
+        match=re.escape(
+            "Validation Error: $.data.metadataSets.0: missing property"
+            " 'agencyID'; $.data.metadataSets.0: unexpected property 'foo';"
+            " $.data.metadataSets.1: unexpected property 'foo'"
+            " (+1 more errors)"
+        ),
+    ):
+        validate_sdmx_json(json.dumps(message))

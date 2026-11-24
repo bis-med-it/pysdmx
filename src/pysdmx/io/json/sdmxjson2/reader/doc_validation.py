@@ -7,10 +7,10 @@ does not depend on the library in use.
 """
 
 import ast
+import heapq
 import json
 import re
 import warnings
-from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from typing import (
@@ -21,6 +21,7 @@ from typing import (
     Iterator,
     List,
     Mapping,
+    NamedTuple,
     Sequence,
     Tuple,
     Union,
@@ -67,8 +68,7 @@ _SCHEMA_FILES: Mapping[str, Mapping[str, Path]] = {
 _Path = Tuple[Union[str, int], ...]
 
 
-@dataclass(frozen=True)
-class _Failure:
+class _Failure(NamedTuple):
     """A schema validation failure, whichever library found it.
 
     Attributes:
@@ -133,6 +133,9 @@ def _rs_validator(path: Path) -> "jsonschema_rs.Draft202012Validator":
     return jsonschema_rs.Draft202012Validator(
         _load_schema(path),
         validate_formats=True,
+        # The messages of jsonschema-rs are not used: not writing the
+        # failing values in them saves time when there are many failures.
+        mask="*",
         formats={
             "uri": _any_value,
             "uri-reference": _any_value,
@@ -141,25 +144,28 @@ def _rs_validator(path: Path) -> "jsonschema_rs.Draft202012Validator":
     )
 
 
+# The attribute holding the detail of each jsonschema-rs error kind.
+_RS_DETAILS = {
+    "AdditionalProperties": "unexpected",
+    "UnevaluatedProperties": "unexpected",
+    "Required": "property",
+    "Type": "types",
+    "Enum": "options",
+    "Pattern": "pattern",
+    "Format": "format",
+    "Constant": "expected_value",
+    "MinItems": "limit",
+    "MaxItems": "limit",
+    "MaxProperties": "limit",
+    "Minimum": "limit",
+    "Maximum": "limit",
+}
+
+
 def _from_rs(e: "jsonschema_rs.ValidationError") -> _Failure:
     kind = e.kind
-    detail = next(
-        (
-            getattr(kind, attribute)
-            for attribute in (
-                "unexpected",
-                "property",
-                "types",
-                "options",
-                "pattern",
-                "limit",
-                "format",
-                "expected_value",
-            )
-            if hasattr(kind, attribute)
-        ),
-        None,
-    )
+    attribute = _RS_DETAILS.get(type(kind).__name__)
+    detail = getattr(kind, attribute) if attribute else None
     # Like jsonschema, keep the subschema failures of an ``anyOf`` or
     # ``oneOf`` that no subschema matches, but not of a ``oneOf`` that
     # several subschemas match.
@@ -236,11 +242,6 @@ _FAILURES: Mapping[str, Callable[[Path, Any], Iterator[_Failure]]] = {
 }
 
 
-def _path_key(path: _Path) -> Tuple[Tuple[int, int, str], ...]:
-    # Paths mix property names and array indexes, which do not compare.
-    return tuple((0, p, "") if isinstance(p, int) else (1, 0, p) for p in path)
-
-
 def _format_path(path: _Path) -> str:
     return "$" if not path else "$." + ".".join(map(str, path))
 
@@ -280,15 +281,20 @@ _DESCRIPTIONS: Mapping[str, Callable[[_Failure], str]] = {
 
 # The subschema failure reported for an ``anyOf`` or ``oneOf`` failure is
 # the first kind of failure in this list, if any.
-_SUBSCHEMA_PRIORITY = (
-    "additionalProperties",
-    "unevaluatedProperties",
-    "type",
-    "enum",
-    "required",
-    "pattern",
-    "minItems",
-)
+_SUBSCHEMA_PRIORITY = {
+    keyword: i
+    for i, keyword in enumerate(
+        (
+            "additionalProperties",
+            "unevaluatedProperties",
+            "type",
+            "enum",
+            "required",
+            "pattern",
+            "minItems",
+        )
+    )
+}
 
 
 def _describe(f: _Failure) -> str:
@@ -297,9 +303,7 @@ def _describe(f: _Failure) -> str:
 
 
 def _priority(f: _Failure) -> int:
-    if f.keyword in _SUBSCHEMA_PRIORITY:
-        return _SUBSCHEMA_PRIORITY.index(f.keyword)
-    return len(_SUBSCHEMA_PRIORITY)
+    return _SUBSCHEMA_PRIORITY.get(f.keyword, len(_SUBSCHEMA_PRIORITY))
 
 
 def _compact(f: _Failure) -> str:
@@ -308,7 +312,7 @@ def _compact(f: _Failure) -> str:
         # one of its subschemas, chosen whatever their order.
         reported = min(
             f.context,
-            key=lambda c: (_priority(c), _path_key(c.path), _compact(c)),
+            key=lambda c: (_priority(c), c.path, _compact(c)),
         )
         return _compact(reported)
     return f"{_format_path(f.path)}: {_describe(f)}"
@@ -342,13 +346,25 @@ def _describe_datetimes(failures: Sequence[_Failure]) -> List[str]:
     }
     return [
         f"{_format_path(p)}: {offending[p]!r} is not an RFC 3339 date-time"
-        for p in sorted(offending, key=_path_key)
+        for p in sorted(offending)
     ]
 
 
-def _summarize(messages: Sequence[str]) -> str:
+def _first(failures: List[_Failure], n: int) -> List[_Failure]:
+    """The first failures, by location then description.
+
+    Only the failures at the first ``n`` locations are described, as
+    describing every failure takes time when there are many.
+    """
+    if len(failures) > n:
+        last = heapq.nsmallest(n, (f.path for f in failures))[-1]
+        failures = [f for f in failures if f.path <= last]
+    return sorted(failures, key=lambda f: (f.path, _compact(f)))[:n]
+
+
+def _summarize(messages: Sequence[str], total: int) -> str:
     summary = "; ".join(messages[:3])
-    more = f" (+{len(messages) - 3} more errors)" if len(messages) > 3 else ""
+    more = f" (+{total - 3} more errors)" if total > 3 else ""
     return f"{summary}{more}"
 
 
@@ -377,15 +393,14 @@ def validate_sdmx_json(input_str: str) -> None:
     schema_path = _schema_for(instance)
     find_failures = _FAILURES[_json_library()]
 
-    failures = sorted(
-        find_failures(schema_path, instance),
-        key=lambda f: (_path_key(f.path), _compact(f)),
-    )
-    dt_failures = [f for f in failures if _involves_datetime(f)]
-    other_failures = [f for f in failures if not _involves_datetime(f)]
+    dt_failures: List[_Failure] = []
+    other_failures: List[_Failure] = []
+    for f in find_failures(schema_path, instance):
+        (dt_failures if _involves_datetime(f) else other_failures).append(f)
 
     if dt_failures:
-        summary = _summarize(_describe_datetimes(dt_failures))
+        messages = _describe_datetimes(dt_failures)
+        summary = _summarize(messages, len(messages))
         warnings.warn(
             f"The message contains SDMX datetimes that are not RFC 3339 "
             f"compliant (e.g. the timezone is missing): {summary}. SDMX "
@@ -395,5 +410,6 @@ def validate_sdmx_json(input_str: str) -> None:
             stacklevel=2,
         )
     if other_failures:
-        summary = _summarize([_compact(f) for f in other_failures])
+        first = [_compact(f) for f in _first(other_failures, 3)]
+        summary = _summarize(first, len(other_failures))
         raise errors.Invalid("Validation Error", summary)
