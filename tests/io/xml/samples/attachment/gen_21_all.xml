@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mes:GenericData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mes="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:gen="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/data/generic" xmlns:com="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common" xsi:schemaLocation="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message https://registry.sdmx.org/schemas/v2_1/SDMXMessage.xsd">
+	<mes:Header>
+		<mes:ID>ID</mes:ID>
+		<mes:Test>false</mes:Test>
+		<mes:Prepared>2026-11-09T00:00:00Z</mes:Prepared>
+		<mes:Sender id="ZZZ"/>
+		<mes:Structure structureID="DSD" dimensionAtObservation="AllDimensions">
+			<com:Structure>
+				<Ref agencyID="MD" id="DSD" version="1.0" class="DataStructure"/>
+			</com:Structure>
+		</mes:Structure>
+	</mes:Header>
+	<mes:DataSet structureRef="DSD" action="Information">
+		<gen:Attributes>
+			<gen:Value id="COMMENT_DSET" value="Sample"/>
+		</gen:Attributes>
+		<gen:Group type="SIBLING">
+			<gen:GroupKey>
+				<gen:Value id="REF_AREA" value="DE"/>
+			</gen:GroupKey>
+			<gen:Attributes>
+				<gen:Value id="TITLE" value="Germany"/>
+				<gen:Value id="UNIT_MULT" value="3"/>
+			</gen:Attributes>
+		</gen:Group>
+		<gen:Group type="SIBLING">
+			<gen:GroupKey>
+				<gen:Value id="REF_AREA" value="FR"/>
+			</gen:GroupKey>
+			<gen:Attributes>
+				<gen:Value id="TITLE" value="France"/>
+				<gen:Value id="UNIT_MULT" value="6"/>
+			</gen:Attributes>
+		</gen:Group>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="FREQ" value="A"/>
+				<gen:Value id="REF_AREA" value="DE"/>
+				<gen:Value id="TIME_PERIOD" value="2024"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="1.5"/>
+			<gen:Attributes>
+				<gen:Value id="COMMENT_TS" value="Revised"/>
+				<gen:Value id="CONF_STATUS" value="F"/>
+				<gen:Value id="OBS_STATUS" value="A"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="FREQ" value="A"/>
+				<gen:Value id="REF_AREA" value="DE"/>
+				<gen:Value id="TIME_PERIOD" value="2025"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="2.5"/>
+			<gen:Attributes>
+				<gen:Value id="COMMENT_TS" value="Revised"/>
+				<gen:Value id="CONF_STATUS" value="C"/>
+				<gen:Value id="OBS_STATUS" value="P"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="FREQ" value="A"/>
+				<gen:Value id="REF_AREA" value="FR"/>
+				<gen:Value id="TIME_PERIOD" value="2024"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="3.5"/>
+			<gen:Attributes>
+				<gen:Value id="COMMENT_TS" value="Provisional"/>
+				<gen:Value id="CONF_STATUS" value="F"/>
+				<gen:Value id="OBS_STATUS" value="A"/>
+			</gen:Attributes>
+		</gen:Obs>
+		<gen:Obs>
+			<gen:ObsKey>
+				<gen:Value id="FREQ" value="A"/>
+				<gen:Value id="REF_AREA" value="FR"/>
+				<gen:Value id="TIME_PERIOD" value="2025"/>
+			</gen:ObsKey>
+			<gen:ObsValue value="4.5"/>
+			<gen:Attributes>
+				<gen:Value id="COMMENT_TS" value="Provisional"/>
+				<gen:Value id="CONF_STATUS" value="F"/>
+				<gen:Value id="OBS_STATUS" value="A"/>
+			</gen:Attributes>
+		</gen:Obs>
+	</mes:DataSet>
+</mes:GenericData>
