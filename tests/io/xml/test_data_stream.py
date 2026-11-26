@@ -328,17 +328,17 @@ def test_severe_error_kept_after_many_allowed_errors():
     assert all(dataset.data.empty for dataset in datasets)
 
 
-def test_ss_series_missing_values_are_null():
+def test_ss_series_missing_values_are_empty():
     text = sample("str_ser.xml").replace(
         FIRST_OBS_21, FIRST_OBS_21.replace(' OBS_CONF="F"', ""), 1
     )
     data = read_str_spe_21(text)[0].data
-    assert pd.isna(data["OBS_CONF"].iloc[0])
+    assert data["OBS_CONF"].iloc[0] == ""
     assert data["OBS_CONF"].iloc[1] == "F"
 
 
 def test_ss_attribute_first_reported_in_a_later_batch(monkeypatch):
-    # The rows of the batches already built get a null value
+    # The rows of the batches already built get an empty value
     monkeypatch.setattr(data_aux, "READING_CHUNKSIZE", 100)
     text = sample("str_ser.xml")
     last = text.rindex("<Obs ")
@@ -346,7 +346,7 @@ def test_ss_attribute_first_reported_in_a_later_batch(monkeypatch):
     data = read_str_spe_21(late)[0].data
     assert len(data) == 1000
     assert data["OBS_PRE_BREAK"].iloc[-1] == "9"
-    assert data["OBS_PRE_BREAK"].iloc[:-1].isna().all()
+    assert (data["OBS_PRE_BREAK"].iloc[:-1] == "").all()
 
 
 def test_ss_all_dimensions_missing_values_are_empty():

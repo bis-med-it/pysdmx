@@ -4,6 +4,7 @@ from typing import Dict, List, Literal, Optional, Sequence, Tuple
 import pandas as pd
 
 from pysdmx.io._pd_utils import (
+    data_set_attributes,
     transform_dataframe_for_writing,
     validate_schema_exists,
 )
@@ -11,7 +12,7 @@ from pysdmx.io.pd import PandasDataset
 from pysdmx.model import Schema
 from pysdmx.model.dataflow import Component, Role
 from pysdmx.model.dataset import ActionType
-from pysdmx.toolkit.pd._data_utils import format_labels, get_codes
+from pysdmx.toolkit.pd._data_utils import format_labels
 
 _NULL_STRINGS = frozenset(("", "nan", "None"))
 
@@ -28,12 +29,27 @@ def __write_time_period(df: pd.DataFrame, time_format: str) -> None:
     raise NotImplementedError("Normalized time format is not implemented yet.")
 
 
+def __key(df: pd.DataFrame, columns: List[str]) -> "pd.Series[str]":
+    """Joins the values of some columns of each row with dots."""
+    values = (df[column].fillna("").astype(str) for column in columns)
+    return pd.Series(map(".".join, zip(*values)), index=df.index)
+
+
 def __write_keys(
     df: pd.DataFrame,
     keys: Literal["obs", "series", "both"],
     schema: Schema,
 ) -> None:
     """Writes the keys to the DataFrame.
+
+    As SDMX-CSV 2.0 and 2.1 define them, the key of each row has the
+    values of its dimensions, in the order of the data structure
+    definition and separated by dots (``M.USD.EUR.SP00.2020-01``).
+    ``OBS_KEY`` has all the dimensions and ``SERIES_KEY`` all of them
+    except the one attached to the observation, the time dimension
+    (``M.USD.EUR.SP00``). A dimension without a value in a row, as in the
+    rows of attributes attached to a partial key, has an empty value in
+    the keys.
 
     Args:
         df: The DataFrame to write the keys to.
@@ -47,23 +63,16 @@ def __write_keys(
             "OBS_KEY" and "SERIES_KEY".
         schema: The schema to get the keys
     """
-    series_codes, obs_codes, group_codes = get_codes(
-        dimension_code="", structure=schema, data=df
-    )
-    del obs_codes[0]
-    obs_values = ".".join(
-        str(df[k].iloc[0]) for k in obs_codes if k in df.columns
-    )
-    series_values = ".".join(
-        str(df[k].iloc[0]) for k in series_codes if k in df.columns
-    )
-    if keys == "obs":
-        df.insert(0, "OBS_KEY", obs_values)
-    elif keys == "series":
-        df.insert(0, "SERIES_KEY", series_values)
-    else:
-        df.insert(0, "OBS_KEY", obs_values)
-        df.insert(0, "SERIES_KEY", series_values)
+    dimensions = [
+        dimension.id
+        for dimension in schema.components.dimensions
+        if dimension.id in df.columns
+    ]
+    if keys in ("obs", "both"):
+        df.insert(0, "OBS_KEY", __key(df, dimensions))
+    if keys in ("series", "both"):
+        series = [d for d in dimensions if d != "TIME_PERIOD"]
+        df.insert(0, "SERIES_KEY", __key(df, series))
 
 
 def __generate_partial_key_df(
@@ -228,7 +237,7 @@ def _write_csv_2_aux(
         structure_ref, unique_id = dataset.short_urn.split("=", maxsplit=1)
 
         # Add additional attributes to the dataset
-        for k, v in dataset.attributes.items():
+        for k, v in data_set_attributes(dataset).items():
             df[k] = v
 
         if partial_keys:

@@ -1,9 +1,12 @@
+from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal
+
 import pandas as pd
 import pyarrow as pa
 import pytest
 
 from pysdmx.errors import Invalid
-from pysdmx.io.pd import PandasDataset
+from pysdmx.io.pd import PandasDataset, format_value
 from pysdmx.model import (
     Component,
     Components,
@@ -113,6 +116,119 @@ def test_schema_conversion_failure_raises_invalid():
         PandasDataset(structure=schema, data=df)
 
 
+@pytest.mark.parametrize(
+    "value",
+    ["not_a_date_time", "now", "today", "nan", "NaT", "2025-13-45T00:00:00"],
+)
+def test_schema_date_time_conversion_failure_raises_invalid(value):
+    schema = _make_schema(
+        _dim("ID"),
+        _att("UPDATED", DataType.DATE_TIME),
+    )
+    df = pd.DataFrame(
+        {"ID": ["A", "B"], "UPDATED": ["2025-12-19T14:30:00Z", value]}
+    )
+
+    with pytest.raises(Invalid, match="Type conversion failed"):
+        PandasDataset(structure=schema, data=df)
+
+
+# --- Decimal tests ---
+
+FLOAT64 = pd.ArrowDtype(pa.float64())
+
+
+def _decimals(values):
+    schema = _make_schema(_dim("ID"), _att("VALUE", DataType.DECIMAL))
+    ids = [str(i) for i in range(len(values))]
+    df = pd.DataFrame({"ID": ids, "VALUE": values})
+    return PandasDataset(structure=schema, data=df)
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        ["0.10", "1.5", "1234.5", None, ""],
+        # More than 15 digits, that float64 holds all the same
+        ["0.1000000000000000", "123456789012345.5"],
+        # NaN and numbers with an exponent are kept as float64 has them
+        ["0.1000000000000000", "NaN", "1e-7"],
+        ["1.2345678901234567e-5", "NaN"],
+        [0.1, 1.5, None],
+        [1, 2],
+        [Decimal("0.10"), Decimal("1.5"), None],
+    ],
+)
+def test_schema_decimals_that_float64_holds_are_float64(values):
+    ds = _decimals(values)
+
+    assert ds.data["VALUE"].dtype == FLOAT64
+
+
+@pytest.mark.parametrize(
+    ("values", "scale"),
+    [
+        (["1234567890.123456789", "0.10", None, ""], 9),
+        # The trailing zeros do not count for the scale
+        (["12345678901234567.25", "1.5000"], 2),
+        (["12345678901234567890", "100"], 0),
+        # A number with an exponent is kept if it fits the scale
+        (["1234567890.123456789", "1e3"], 9),
+        ([Decimal("1234567890.123456789"), Decimal("0.10"), None], 9),
+        # Integers beyond 2**53
+        ([9007199254740993, 1], 0),
+    ],
+)
+def test_schema_decimals_that_float64_alters_are_decimal(values, scale):
+    ds = _decimals(values)
+
+    assert ds.data["VALUE"].dtype == pd.ArrowDtype(pa.decimal128(38, scale))
+    result = ds.data["VALUE"].astype(object).tolist()
+    for value, decimal in zip(values, result):
+        if value in (None, ""):
+            assert pd.isna(decimal)
+        else:
+            assert decimal == Decimal(str(value))
+
+
+def test_schema_decimal_column_keeps_its_decimals():
+    values = [Decimal("1234567890.123456789"), Decimal("0.10"), None]
+    column = pd.Series(values, dtype=pd.ArrowDtype(pa.decimal128(38, 18)))
+
+    ds = _decimals(column)
+
+    assert ds.data["VALUE"].dtype == pd.ArrowDtype(pa.decimal128(38, 9))
+    assert ds.data["VALUE"].iloc[0] == values[0]
+    assert ds.data["VALUE"].iloc[1] == values[1]
+    assert pd.isna(ds.data["VALUE"].iloc[2])
+
+
+def test_reassign_structure_keeps_decimals():
+    ds = _decimals(["1234567890.123456789", "0.10", None])
+
+    ds.structure = ds.structure
+
+    assert ds.data["VALUE"].dtype == pd.ArrowDtype(pa.decimal128(38, 9))
+    assert ds.data["VALUE"].iloc[0] == Decimal("1234567890.123456789")
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        ["not_a_number"],
+        ["1234567890.123456789", "not_a_number"],
+        # A decimal column has no NaN
+        ["1234567890.123456789", "NaN"],
+        # More digits than a decimal holds
+        ["1" * 39],
+        ["1234567890.123456789", "1e-12"],
+    ],
+)
+def test_schema_decimal_conversion_failure_raises_invalid(values):
+    with pytest.raises(Invalid, match="Type conversion failed"):
+        _decimals(values)
+
+
 # --- URN-based tests ---
 
 
@@ -150,6 +266,24 @@ def test_reassign_structure_updates_dtypes():
     assert ds.data["VALUE"].dtype == pd.ArrowDtype(pa.float64())
 
 
+def test_reassign_structure_keeps_date_times_in_utc():
+    schema = _make_schema(
+        _dim("ID"),
+        _att("UPDATED", DataType.DATE_TIME),
+    )
+    df = pd.DataFrame(
+        {"ID": ["A", "B"], "UPDATED": ["2025-12-19T14:30:00+02:00", None]}
+    )
+    ds = PandasDataset(structure=schema, data=df)
+
+    ds.structure = schema
+
+    utc = pd.ArrowDtype(pa.timestamp("ns", tz="UTC"))
+    assert ds.data["UPDATED"].dtype == utc
+    assert ds.data["UPDATED"].iloc[0] == pd.Timestamp("2025-12-19T12:30:00Z")
+    assert pd.isna(ds.data["UPDATED"].iloc[1])
+
+
 # --- Regression tests ---
 
 
@@ -165,6 +299,43 @@ def test_stringify_dataframe():
     # version (object in pandas 2, str in pandas 3)
     plain_str = pd.Series(dtype=str).dtype
     assert all(result[c].dtype == plain_str for c in result.columns)
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (True, "true"),
+        (False, "false"),
+        (1, "1"),
+        (9007199254740993, "9007199254740993"),
+        ("text", "text"),
+        (date(2020, 1, 5), "2020-01-05"),
+        (datetime(2025, 12, 19, 14, 30), "2025-12-19T14:30:00Z"),
+        (
+            datetime(2025, 12, 19, 14, 30, 0, 500000),
+            "2025-12-19T14:30:00.5Z",
+        ),
+        (
+            datetime(
+                2025, 12, 19, 14, 30, tzinfo=timezone(timedelta(hours=2))
+            ),
+            "2025-12-19T12:30:00Z",
+        ),
+        (pd.Timestamp("2025-12-19T14:30:10"), "2025-12-19T14:30:10Z"),
+        (Decimal("1234567890.123456789"), "1234567890.123456789"),
+        (Decimal("0.100000000"), "0.1"),
+        (Decimal("-0.000000001"), "-0.000000001"),
+        (Decimal("100.000"), "100"),
+        (Decimal("1E+2"), "100"),
+        (Decimal("0E-9"), "0"),
+        (
+            pd.Timestamp("2025-12-19T14:30:00.123456789+02:00"),
+            "2025-12-19T12:30:00.123456789Z",
+        ),
+    ],
+)
+def test_format_value(value, expected):
+    assert format_value(value) == expected
 
 
 def test_stringify_dataframe_empty():
