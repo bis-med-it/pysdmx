@@ -1,7 +1,8 @@
 """Validates an SDMX-ML 2.1 XML file against the XSD schema."""
 
+import threading
 from io import BytesIO
-from typing import List, Sequence
+from typing import Dict, List, Sequence
 
 from lxml import etree
 from sdmxschemas import SDMX_ML_21_MESSAGE_PATH as SCHEMA_PATH_21
@@ -13,6 +14,14 @@ from pysdmx.io.xml.__allowed_lxml_errors import ALLOWED_ERRORS_CONTENT
 
 SCHEMA_ROOT_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
 SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
+SCHEMA_PATHS = {
+    "2.1": SCHEMA_PATH_21,
+    "3.0": SCHEMA_PATH_30,
+    "3.1": SCHEMA_PATH_31,
+}
+
+# The schemas already loaded, for each thread
+__loaded = threading.local()
 
 
 def sdmx_ml_version(head: str) -> str:
@@ -36,6 +45,11 @@ def sdmx_ml_version(head: str) -> str:
 def load_schema(head: str) -> etree.XMLSchema:
     """Loads the XSD schema of the SDMX-ML version of a message.
 
+    A schema is loaded once and then reused, as loading it takes most of
+    the time of validating a small message. Each thread loads its own:
+    a schema holds the errors of its last validation, so two threads
+    validating with the same schema would mix them up.
+
     Args:
         head: The start of the message. Its first 1000 characters name
             the version.
@@ -43,10 +57,11 @@ def load_schema(head: str) -> etree.XMLSchema:
     Returns:
         The XSD schema of the SDMX-ML message.
     """
-    path = {"3.1": SCHEMA_PATH_31, "3.0": SCHEMA_PATH_30}.get(
-        sdmx_ml_version(head), SCHEMA_PATH_21
-    )
-    return etree.XMLSchema(etree.parse(path))
+    version = sdmx_ml_version(head)
+    schemas: Dict[str, etree.XMLSchema] = vars(__loaded)
+    if version not in schemas:
+        schemas[version] = etree.XMLSchema(etree.parse(SCHEMA_PATHS[version]))
+    return schemas[version]
 
 
 def severe_errors(messages: Sequence[str]) -> List[str]:
