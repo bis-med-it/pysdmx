@@ -3,6 +3,7 @@ import sys
 from typing import Iterable, Optional
 
 import pandas as pd
+import pyarrow as pa
 
 from pysdmx.errors import Invalid
 from pysdmx.io.pd import PandasDataset
@@ -61,16 +62,21 @@ class _TextChunks(io.TextIOBase):
 def read_csv_chunks(chunks: Iterable[str]) -> pd.DataFrame:
     """Reads SDMX-CSV text, given in chunks, into a DataFrame.
 
-    pandas reads the text as it needs it, as from a file.
+    pandas reads the text as it needs it, as from a file. Every column is
+    read as a PyArrow string, so that the values are kept as they are
+    written (a code such as 01 would otherwise be read as the number 1).
 
     Args:
         chunks: The text, in chunks.
 
     Returns:
-        The DataFrame, with the types pandas infers.
+        The DataFrame, with every column as ``string[pyarrow]``.
     """
     return pd.read_csv(
-        _TextChunks(chunks), keep_default_na=False, na_values=[]
+        _TextChunks(chunks),
+        keep_default_na=False,
+        na_values=[],
+        dtype=pd.ArrowDtype(pa.string()),
     )
 
 

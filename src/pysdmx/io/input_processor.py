@@ -1,6 +1,5 @@
 """Processes the input that comes into read_sdmx function."""
 
-import codecs
 import contextlib
 import csv
 import gzip
@@ -11,7 +10,6 @@ from pathlib import Path
 from typing import (
     BinaryIO,
     Generator,
-    Iterable,
     Iterator,
     List,
     Optional,
@@ -21,18 +19,17 @@ from typing import (
 )
 
 import msgspec
-from httpx import Client as httpx_Client
-from httpx import HTTPStatusError, create_ssl_context
 
 from pysdmx.errors import Invalid, NotImplemented
 from pysdmx.io.format import Format
-from pysdmx.util import map_httpx_errors
-from pysdmx.util._net_utils import GZIP_MAGIC, decompress_gzip
+from pysdmx.util._net_utils import GZIP_MAGIC
 
 SCHEMA_ROOT_31 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_1/"
 SCHEMA_ROOT_30 = "http://www.sdmx.org/resources/sdmxml/schemas/v3_0/"
 # Characters read at a time from a file or a BytesIO
 READ_CHUNK_CHARS = 65536
+# Seconds to wait for each network operation when reading from a URL
+URL_TIMEOUT = 600.0
 
 
 def __remove_bom(input_string: str) -> str:
@@ -209,16 +206,8 @@ def __string_chunks(text: str) -> Generator[str, None, None]:
     yield __remove_bom(text)
 
 
-def __body_chunks(
-    chunks: Iterable[bytes], encoding: str
-) -> Generator[str, None, None]:
-    """Decodes the chunks of an HTTP body as httpx's iter_text does."""
-    for text in codecs.iterdecode(chunks, encoding, errors="replace"):
-        yield __remove_bom(text)
-
-
 def __url_chunks(
-    url: str, pem: Optional[Union[str, Path]]
+    url: str, pem: Optional[Union[str, Path]], timeout: float
 ) -> Generator[str, None, None]:
     if pem is not None and isinstance(pem, Path):
         pem = str(pem)
@@ -227,30 +216,22 @@ def __url_chunks(
             "Validation Error",
             f"PEM file {pem} does not exist.",
         )
-    ssl_context = (
-        create_ssl_context(verify=pem) if pem else create_ssl_context()
+    # Imported here to avoid a circular import: the API package imports
+    # pysdmx.io
+    from pysdmx.api.qb import ApiVersion, LenientRestService
+
+    # The URL is the endpoint, and the API version is not used to read it
+    service = LenientRestService(
+        url,
+        ApiVersion.V2_0_0,
+        pem=pem,
+        timeout=timeout,
+        extraction_timeout=timeout,
     )
     try:
-        with (
-            httpx_Client(verify=ssl_context) as client,
-            client.stream("GET", url, timeout=60) as response,
-        ):
-            try:
-                response.raise_for_status()
-            except HTTPStatusError as e:
-                # The body of an error is read whole: it is small, and
-                # map_httpx_errors needs it
-                response.read()
-                if "<?xml" in response.text:
-                    yield __remove_bom(response.text)
-                    return
-                map_httpx_errors(e)
-            # The body is decoded from its Content-Encoding by httpx, but
-            # some services (e.g. Eurostat) send a gzip body without one
-            yield from __body_chunks(
-                decompress_gzip(response.iter_bytes(), response.request),
-                response.encoding or "utf-8",
-            )
+        with contextlib.closing(service.stream_message(url)) as chunks:
+            for chunk in chunks:
+                yield __remove_bom(chunk)
     except Exception as e:
         raise Invalid(
             "Validation Error",
@@ -262,6 +243,7 @@ def __url_chunks(
 def __text_chunks(
     sdmx_document: Union[str, Path, BytesIO],
     pem: Optional[Union[str, Path]],
+    timeout: float,
 ) -> Generator[str, None, None]:
     """Reads the input as decoded text chunks, without any BOM."""
     if isinstance(sdmx_document, str) and os.path.exists(sdmx_document):
@@ -272,7 +254,7 @@ def __text_chunks(
         return __binary_chunks(sdmx_document)
     if isinstance(sdmx_document, str):
         if sdmx_document.startswith("http"):
-            return __url_chunks(sdmx_document, pem)
+            return __url_chunks(sdmx_document, pem, timeout)
         return __string_chunks(sdmx_document)
     raise Invalid(
         "Validation Error",
@@ -363,6 +345,7 @@ def head_and_rest(
 def process_string_to_read(
     sdmx_document: Union[str, Path, BytesIO],
     pem: Optional[Union[str, Path]] = None,
+    timeout: float = URL_TIMEOUT,
 ) -> Tuple[str, Format]:
     """Processes the input that comes into read_sdmx function.
 
@@ -372,6 +355,8 @@ def process_string_to_read(
     Args:
         sdmx_document: Path to file, URL, or string.
         pem: Path to a PEM file for SSL verification when reading from a URL.
+        timeout: The seconds to wait for each network operation when
+            reading from a URL.
 
     Returns:
         tuple: Tuple containing the parsed input and the format of the input.
@@ -379,12 +364,15 @@ def process_string_to_read(
     Raises:
         Invalid: If the input cannot be parsed as SDMX.
     """
-    return __check_sdmx_str("".join(__text_chunks(sdmx_document, pem)))
+    return __check_sdmx_str(
+        "".join(__text_chunks(sdmx_document, pem, timeout))
+    )
 
 
 def stream_sdmx(
     sdmx_document: Union[str, Path, BytesIO],
     pem: Optional[Union[str, Path]] = None,
+    timeout: float = URL_TIMEOUT,
 ) -> Tuple[Generator[str, None, None], Format]:
     """Processes the input that comes into read_sdmx, as a stream of text.
 
@@ -396,6 +384,8 @@ def stream_sdmx(
     Args:
         sdmx_document: Path to file, URL, or string.
         pem: Path to a PEM file for SSL verification when reading from a URL.
+        timeout: The seconds to wait for each network operation when
+            reading from a URL.
 
     Returns:
         The text of the input as a generator of chunks, and the format of
@@ -405,7 +395,7 @@ def stream_sdmx(
     Raises:
         Invalid: If the input cannot be parsed as SDMX.
     """
-    chunks = __text_chunks(sdmx_document, pem)
+    chunks = __text_chunks(sdmx_document, pem, timeout)
     try:
         head, _ = head_and_rest(chunks)
         if __check_xml(head):

@@ -27,6 +27,9 @@ Your opinionated Python SDMX library.
    :caption: Data discovery
 
    howto/dc
+   howto/stat
+   howto/fmr_to_stat
+   howto/stat_fmr_sync
    howto/sdmx_rest
 
 .. toctree::
@@ -60,6 +63,7 @@ Your opinionated Python SDMX library.
    api/fmr
    api/gds
    api/dc
+   api/stat
    api/rest
    api/helper
    api/toolkit
