@@ -79,27 +79,18 @@ collects comparable short-URNs via :func:`~pysdmx.io.read_sdmx`:
     truth for it. Pointing at a partial FMR would delete legitimate
     structures. Always inspect ``extras`` first.
 
-Delete the extras in dependency order
---------------------------------------
+Delete the extras
+-----------------
 
-Deletions must run **dependents first** or a still-referenced artefact
+Hand the short-URNs to
+:meth:`~pysdmx.api.stat.StatUploader.delete_structure`, in any order. It
+deletes them **dependents first**, because a still-referenced artefact
 returns HTTP 409. In particular a data import auto-creates an actual
-content constraint (``CR_A_<dataflow>``) that must go before its
-dataflow. Rank the short-URNs by type, then hand them to
-:meth:`~pysdmx.api.stat.StatUploader.delete_structure`:
+content constraint (``CR_A_<dataflow>``), which goes before its dataflow:
 
 .. code-block:: python
 
     from pysdmx.api.stat import StatUploader
-
-    ORDER = {
-        "DataConstraint": 0, "ContentConstraint": 0,
-        "Dataflow": 2, "DataStructure": 3,
-        "ConceptScheme": 4, "Codelist": 5,
-    }
-    ordered = sorted(
-        extras, key=lambda u: ORDER.get(u.split("=", 1)[0], 99)
-    )
 
     uploader = StatUploader(
         nsi_endpoint=NSI,
@@ -108,7 +99,7 @@ dataflow. Rank the short-URNs by type, then hand them to
         token=dotstat_token,
     )
     try:
-        for result in uploader.delete_structure(ordered):
+        for result in uploader.delete_structure(extras):
             print("ok", "; ".join(result.messages))
     except (Invalid, NotFound) as err:
         # delete_structure is fail-fast: the first artefact the NSI
@@ -116,7 +107,7 @@ dataflow. Rank the short-URNs by type, then hand them to
         # may already be deleted -- re-run with the remainder).
         print("FAILED", err)
 
-``delete_structure`` deletes in order and is **fail-fast**: it returns one
+``delete_structure`` is **fail-fast**: it returns one
 :class:`~pysdmx.api.stat.StructureSubmissionResult` per artefact it
 deletes, but the first the NSI rejects raises
 :class:`~pysdmx.errors.Invalid` and stops the loop — so wrap it in
