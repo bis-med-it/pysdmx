@@ -262,8 +262,10 @@ def test_init_configures_rest_service(client):
 
 
 def test_init_accepts_endpoint_enum():
-    conn = StatConnector(StatEndpoints.OECD)
+    bearer = "TKN"
+    conn = StatConnector(StatEndpoints.OECD, token=bearer)
     assert conn._svc._api_endpoint == StatEndpoints.OECD.value
+    assert conn._svc._headers["Authorization"] == f"Bearer {bearer}"
 
 
 def test_is_a_registry_client():
@@ -504,9 +506,11 @@ def aclient():
 def test_async_init_is_async_registry_client():
     from pysdmx.api.fmr import AsyncRegistryClient
 
-    conn = AsyncStatConnector(HOST)
+    bearer = "TKN"
+    conn = AsyncStatConnector(HOST, token=bearer)
     assert isinstance(conn, AsyncRegistryClient)
     assert conn._svc._api_endpoint == HOST
+    assert conn._svc._headers["Authorization"] == f"Bearer {bearer}"
 
 
 @pytest.mark.asyncio

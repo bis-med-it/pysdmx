@@ -13,6 +13,7 @@ from typing import (
     Any,
     AsyncGenerator,
     Generator,
+    Iterable,
     Literal,
     Mapping,
     NoReturn,
@@ -67,7 +68,7 @@ from pysdmx.model import (
     StructureMap,
     TransformationScheme,
 )
-from pysdmx.model.__base import MaintainableArtefact
+from pysdmx.model.__base import MaintainableArtefact, Reference
 from pysdmx.model.dataset import ActionType, Dataset
 from pysdmx.util import (
     experimental,
@@ -87,6 +88,39 @@ if TYPE_CHECKING:  # pragma: no cover
         MetadataReport,
         Schema,
     )
+
+
+# The types of structures that .Stat Suite holds, in the order in which
+# they are deleted. A type references only types that come after it, so
+# the dependents go first.
+_DELETION_ORDER = (
+    "categorisation",
+    "dataconstraint",
+    "contentconstraint",
+    "structureset",
+    "provisionagreement",
+    "metadataflow",
+    "dataflow",
+    "datastructure",
+    "metadatastructure",
+    "hierarchicalcodelist",
+    "conceptscheme",
+    "codelist",
+    "categoryscheme",
+    "agencyscheme",
+    "dataproviderscheme",
+    "dataconsumerscheme",
+)
+_DELETION_RANK = {t: i for i, t in enumerate(_DELETION_ORDER)}
+
+
+def _deletion_rank(ref: Reference) -> int:
+    """Return the position of the type of ``ref`` in a deletion.
+
+    A type that .Stat Suite does not hold goes first, so that the
+    service rejects it before anything is deleted.
+    """
+    return _DELETION_RANK.get(ref.sdmx_type.lower(), -1)
 
 
 class SubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
@@ -113,7 +147,9 @@ class StructureSubmissionResult(Struct, frozen=True, repr_omit_defaults=True):
     """Outcome of a .Stat structure submission or deletion.
 
     Attributes:
-        success: True when every reported artefact code is 200/201.
+        success: True when every reported artefact code is 200/201. A
+            submission reporting no artefact is not a success; a
+            deletion is, as its HTTP status alone confirms it.
         messages: The per-artefact messages the service returned.
     """
 
@@ -132,7 +168,9 @@ def _submission_from_import(text: str) -> SubmissionResult:
     message = str(lower.get("message") or "")
     rid = re.search(r"ID\s+(\d+)", message)
     return SubmissionResult(
-        success=bool(lower.get("success", True)),
+        # An OperationResult always carries "success"; a body without it
+        # is not an acknowledgement, so it is not reported as a success.
+        success=bool(lower.get("success", False)),
         message=message,
         request_id=int(rid.group(1)) if rid else lower.get("requestid"),
     )
@@ -162,13 +200,21 @@ def _submission_from_status(text: str) -> SubmissionResult:
     )
 
 
-def _structure_result(text: str) -> StructureSubmissionResult:
-    """Parse an NSIWS ``SubmitStructureResponse`` error envelope."""
+def _structure_result(
+    text: str, empty_ok: bool = False
+) -> StructureSubmissionResult:
+    """Parse an NSIWS ``SubmitStructureResponse`` error envelope.
+
+    A body reporting no artefact is not a success, unless ``empty_ok``:
+    a deletion is confirmed by its HTTP status alone (an HTTP error is
+    raised before) and may have no body (204).
+    """
     pairs = re.findall(
         r'code="(\d+)"[^>]*>\s*<[^>]*Text[^>]*>(.*?)</', text, re.DOTALL
     )
+    codes = [c in {"200", "201"} for c, _ in pairs]
     return StructureSubmissionResult(
-        success=all(c in {"200", "201"} for c, _ in pairs),
+        success=all(codes) if codes else empty_ok,
         messages=tuple(t.strip() for _, t in pairs),
     )
 
@@ -244,7 +290,7 @@ class StatConnector(RegistryClient, BasicConnector):
     (:class:`~pysdmx.api.dc.BasicConnector`) that the FMR client does not
     offer -- :meth:`dataflows`, :meth:`dataflow` and :meth:`data` -- with
     the same signatures as the generic ``SdmxConnector``. Reads are
-    anonymous.
+    anonymous unless a bearer ``token`` is supplied.
 
     Obtain the ``agency``, ``id`` and ``version`` of a dataflow from the
     OECD Data Explorer (https://data-explorer.oecd.org) via its
@@ -256,6 +302,7 @@ class StatConnector(RegistryClient, BasicConnector):
         api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
         timeout: float = 20.0,
+        token: Optional[str] = None,
     ) -> None:
         """Instantiate a .Stat Suite read connector.
 
@@ -265,6 +312,10 @@ class StatConnector(RegistryClient, BasicConnector):
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
+            token: An optional OAuth2 bearer token, for access-controlled
+                deployments; obtain one via a flow in
+                :mod:`pysdmx.api.stat.authentication`. Reads are
+                anonymous when omitted.
         """
         super().__init__(
             api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
@@ -281,6 +332,7 @@ class StatConnector(RegistryClient, BasicConnector):
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
+            token=token,
         )
 
     def _structures(self, query: StructureQuery) -> Sequence[Any]:
@@ -583,7 +635,8 @@ class AsyncStatConnector(AsyncRegistryClient):
     2.1 and parses it with :func:`~pysdmx.io.read_sdmx`, and raises
     :class:`~pysdmx.errors.Invalid` for endpoints .Stat does not serve.
     Adds the async data-discovery-and-retrieval profile: :meth:`dataflows`,
-    :meth:`dataflow` and :meth:`data`.
+    :meth:`dataflow` and :meth:`data`. Reads are anonymous unless a bearer
+    ``token`` is supplied.
     """
 
     def __init__(
@@ -591,6 +644,7 @@ class AsyncStatConnector(AsyncRegistryClient):
         api_endpoint: str = StatEndpoints.OECD,
         pem: Optional[str] = None,
         timeout: float = 20.0,
+        token: Optional[str] = None,
     ) -> None:
         """Instantiate an async .Stat Suite read connector.
 
@@ -600,6 +654,10 @@ class AsyncStatConnector(AsyncRegistryClient):
             pem: Optional PEM file with trusted certificate authorities,
                 for services using a self-signed certificate.
             timeout: Maximum number of seconds to wait per request.
+            token: An optional OAuth2 bearer token, for access-controlled
+                deployments; obtain one via a flow in
+                :mod:`pysdmx.api.stat.authentication`. Reads are
+                anonymous when omitted.
         """
         super().__init__(
             api_endpoint, StructureFormat.SDMX_JSON_2_0_0, pem, timeout
@@ -616,6 +674,7 @@ class AsyncStatConnector(AsyncRegistryClient):
             structure_format=StructureFormat.SDMX_ML_2_1,
             timeout=timeout,
             pem=pem,
+            token=token,
         )
 
     async def _structures(self, query: StructureQuery) -> Sequence[Any]:
@@ -930,7 +989,7 @@ class StatUploader:
     This class is standalone (it does not inherit
     :class:`pysdmx.api.dc.rest.SdmxConnector`): submission needs
     authenticated ``POST`` requests, whereas the connector's
-    ``RestService`` only performs anonymous ``GET`` requests.
+    ``RestService`` only performs ``GET`` requests.
 
     It is the .Stat counterpart of the FMR's
     ``RegistryMaintenanceClient`` but is **not interchangeable** with it.
@@ -1094,8 +1153,9 @@ class StatUploader:
 
         Returns:
             A :class:`StructureSubmissionResult` parsed from the NSI
-            ``SubmitStructureResponse`` body. A per-artefact failure
-            surfaces as ``success=False`` (with the service messages),
+            ``SubmitStructureResponse`` body. A per-artefact failure, or
+            a body reporting no artefact at all, surfaces as
+            ``success=False`` (with the service messages),
             not as an exception: the service can report a failure inside
             the body even on an HTTP 200 response. The NSI may instead
             reject a submission with an HTTP error (e.g. 422 carrying an
@@ -1273,8 +1333,9 @@ class StatUploader:
         self,
         artefacts: Union[
             MaintainableArtefact,
+            Reference,
             str,
-            Sequence[Union[MaintainableArtefact, str]],
+            Iterable[Union[MaintainableArtefact, Reference, str]],
         ],
     ) -> list[StructureSubmissionResult]:
         """Delete structural artefact(s) from the NSI web service.
@@ -1282,21 +1343,28 @@ class StatUploader:
         Each artefact is deleted with
         ``DELETE {nsi}/rest/{type}/{agency}/{id}/{version}`` (the type
         segment is the lower-cased SDMX type). Accepts a maintainable
-        artefact, a short-URN string (e.g.
-        ``"DataConstraint=MD:CR_A_DF(1.0)"``), or a sequence of either;
-        a sequence is deleted **in order**, so pass dependents first.
+        artefact, a :class:`~pysdmx.model.Reference`, a short-URN string
+        (e.g. ``"DataConstraint=MD:CR_A_DF(1.0)"``), or a collection of
+        them (a list, a set, ...).
+
+        A collection may be given in any order: the artefacts are deleted
+        **dependents first**, following a fixed order of types
+        (constraints, dataflows, data structures, concept schemes,
+        codelists, ...), because the NSI rejects the deletion of an
+        artefact that another one still references (``409``). Artefacts
+        of the same type are deleted in the order given.
 
         .Stat dependencies: a data import auto-creates an actual content
         constraint ``CR_A_<dataflow>``. To remove a dataflow, first
-        :meth:`delete_data`, then delete that constraint, then the
-        dataflow, its DSD and concept scheme (a wrong order yields a
-        ``409``/:class:`~pysdmx.errors.Invalid`).
+        :meth:`delete_data`, then delete that constraint along with the
+        dataflow, its DSD and concept scheme.
 
         Args:
-            artefacts: The artefact(s) or short URN(s) to delete.
+            artefacts: The artefact(s), reference(s) or short URN(s) to
+                delete.
 
         Deletion is fail-fast: on the first error the exception is
-        raised and an indeterminate prefix of the sequence may already
+        raised and an indeterminate part of the collection may already
         have been deleted (re-run with the remaining artefacts). The NSI
         signals a delete failure with an HTTP status (mapped above)
         rather than an in-body error, but callers may still inspect the
@@ -1304,7 +1372,7 @@ class StatUploader:
 
         Returns:
             The parsed :class:`StructureSubmissionResult` for each
-            artefact, in order.
+            artefact, in the order of deletion.
 
         Raises:
             errors.Unauthorized: If the token is missing or rejected.
@@ -1319,25 +1387,32 @@ class StatUploader:
         """
         items = (
             [artefacts]
-            if isinstance(artefacts, (str, MaintainableArtefact))
+            if isinstance(artefacts, (str, MaintainableArtefact, Reference))
             else list(artefacts)
         )
-        responses = []
+        refs = []
         for item in items:
-            urn = item if isinstance(item, str) else item.short_urn
+            urn = (
+                item.short_urn
+                if isinstance(item, MaintainableArtefact)
+                else str(item)
+            )
             try:
-                ref = parse_short_urn(urn)
+                refs.append(parse_short_urn(urn))
             except errors.Invalid as exc:
                 raise errors.Invalid(
                     "Invalid artefact reference",
                     "Expected a short URN like 'Dataflow=MD:DF(1.0)'; "
                     f"got {urn!r}.",
                 ) from exc
+        responses = []
+        for ref in sorted(refs, key=_deletion_rank):
             url = (
                 f"{self._nsi}/rest/{ref.sdmx_type.lower()}"
                 f"/{ref.agency}/{ref.id}/{ref.version}"
             )
-            responses.append(_structure_result(self._send("DELETE", url).text))
+            r = self._send("DELETE", url)
+            responses.append(_structure_result(r.text, empty_ok=True))
         return responses
 
     def cleanup_dsd(

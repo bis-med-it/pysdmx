@@ -136,8 +136,11 @@ class Authentication(ABC):
         self._access_token = access_token
         self._refresh_token = refresh_token
         self._creation_time = time.time()
-        # renew one minute early to never hand out an almost-expired token
-        self._expiration_time = time.time() + int(expires_in) - 60
+        # renew one minute early to never hand out an almost-expired token;
+        # the margin is capped at half the lifetime, so that a token living
+        # a minute or less is not considered expired as soon as it is issued
+        lifetime = int(expires_in)
+        self._expiration_time = time.time() + lifetime - min(60, lifetime // 2)
         self.init_status = SUCCESSFUL_AUTHENTICATION
 
     @staticmethod

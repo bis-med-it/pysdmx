@@ -46,6 +46,17 @@ Suite deployments are available via the ``StatEndpoints`` enum:
     conn = StatConnector()                    # OECD (default)
     # conn = StatConnector(StatEndpoints.ILO) # or another deployment
 
+Reads are anonymous by default. For an access-controlled deployment,
+pass a bearer ``token`` (see `Uploading`_ for the flows that obtain
+one):
+
+.. code-block:: python
+
+    conn = StatConnector(
+        api_endpoint="https://nsi.example.org/rest/v2",
+        token=auth.get_token(),
+    )
+
 You can find the ``agency``, ``id`` and ``version`` of a dataflow in
 the `OECD Data Explorer <https://data-explorer.oecd.org>`_ via its
 "Developer API" button.
@@ -251,7 +262,7 @@ structures with :meth:`~pysdmx.api.stat.StatUploader.delete_structure`.
     uploader.delete_data(dataset)
 
     # Delete structures. A data import auto-creates an actual content
-    # constraint (CR_A_<dataflow>); tear down in dependency order:
+    # constraint (CR_A_<dataflow>), which must be deleted with its dataflow:
     uploader.delete_structure([
         "DataConstraint=MD:CR_A_DF_EXAMPLE(1.0)",
         "Dataflow=MD:DF_EXAMPLE(1.0)",
@@ -263,14 +274,18 @@ structures with :meth:`~pysdmx.api.stat.StatUploader.delete_structure`.
     # the Transfer data-side objects (else the next import fails):
     uploader.cleanup_dsd("DataStructure=MD:DSD_EXAMPLE(1.0)")
 
-``delete_structure`` accepts maintainable artefacts or short-URN strings,
-and deletes them in the order given — pass dependents first. It is
-**fail-fast**: the first artefact the NSI rejects (e.g. a still-referenced
-one → HTTP 409) raises :class:`~pysdmx.errors.Invalid` and stops the
-sequence, so an indeterminate prefix may already be deleted (re-run with
-the remainder). The returned list holds one ``StructureSubmissionResult``
-per artefact deleted **before** the failure — informational only; a
-failure is signalled by the raised exception, not by ``.success``.
+``delete_structure`` accepts maintainable artefacts,
+:class:`~pysdmx.model.Reference` objects or short-URN strings, in any
+order: it deletes them **dependents first**, following a fixed order of
+types (constraints, dataflows, data structures, concept schemes,
+codelists, ...), and keeps the order given within a type. It is
+**fail-fast**: the first artefact the NSI rejects (e.g. one still
+referenced by an artefact that is not in the sequence → HTTP 409) raises
+:class:`~pysdmx.errors.Invalid` and stops the sequence, so an
+indeterminate prefix may already be deleted (re-run with the remainder).
+The returned list holds one ``StructureSubmissionResult`` per artefact
+deleted **before** the failure — informational only; a failure is
+signalled by the raised exception, not by ``.success``.
 
 .. note::
     Re-creating a DSD with **changed component types** (e.g. a measure's
