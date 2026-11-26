@@ -191,3 +191,11 @@ def test_instantiation_ruleset(valid_ruleset):
     assert ruleset.description == "description"
     assert ruleset.ruleset_type == "datapoint"
     assert ruleset.ruleset_scope == "variable"
+
+
+@pytest.mark.parametrize(
+    "scheme",
+    [TransformationScheme, RulesetScheme, UserDefinedOperatorScheme],
+)
+def test_vtl_2_2_is_a_valid_version(scheme):
+    assert scheme(id="id", vtl_version="2.2").vtl_version == "2.2"

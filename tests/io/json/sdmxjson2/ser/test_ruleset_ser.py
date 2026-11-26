@@ -1,3 +1,4 @@
+import msgspec
 import pytest
 
 from pysdmx import errors
@@ -72,3 +73,18 @@ def test_ruleset_no_type(ruleset_no_type):
 def test_ruleset_no_scope(ruleset_no_scope):
     with pytest.raises(errors.Invalid, match="must have a ruleset scope"):
         JsonRuleset.from_model(ruleset_no_scope)
+
+
+def test_viral_propagation():
+    payload = (
+        b'{"id": "VP", "name": "Viral propagation", "rulesetDefinition": '
+        b'"define viral propagation VP (variable OBS_STATUS) is else \\"A\\" '
+        b'end viral propagation", "rulesetType": "viral", '
+        b'"rulesetScope": "variable"}'
+    )
+
+    sjson = msgspec.json.decode(payload, type=JsonRuleset)
+    ruleset = sjson.to_model()
+
+    assert ruleset.ruleset_type == "viral"
+    assert JsonRuleset.from_model(ruleset) == sjson
