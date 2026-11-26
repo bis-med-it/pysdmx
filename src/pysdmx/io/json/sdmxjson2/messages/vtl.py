@@ -1,6 +1,6 @@
 """Collection of SDMX-JSON schemas for VTL artefacts."""
 
-from typing import Dict, Literal, Optional, Sequence
+from typing import Dict, List, Literal, Optional, Sequence, Union
 
 from msgspec import Struct
 
@@ -8,6 +8,7 @@ from pysdmx import errors
 from pysdmx.io.json.sdmxjson2.messages.core import (
     ItemSchemeType,
     JsonAnnotation,
+    MaintainableType,
     NameableType,
     _self_link,
     _self_link_href,
@@ -19,20 +20,37 @@ from pysdmx.model.vtl import (
     FromVtlMapping,
     NamePersonalisation,
     NamePersonalisationScheme,
+    QueryExtraction,
+    QueryParameter,
     Ruleset,
     RulesetScheme,
     ToVtlMapping,
     Transformation,
     TransformationScheme,
+    UrlExtraction,
     UserDefinedOperator,
     UserDefinedOperatorScheme,
     VtlCodelistMapping,
     VtlConceptMapping,
+    VtlDataExtraction,
     VtlDataflowMapping,
+    VtlDatasetMapping,
+    VtlExecution,
     VtlMapping,
     VtlMappingScheme,
 )
 from pysdmx.util import ensure_tz_aware, is_final, parse_urn
+
+
+def _name(artefact: Union[VtlMapping, VtlExecution]) -> str:
+    """Returns the name of an artefact, which is mandatory in SDMX-JSON."""
+    if not artefact.name:
+        raise errors.Invalid(
+            "Invalid input",
+            f"SDMX-JSON {type(artefact).__name__} must have a name",
+            {"id": artefact.id},
+        )
+    return artefact.name
 
 
 class JsonCustomType(NameableType, frozen=True, omit_defaults=True):
@@ -712,15 +730,110 @@ class JsonVtlMapping(NameableType, frozen=True, omit_defaults=True):
             )
 
 
+class JsonVtlDatasetMapping(
+    NameableType, frozen=True, omit_defaults=True, kw_only=True
+):
+    """SDMX-JSON payload for VTL dataset mappings (SDMX-JSON 2.2)."""
+
+    vtlAlias: str
+    isInput: bool
+    dataStructure: Optional[str] = None
+    dataflow: Optional[str] = None
+    provisionAgreement: Optional[str] = None
+
+    def to_model(self) -> VtlDatasetMapping:
+        """Converts deserialized class to pysdmx model class."""
+        urn = self.dataStructure or self.dataflow or self.provisionAgreement
+        return VtlDatasetMapping(
+            self.id,
+            name=self.name,
+            description=self.description,
+            vtl_alias=self.vtlAlias,
+            is_input=self.isInput,
+            sdmx_artefact=urn or "",
+            annotations=tuple([a.to_model() for a in self.annotations]),
+        )
+
+    @classmethod
+    def from_model(cls, mapping: VtlDatasetMapping) -> "JsonVtlDatasetMapping":
+        """Converts a pysdmx VTL dataset mapping to an SDMX-JSON one."""
+        urn = str(mapping.sdmx_urn)
+        artefact = urn.split("=")[0].rsplit(".", 1)[1]
+        return JsonVtlDatasetMapping(
+            id=mapping.id,
+            name=_name(mapping),
+            description=mapping.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in mapping.annotations]
+            ),
+            vtlAlias=mapping.vtl_alias,
+            isInput=mapping.is_input,
+            dataStructure=urn if artefact == "DataStructure" else None,
+            dataflow=urn if artefact == "Dataflow" else None,
+            provisionAgreement=(
+                urn if artefact == "ProvisionAgreement" else None
+            ),
+        )
+
+
+class JsonVtlCodelistMapping(
+    NameableType, frozen=True, omit_defaults=True, kw_only=True
+):
+    """SDMX-JSON payload for VTL codelist mappings (SDMX-JSON 2.2)."""
+
+    vtlAlias: str
+    codelist: str
+
+    def to_model(self) -> VtlCodelistMapping:
+        """Converts deserialized class to pysdmx model class."""
+        return VtlCodelistMapping(
+            self.id,
+            name=self.name,
+            description=self.description,
+            vtl_alias=self.vtlAlias,
+            codelist=self.codelist,
+            annotations=tuple([a.to_model() for a in self.annotations]),
+        )
+
+    @classmethod
+    def from_model(
+        cls, mapping: VtlCodelistMapping
+    ) -> "JsonVtlCodelistMapping":
+        """Converts a pysdmx VTL codelist mapping to an SDMX-JSON one."""
+        urn = mapping.sdmx_urn
+        if not urn:
+            raise errors.Invalid(
+                "Invalid input",
+                "SDMX-JSON VTL codelist mappings must reference a codelist",
+                {"vtl_mapping": mapping.id},
+            )
+        return JsonVtlCodelistMapping(
+            id=mapping.id,
+            name=_name(mapping),
+            description=mapping.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in mapping.annotations]
+            ),
+            vtlAlias=mapping.vtl_alias,
+            codelist=urn,
+        )
+
+
 class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
     """SDMX-JSON payload for VTL mapping schemes."""
 
     vtlMappings: Sequence[JsonVtlMapping] = ()
     vtlMappingScheme: Optional[str] = None
+    vtlDatasetMappings: Sequence[JsonVtlDatasetMapping] = ()
+    vtlCodelistMappings: Sequence[JsonVtlCodelistMapping] = ()
 
     def to_model(self) -> VtlMappingScheme:
         """Converts deserialized class to pysdmx model class."""
-        items = [i.to_model() for i in self.vtlMappings]
+        items: List[VtlMapping] = [
+            *[i.to_model() for i in self.vtlDatasetMappings],
+            *[i.to_model() for i in self.vtlCodelistMappings],
+            *[i.to_model() for i in self.vtlMappings],
+        ]
         return VtlMappingScheme(
             self.id,
             name=self.name,
@@ -738,8 +851,26 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
         )
 
     @classmethod
-    def from_model(cls, vms: VtlMappingScheme) -> "JsonVtlMappingScheme":
-        """Converts a pysdmx VTL mapping scheme to an SDMX-JSON one."""
+    def from_model(
+        cls,
+        vms: VtlMappingScheme,
+        msg_version: Literal["2.0.0", "2.1", "2.2"] = "2.0.0",
+    ) -> "JsonVtlMappingScheme":
+        """Converts a pysdmx VTL mapping scheme to an SDMX-JSON one.
+
+        In SDMX-JSON 2.2, the dataset and codelist mappings have their own
+        properties, and ``vtlMappings`` has the deprecated mappings only.
+        """
+        is_22 = msg_version == "2.2"
+        datasets = [i for i in vms.items if isinstance(i, VtlDatasetMapping)]
+        codelists = [
+            i for i in vms.items if isinstance(i, VtlCodelistMapping) and is_22
+        ]
+        others = [
+            i
+            for i in vms.items
+            if i not in codelists and not (is_22 and i in datasets)
+        ]
         if not vms.name:
             raise errors.Invalid(
                 "Invalid input",
@@ -762,8 +893,16 @@ class JsonVtlMappingScheme(ItemSchemeType, frozen=True, omit_defaults=True):
                 [JsonAnnotation.from_model(a) for a in vms.annotations]
             ),
             isPartial=vms.is_partial,
-            vtlMappings=tuple(
-                [JsonVtlMapping.from_model(i) for i in vms.items]
+            vtlMappings=tuple([JsonVtlMapping.from_model(i) for i in others]),
+            vtlDatasetMappings=tuple(
+                [
+                    JsonVtlDatasetMapping.from_model(i)
+                    for i in datasets
+                    if is_22
+                ]
+            ),
+            vtlCodelistMappings=tuple(
+                [JsonVtlCodelistMapping.from_model(i) for i in codelists]
             ),
         )
 
@@ -946,6 +1085,158 @@ class JsonTransformationScheme(
             userDefinedOperatorSchemes=udo_refs,
             transformations=tuple(
                 [JsonTransformation.from_model(i) for i in ts.items]
+            ),
+        )
+
+
+class JsonQueryParameter(Struct, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for the query parameters of a data extraction."""
+
+    name: str
+    isFixed: bool
+    value: Optional[str] = None
+
+    def to_model(self) -> QueryParameter:
+        """Converts deserialized class to pysdmx model class."""
+        return QueryParameter(
+            name=self.name, value=self.value, is_fixed=self.isFixed
+        )
+
+    @classmethod
+    def from_model(cls, parameter: QueryParameter) -> "JsonQueryParameter":
+        """Converts a pysdmx query parameter to an SDMX-JSON one."""
+        return JsonQueryParameter(
+            parameter.name, parameter.is_fixed, parameter.value
+        )
+
+
+def _parameters(
+    extraction: VtlDataExtraction,
+) -> Sequence[JsonQueryParameter]:
+    return tuple(
+        [JsonQueryParameter.from_model(p) for p in extraction.parameters]
+    )
+
+
+class JsonQueryExtraction(Struct, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for query extractions."""
+
+    datasetMapping: str
+    entryPoint: str
+    context: Optional[str] = None
+    sdmxApiVersion: Optional[str] = None
+    queryParameters: Sequence[JsonQueryParameter] = ()
+
+    def to_model(self) -> QueryExtraction:
+        """Converts deserialized class to pysdmx model class."""
+        return QueryExtraction(
+            dataset_mapping=self.datasetMapping,
+            entry_point=self.entryPoint,
+            sdmx_api_version=self.sdmxApiVersion,
+            context=self.context,
+            parameters=tuple([p.to_model() for p in self.queryParameters]),
+        )
+
+    @classmethod
+    def from_model(cls, extraction: QueryExtraction) -> "JsonQueryExtraction":
+        """Converts a pysdmx query extraction to an SDMX-JSON one."""
+        return JsonQueryExtraction(
+            datasetMapping=str(extraction.dataset_mapping_urn),
+            entryPoint=extraction.entry_point,
+            context=extraction.context_urn,
+            sdmxApiVersion=extraction.sdmx_api_version,
+            queryParameters=_parameters(extraction),
+        )
+
+
+class JsonUrlExtraction(Struct, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for URL extractions."""
+
+    datasetMapping: str
+    urlTemplate: str
+    queryParameters: Sequence[JsonQueryParameter] = ()
+
+    def to_model(self) -> UrlExtraction:
+        """Converts deserialized class to pysdmx model class."""
+        return UrlExtraction(
+            dataset_mapping=self.datasetMapping,
+            url_template=self.urlTemplate,
+            parameters=tuple([p.to_model() for p in self.queryParameters]),
+        )
+
+    @classmethod
+    def from_model(cls, extraction: UrlExtraction) -> "JsonUrlExtraction":
+        """Converts a pysdmx URL extraction to an SDMX-JSON one."""
+        return JsonUrlExtraction(
+            datasetMapping=str(extraction.dataset_mapping_urn),
+            urlTemplate=extraction.url_template,
+            queryParameters=_parameters(extraction),
+        )
+
+
+class JsonVtlExecution(MaintainableType, frozen=True, omit_defaults=True):
+    """SDMX-JSON payload for VTL executions (SDMX-JSON 2.2)."""
+
+    transformationScheme: Optional[str] = None
+    queryExtractions: Sequence[JsonQueryExtraction] = ()
+    urlExtractions: Sequence[JsonUrlExtraction] = ()
+
+    def to_model(self) -> VtlExecution:
+        """Converts deserialized class to pysdmx model class."""
+        return VtlExecution(
+            id=self.id,
+            name=self.name,
+            description=self.description,
+            version=self.version,
+            valid_from=ensure_tz_aware(self.validFrom),
+            valid_to=ensure_tz_aware(self.validTo),
+            is_external_reference=self.isExternalReference,
+            structure_url=_self_link_href(self.links),
+            is_final=is_final(self.version),
+            agency=self.agency,
+            annotations=tuple([a.to_model() for a in self.annotations]),
+            transformation_scheme=self.transformationScheme,
+            extractions=(
+                *[e.to_model() for e in self.queryExtractions],
+                *[e.to_model() for e in self.urlExtractions],
+            ),
+        )
+
+    @classmethod
+    def from_model(cls, execution: VtlExecution) -> "JsonVtlExecution":
+        """Converts a pysdmx VTL execution to an SDMX-JSON one."""
+        extractions = execution.extractions
+        return JsonVtlExecution(
+            agency=(
+                execution.agency.id
+                if isinstance(execution.agency, Agency)
+                else execution.agency
+            ),
+            id=execution.id,
+            name=_name(execution),
+            version=execution.version,
+            isExternalReference=execution.is_external_reference,
+            links=_self_link(execution.structure_url),
+            validFrom=ensure_tz_aware(execution.valid_from),
+            validTo=ensure_tz_aware(execution.valid_to),
+            description=execution.description,
+            annotations=tuple(
+                [JsonAnnotation.from_model(a) for a in execution.annotations]
+            ),
+            transformationScheme=execution.transformation_scheme_urn,
+            queryExtractions=tuple(
+                [
+                    JsonQueryExtraction.from_model(e)
+                    for e in extractions
+                    if isinstance(e, QueryExtraction)
+                ]
+            ),
+            urlExtractions=tuple(
+                [
+                    JsonUrlExtraction.from_model(e)
+                    for e in extractions
+                    if isinstance(e, UrlExtraction)
+                ]
             ),
         )
 
