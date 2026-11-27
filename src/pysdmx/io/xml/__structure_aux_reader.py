@@ -1064,12 +1064,26 @@ class StructureParser(Struct):
                 if dataflow.id == dataflow_ref[ID]:
                     json_obj[DFW_LOW] = dataflow
 
+    def __format_component_array_def(
+        self, comp: Dict[str, Any], role: Role
+    ) -> None:
+        """Sets the array_def of a DSD attribute or measure, if any.
+
+        SDMX-ML 3.x sets the number of values of attributes and measures
+        with minOccurs and maxOccurs on their LocalRepresentation.
+        """
+        if role != Role.DIMENSION and isinstance(comp.get(LOCAL_REP), dict):
+            array_def = self.__array_def(comp[LOCAL_REP])
+            if array_def is not None:
+                comp["array_def"] = array_def
+
     def __format_component(
         self, comp: Dict[str, Any], role: Role, element_info: Dict[str, Any]
     ) -> Component:
         comp[ROLE.lower()] = role
         comp[REQUIRED] = True
 
+        self.__format_component_array_def(comp, role)
         self.__format_local_rep(comp) if LOCAL_REP in comp else None
 
         if LINK in comp:
@@ -1340,6 +1354,9 @@ class StructureParser(Struct):
     @staticmethod
     def __array_def(att_elem: Dict[str, Any]) -> Optional[ArrayBoundaries]:
         """Builds ArrayBoundaries from minOccurs / maxOccurs.
+
+        The element is an MSD MetadataAttribute, or the LocalRepresentation
+        of a DSD attribute or measure (SDMX-ML 3.x).
 
         Mirrors ``JsonMetadataAttribute.to_model``: an array definition is
         only created when the attribute is genuinely multi-valued
