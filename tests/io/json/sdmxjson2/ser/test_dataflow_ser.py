@@ -4,8 +4,15 @@ from datetime import timezone as tz
 import pytest
 
 from pysdmx import errors
+from pysdmx.io import read_sdmx
 from pysdmx.io.json.sdmxjson2.messages.core import JsonLink
 from pysdmx.io.json.sdmxjson2.messages.dataflow import JsonDataflow
+from pysdmx.io.json.sdmxjson2.writer.v2_0.structure import (
+    write as write_v2_0,
+)
+from pysdmx.io.json.sdmxjson2.writer.v2_1.structure import (
+    write as write_v2_1,
+)
 from pysdmx.model import (
     Agency,
     Annotation,
@@ -142,6 +149,58 @@ def test_dataflow_dsd(dataflow_dsd: Dataflow):
     sjson = JsonDataflow.from_model(dataflow_dsd)
 
     assert sjson.structure == _CBS
+
+
+def _cbs(agency):
+    return DataStructureDefinition(
+        "BIS_CBS",
+        agency=agency,
+        version="1.0",
+        components=Components(
+            [
+                Component(
+                    "DIM",
+                    True,
+                    Role.DIMENSION,
+                    Concept("DIM"),
+                    DataType.STRING,
+                )
+            ]
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "structure",
+    [_CBS, "DataStructure=BIS:BIS_CBS(1.0)", _cbs("BIS"), _cbs(Agency("BIS"))],
+)
+def test_dataflow_structure_written_as_urn(structure):
+    df = Dataflow(
+        "CL_FREQ", name="Frequency", agency="BIS", structure=structure
+    )
+
+    assert JsonDataflow.from_model(df).structure == _CBS
+
+
+@pytest.mark.parametrize("writer", [write_v2_0, write_v2_1])
+def test_dataflow_with_short_urn_round_trip(writer):
+    df = Dataflow(
+        "CL_FREQ",
+        name="Frequency",
+        agency="BIS",
+        structure="DataStructure=BIS:BIS_CBS(1.0)",
+    )
+
+    out = writer([df])
+
+    assert read_sdmx(out, validate=True).get_dataflows()[0].structure == _CBS
+
+
+def test_dataflow_structure_not_a_urn():
+    df = Dataflow("CL_FREQ", name="Frequency", agency="BIS", structure="CBS")
+
+    with pytest.raises(errors.Invalid, match="does not match any"):
+        JsonDataflow.from_model(df)
 
 
 def test_dataflow_no_name(dataflow_no_name):
