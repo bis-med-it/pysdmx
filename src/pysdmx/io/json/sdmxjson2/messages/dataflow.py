@@ -152,13 +152,15 @@ class JsonDataflow(MaintainableType, frozen=True, omit_defaults=True):
                 "SDMX-JSON dataflows must reference a DSD.",
                 {"dataflow": df.id},
             )
-        if isinstance(df.structure, DataStructureDefinition):
-            dsdref = (
-                "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
-                f"{df.structure.agency}:{df.structure.id}({df.structure.version})"
-            )
-        else:
-            dsdref = df.structure
+        ref = parse_urn(
+            df.structure.short_urn
+            if isinstance(df.structure, DataStructureDefinition)
+            else df.structure
+        )
+        dsdref = (
+            "urn:sdmx:org.sdmx.infomodel.datastructure.DataStructure="
+            f"{ref.agency}:{ref.id}({ref.version})"
+        )
         return JsonDataflow(
             agency=(
                 df.agency.id if isinstance(df.agency, Agency) else df.agency

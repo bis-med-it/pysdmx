@@ -658,7 +658,10 @@ class DataStructureDefinition(MaintainableArtefact, frozen=True, kw_only=True):
     @property
     def short_urn(self) -> str:
         """Returns a short URN for the data structure."""
-        return f"DataStructure={self.agency}:{self.id}({self.version})"
+        agency = (
+            self.agency.id if isinstance(self.agency, Agency) else self.agency
+        )
+        return f"DataStructure={agency}:{self.id}({self.version})"
 
     @property
     def attribute_relationships(self) -> dict[str, AttributeRelationship]:
