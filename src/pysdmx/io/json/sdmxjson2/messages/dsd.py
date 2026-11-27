@@ -541,10 +541,8 @@ class JsonComponents(Struct, frozen=True, omit_defaults=True):
             components.attributes, components.measures
         )
         measures = JsonMeasures.from_model(components.measures)
-        if grps is None:
-            groups = []
-        else:
-            groups = [JsonGroup(g.id, g.dimensions) for g in grps]
+        # An empty tuple equals the default, so it is left out.
+        groups = tuple(JsonGroup(g.id, g.dimensions) for g in grps or ())
         return JsonComponents(dimensions, measures, attributes, groups)
 
 

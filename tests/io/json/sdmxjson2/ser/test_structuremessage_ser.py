@@ -21,14 +21,20 @@ from pysdmx.model import (
     Annotation,
     AvailabilityConstraint,
     Codelist,
+    Component,
+    Components,
+    Concept,
     ConstraintAttachment,
     CubeKeyValue,
     CubeRegion,
     CubeValue,
     Dataflow,
+    DataStructureDefinition,
     Organisation,
+    Role,
 )
 from pysdmx.model.code import Code
+from pysdmx.model.dataflow import Group
 from pysdmx.model.message import Header, StructureMessage
 
 
@@ -102,6 +108,50 @@ def test_structure_url_round_trip(header, codelist):
     result = message.get_codelists()[0]
 
     assert result.structure_url == codelist.structure_url
+
+
+def _dsd(groups):
+    urn = "urn:sdmx:org.sdmx.infomodel.conceptscheme.Concept=A:CS(1.0)."
+    return DataStructureDefinition(
+        id="D",
+        agency="A",
+        name="D",
+        components=Components(
+            [
+                Component(
+                    id=c,
+                    required=True,
+                    role=r,
+                    concept=Concept(id=c, urn=urn + c),
+                )
+                for c, r in (
+                    ("FREQ", Role.DIMENSION),
+                    ("OBS_VALUE", Role.MEASURE),
+                )
+            ]
+        ),
+        groups=groups,
+    )
+
+
+@pytest.mark.parametrize("writer", [write_v2_0, write_v2_1])
+@pytest.mark.parametrize("groups", [None, []])
+def test_dsd_without_groups_leaves_groups_out(writer, groups):
+    out = writer([_dsd(groups)])
+
+    assert '"groups"' not in out
+    result = read_sdmx(out, validate=True).get_data_structure_definitions()
+    assert result[0].groups == ()
+
+
+@pytest.mark.parametrize("writer", [write_v2_0, write_v2_1])
+def test_dsd_with_groups_keeps_groups(writer):
+    out = writer([_dsd([Group("SIBLING", dimensions=["FREQ"])])])
+
+    result = read_sdmx(out, validate=True).get_data_structure_definitions()
+    assert [(g.id, list(g.dimensions)) for g in result[0].groups] == [
+        ("SIBLING", ["FREQ"])
+    ]
 
 
 @pytest.fixture
